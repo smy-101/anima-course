@@ -24,6 +24,9 @@ const searchKey = (e: (typeof entries)[number]) => `${e.data.tag} ${e.data.meani
     释义依据优先级：Danbooru wiki → 模型卡 → 社区实测。写进提示词时全小写、空格代替下划线（<code>score_N</code> 除外）。
     目前收录 {entries.length} 个标签。
   </p>
+  <p class="crumbs" aria-label="分类导航">
+    分类：{ordered.map(([category], i) => (<>{i > 0 && ' · '}<a href={url(`tags/#cat-${category}`)}>{category}</a></>))}
+  </p>
   <p>
     <label>
       筛选：
@@ -48,7 +51,7 @@ const searchKey = (e: (typeof entries)[number]) => `${e.data.tag} ${e.data.meani
 
   {ordered.map(([category, list]) => (
     <section data-tag-group>
-      <h2>{category}</h2>
+      <h2 id={`cat-${category}`}>{category}<span class="verified">　{list.length} 个</span></h2>
       <div class="cards">
         {list.map((e) => (
           <a class="card" href={url(`tags/${e.id}/`)} data-tag-search={searchKey(e)}>

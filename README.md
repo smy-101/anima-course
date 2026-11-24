@@ -35,10 +35,10 @@ npm run preview      # 预览 dist/，地址同上
 source/                 原始 7 份笔记（一手资料）
 src/content/            内容（六个 Content Collections，schema 见 src/content.config.ts）
   lessons/              课程：18 篇，阶段 0–5 已全部迁移（14 天路径）
-  nodes/                节点卡（76 张，L0–L8 + 社区节点），文件名 = 英文类名
-  tags/                 标签卡，文件名 = slug
+  nodes/                节点卡（83 张，L0–L8 + 社区节点 + "Anima 为什么不用它"的 SD 系节点），文件名 = 英文类名
+  tags/                 标签卡（340 张：四段式全部 SFW 标签 + 常用负向项），文件名 = slug
   troubleshooting/      排错条目：现象 → 先调 → 再调 → 不要
-  resources/            参数基线、模型清单、模板、误区、链接
+  resources/            参数基线、启动参数、模型清单、模板、误区、链接、换模型时什么不变
   nsfw/                 成人附录（构建开关 NSFW）
 src/pages/              路由：/ 阶段地图、/lessons/[id]、/nodes、/tags、/troubleshooting、/resources、/nsfw、/search
 src/components/         FigureGallery、SourceBadge、Acceptance、AgeGate
@@ -68,12 +68,13 @@ scripts/                check-site.mjs（构建后检查）、satteri-base-links
 |---|---|
 | 课程阶段 0–5（18 篇） | 已迁移 |
 | 节点卡 L0–L8 + 社区节点（UltimateSDUpscale、FaceDetailer 等） | 已迁移 |
-| 标签字典 | 核心 40 张；成人词表待补 |
+| 标签字典 | 四段式的 SFW 标签已全部建卡（340 张）；成人词表待补 |
 | 排错速查 | 51 条 |
+| 启动参数与 Attention 后端（《节点详解》§5.5） | 已迁移（`resources/startup-args.md`） |
+| 概念可迁移：换模型时什么不变、什么要换（《节点详解》§4.1–4.9） | 已迁移（`resources/transfer.md`） |
 | 成人附录 | 规则与合规两页；词表 / 负向 / 模板待补（纯文字） |
 | 开发者选修（《补充B》：HTTP API / 无界面 / 自定义节点） | 待迁移 |
-| 示例图（76 处占位，清单见 `npm run check:site`） | 待换机器补图 |
-| L0–L8 工作流 JSON、四个工具（实验记录本 / 提示词检查器 / 排错向导 / 误区自测） | 待做 |
+| 示例图（76 处占位，清单见 `npm run check:site`） | 待换机器补图 || L0–L8 工作流 JSON、四个工具（实验记录本 / 提示词检查器 / 排错向导 / 误区自测） | 待做 |
 
 ## 技术栈
 

@@ -39,6 +39,21 @@ tags:
   - censored
   - high-contrast
   - blurry
+  - good-quality
+  - normal-quality
+  - recent
+  - early
+  - old
+  - cowboy-shot
+  - looking-at-viewer
+  - twintails
+  - blue-eyes
+  - outdoors
+  - backlighting
+  - depth-of-field
+  - pixel-art
+  - 4koma
+  - character-design-sheet
 deliverable: 同一画面（建议"雨天电车站台的少女"）的标签版、自然语言版、混合版各一张；2–3 个喜欢的画师组合。
 acceptance:
   - 能说出"权重只有一半生效"和"逗号后必须有空格"各自的原因
@@ -208,6 +223,24 @@ Volnovik 指南把混合写法叫 **"boorified language"**：用句子搭骨架�
 | **Base** | 建议加 `masterpiece, best quality` | 可用（`score_7`） | 想要扁平 / 复古 / 绘画感时**去掉质量标签和 highres** |
 | **Aesthetic** | 可留 `masterpiece, best quality`，不加也行 | **正负向都不要用** | 已在高质量图上精调，score 会把画面推成"AI 味" |
 | **Turbo** | 同 Base 即可 | 可用 | CFG 1 时负面无效，把想要的东西写进正向；种子间变化比 Base 小 |
+
+### 第三段：通用标签（主体）
+
+这一段是提示词的主体：Anima 语料里常见的 SFW 标签，按用途分组。完整释义（300 多个）在[标签字典](/tags/)，点组名跳到对应分类。
+
+| 组 | 常用标签 | 用途 |
+|---|---|---|
+| [构图 / 取景](/tags/#cat-构图) | `portrait`、[cowboy shot](/tags/cowboy-shot/)、`full body`、`from below`、`dutch angle`、[looking at viewer](/tags/looking-at-viewer/) | 镜头离人物多远、从哪个方向拍。想要"电影感"用这一组，别写 cinematic |
+| [动作](/tags/#cat-动作) | `standing`、`sitting`、`crossed arms`、[own hands together](/tags/own-hands-together/)、`hand on own hip`、[a-pose](/tags/a-pose/) | 姿势与手。补手部细节标签能减少手崩 |
+| [表情](/tags/#cat-表情) | `smile`、`grin`、[blush](/tags/blush/)、`crying`、`angry`、`expressionless`、`fang` | 表情。每个词是精确的一张脸，不是形容词 |
+| [外观](/tags/#cat-外观) | `long hair`、[twintails](/tags/twintails/)、`ahoge`、`blue hair`、`gradient hair`、[blue eyes](/tags/blue-eyes/)、`heterochromia` | 发型 / 发色 / 瞳色，Anima 的强项；多人时**每个角色都写**，否则特征会"串" |
+| [服饰](/tags/#cat-服饰) | `hair ribbon`、`hair ornament`、`hairclip`、`kanzashi` | 服装与发饰；`cosplay` 是"扮演别的角色"，不是"穿衣服" |
+| [背景](/tags/#cat-背景) | `scenery`、`detailed background`、`indoors`、[outdoors](/tags/outdoors/)、`blurry background`、`gradient background` | 治白底的药：纯色背景在语料里占比极高 |
+| [光线 / 效果](/tags/#cat-光线) | [backlighting](/tags/backlighting/)、`rim lighting`、`light rays`、`bloom`、[depth of field](/tags/depth-of-field/)、`speed lines` | 光线与镜头效果；`depth of field`、`shaded face` 都有精确含义 |
+| [画风 / 媒介](/tags/#cat-画风) | `flat color`、`painterly`、`sketch`、[watercolor (medium)](/tags/watercolor-medium/)、[pixel art](/tags/pixel-art/)、`retro artstyle` | 画风。内置风格标签的括号要转义成 `\(medium\)` |
+| [画面格式](/tags/#cat-格式) | [4koma](/tags/4koma/)、`manga`、[character design sheet](/tags/character-design-sheet/)、`tachi-e`、`border` | 漫画分格、设定图、立绘 |
+
+规则只有一条：**这一段里每个词都是一个精确的标签，不是形容词**。把 `lineart`、`monochrome`、`wet` 当普通英文写进句子，整张图会被它定义——下面"陷阱标签"一节专门讲这件事。
 
 ## 自然语言要点
 
