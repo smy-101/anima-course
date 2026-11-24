@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 import { AREAS } from '../../content.config';
+import { inlineLinks } from '../../lib/env';
 
 const entries = await Promise.all(
   (await getCollection('troubleshooting')).map(async (e) => ({ e, Content: (await render(e)).Content })),
@@ -49,9 +50,9 @@ const hasBody = (e: (typeof entries)[number]['e']) => Boolean(e.body && e.body.t
             <div class="table-wrap">
               <table>
                 <tbody>
-                  <tr><th>先调</th><td>{e.data.first}</td></tr>
-                  {e.data.then && <tr><th>再调</th><td>{e.data.then}</td></tr>}
-                  {e.data.dont && <tr><th>不要</th><td>{e.data.dont}</td></tr>}
+                  <tr><th>先调</th><td set:html={inlineLinks(e.data.first)} /></tr>
+                  {e.data.then && <tr><th>再调</th><td set:html={inlineLinks(e.data.then)} /></tr>}
+                  {e.data.dont && <tr><th>不要</th><td set:html={inlineLinks(e.data.dont)} /></tr>}
                 </tbody>
               </table>
             </div>
