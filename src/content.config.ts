@@ -22,10 +22,11 @@ const source = z.object({
   note: z.string().optional(),
 });
 
-/** 所有集合共有：来源与核实日期 */
+/** 所有集合共有：来源与核实日期（YAML 可能把 2026-11-24 解析成 Date，统一转成字符串） */
+const ymd = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, '核实日期必须是 YYYY-MM-DD');
 const common = {
   sources: z.array(source).default([]),
-  verified: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, '核实日期必须是 YYYY-MM-DD'),
+  verified: z.preprocess((v) => (v instanceof Date ? v.toISOString().slice(0, 10) : v), ymd),
 };
 
 const lessons = defineCollection({
@@ -85,9 +86,13 @@ const paramField = z.object({
   desc: z.string().default(''),
 });
 
-/** 节点卡：文件名 = 英文类名 */
+/** 节点卡：文件名 = 英文类名（保留大小写，不 slugify） */
 const nodes = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/nodes' }),
+  loader: glob({
+    pattern: '**/*.md',
+    base: './src/content/nodes',
+    generateId: ({ entry }) => entry.replace(/\.md$/, ''),
+  }),
   schema: z.object({
     ...common,
     name_zh: z.string(),

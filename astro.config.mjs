@@ -2,6 +2,8 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
+import { satteri } from '@astrojs/markdown-satteri';
+import { satteriBaseLinks } from './scripts/satteri-base-links.mjs';
 
 // GitHub Pages 项目站点：https://<user>.github.io/<repo>/
 // 部署前把 SITE_URL 换成你的地址；BASE_PATH 默认为仓库名，两者都可用环境变量覆盖。
@@ -16,6 +18,8 @@ export default defineConfig({
   base: BASE_PATH,
   integrations: [mdx(), react()],
   markdown: {
+    // Sätteri（默认处理器）+ 给正文链接加 base 的插件
+    processor: satteri({ hastPlugins: [satteriBaseLinks()] }),
     shikiConfig: { theme: 'github-dark', wrap: true },
   },
 });

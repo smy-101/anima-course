@@ -1,22 +1,26 @@
-## Development
+# AGENTS.md — anima-course
 
-When starting the dev server, use background mode:
+课程站的内容与结构方案在 `docs/学习网站方案.md`：写新课程先读 §4（课程主线）与 §6（内容模型）；补图读 §7；迁移原始笔记读 §8。原始笔记在 `source/`，是一手资料，站点内容全部是它的派生。
 
-```
-astro dev --background
-```
+## 改动内容后的收尾步骤
 
-Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
+1. `npm run build`——frontmatter 不合 schema 会在这里报错，错误信息给出文件与字段。
+2. `npm run check:site`——列出待补图与死链；死链退出码 1。
+3. `npx astro check`——类型检查。
 
-## Documentation
+三项都过再提交。
 
-Full documentation: https://docs.astro.build
+## 按任务分支
 
-Consult these guides before working on related tasks:
+- **写课程 / 节点 / 标签 / 排错**：照同目录已有文件的 frontmatter 写；字段含义见 `src/content.config.ts` 的注释。
+- **正文里链站内页面**：写 `/lessons/…/`、`/nodes/…/` 这种根路径，不写 base；`scripts/satteri-base-links.mjs` 会加前缀。`.astro` 模板里用 `src/lib/env.ts` 的 `url()`。
+- **改 `astro.config.mjs` 的 `markdown` 段**：先 `rm -rf .astro node_modules/.astro`，内容层缓存按文件摘要复用已渲染正文，配置变了也不会重渲染。
+- **frontmatter 里写字符串**：含 `: `、引号或括号的值加引号；`note:` 尤其容易漏。
+- **成人附录（`src/content/nsfw/`）**：纯文字。示例图一律不放进这个集合。
+- **部署**：`.github/workflows/deploy.yml`；`NSFW` 开关在那里。
 
-- [Adding pages, dynamic routes, or middleware](https://docs.astro.build/en/guides/routing/)
-- [Working with Astro components](https://docs.astro.build/en/basics/astro-components/)
-- [Using React, Vue, Svelte, or other framework components](https://docs.astro.build/en/guides/framework-components/)
-- [Adding or managing content](https://docs.astro.build/en/guides/content-collections/)
-- [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
-- [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
+## 约定
+
+- 节点卡文件名 = 英文类名，保留大小写（loader 用 `generateId` 保住）；标签卡文件名 = 小写连字符 slug。
+- 每个数值都是"起点值"，行文里这样说；每条结论带来源徽章。
+- 笔记里的元信息（勘误表、"对现有笔记的修改建议"、"补充清单"）不进站，勘误改写成 `resources/misconceptions.md` 的条目。

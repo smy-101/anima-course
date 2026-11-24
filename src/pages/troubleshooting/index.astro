@@ -20,7 +20,6 @@ for (const item of entries) {
 const ordered = [...byArea.entries()].sort(
   ([a], [b]) => AREAS.indexOf(a as (typeof AREAS)[number]) - AREAS.indexOf(b as (typeof AREAS)[number]),
 );
-const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-');
 const hasBody = (e: (typeof entries)[number]['e']) => Boolean(e.body && e.body.trim());
 ---
 
@@ -43,7 +42,7 @@ const hasBody = (e: (typeof entries)[number]['e']) => Boolean(e.body && e.body.t
         {list.map(({ e, Content }) => (
           <article
             class="card"
-            id={slug(e.data.symptom)}
+            id={e.id}
             data-ts-search={`${e.data.symptom} ${e.data.first} ${e.data.then} ${e.data.dont} ${e.body ?? ''}`}
           >
             <h3>{e.data.symptom}</h3>
