@@ -11,11 +11,11 @@
 
 ```bash
 npm install
-npm run dev          # http://localhost:4321/anima-course/
+npm run dev          # Windows 浏览器打开 http://localhost:4321/anima-course/（项目在 WSL 也能访问）
 npm run build        # 构建到 dist/，随后 pagefind 自动建索引（postbuild）
 npm run check:site   # 待补图清单 + 死链检查（死链则退出码 1）
 npm run check        # astro check：TS / .astro 类型检查
-npm run preview      # 预览 dist/
+npm run preview      # 预览 dist/，地址同上
 ```
 
 环境变量：
@@ -25,8 +25,9 @@ npm run preview      # 预览 dist/
 | `BASE_PATH` | `/anima-course` | GitHub Pages 项目站点的子路径（= 仓库名） |
 | `SITE_URL` | `https://USERNAME.github.io` | 站点根地址 |
 | `NSFW` | `true` | `false` 时 `/nsfw/*` 整个不生成，导航与页脚也不出现 |
+| `DEV_HOST` | `127.0.0.1` | dev / preview 的监听地址。设为 `0.0.0.0` 可让局域网访问 |
 
-本地开发链接带 base：`http://localhost:4321/anima-course/`。
+本地链接带 base：`http://localhost:4321/anima-course/`。
 
 ## 目录
 

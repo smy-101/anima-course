@@ -15,6 +15,7 @@
 - **写课程 / 节点 / 标签 / 排错**：照同目录已有文件的 frontmatter 写；字段含义见 `src/content.config.ts` 的注释。
 - **正文里链站内页面**：写 `/lessons/…/`、`/nodes/…/` 这种根路径，不写 base；`scripts/satteri-base-links.mjs` 会加前缀。`.astro` 模板里用 `src/lib/env.ts` 的 `url()`。
 - **改 `astro.config.mjs` 的 `markdown` 段**：先 `rm -rf .astro node_modules/.astro`，内容层缓存按文件摘要复用已渲染正文，配置变了也不会重渲染。
+- **dev / preview 的监听地址**：已固定为 `127.0.0.1`（`server.host` / `preview.host`）。本机 Node 把 `localhost` 解析成 `::1`，Vite 默认只绑 IPv6 回环，WSL 镜像网络不转发它，Windows 浏览器会打不开；保持 IPv4 回环。
 - **frontmatter 里写字符串**：含 `: `、引号或括号的值加引号；`note:` 尤其容易漏。
 - **成人附录（`src/content/nsfw/`）**：纯文字。示例图一律不放进这个集合。
 - **部署**：`.github/workflows/deploy.yml`；`NSFW` 开关在那里。
