@@ -11,10 +11,10 @@ export const badges = ['官方', '源码', '作者', '平台', '社区', 'Danboo
 export type Badge = (typeof badges)[number];
 
 export const LEVELS = ['L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8'] as const;
-export const TAG_CATEGORIES = ['质量', '年代', '元数据', '安全', '人数', '角色', '构图', '外观', '服饰', '动作', '背景', '其它'] as const;
+export const TAG_CATEGORIES = ['质量', '年代', '元数据', '安全', '人数', '角色', '构图', '动作', '表情', '外观', '服饰', '背景', '光线', '画风', '格式', '其它'] as const;
 export const AREAS = ['提示词', '参数', '工作流', '放大', '重绘', '环境'] as const;
 export const NSFW_SECTIONS = ['规则', '词表', '负向', '陷阱', '模板', '合规'] as const;
-export const RESOURCE_KINDS = ['模型文件', '工具', '链接', '模板', '误区', '基线'] as const;
+export const RESOURCE_KINDS = ['模型文件', '工具', '链接', '模板', '误区', '基线', '概念'] as const;
 
 const source = z.object({
   badge: z.enum(badges),

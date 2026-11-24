@@ -16,6 +16,7 @@ nodes:
   - ResizeImageMaskNode
   - FaceDetailer
   - HandDetailer
+  - UltralyticsDetectorProvider
   - PreviewImage
 tags: []
 deliverable: 一张横图扩成的方图；一张裁剪法修好的手；一张 FaceDetailer 修脸前后对比。
@@ -65,7 +66,7 @@ verified: 2026-11-24
 |---|---|---|
 | 外补画板 `ImagePadForOutpaint` | 四周补边，输出补边后的图 + 新区域的 MASK | `left/top/right/bottom`，`feathering 40` |
 | 图像裁剪 `ImageCropV2` / 裁剪遮罩 `CropMask` / 合成图像（遮罩）`ImageCompositeMasked` | "裁剪法"：把小区域放大到整张画布重绘再贴回 | 同一组 x / y / w / h |
-| 脸部细化 `FaceDetailer` / 手部细化 `HandDetailer`（社区 Impact Pack） | 检测 → 裁出放大 → 重绘 → 羽化贴回 | `guide_size`、`denoise`、`feather`、`bbox_threshold` |
+| 脸部细化 [FaceDetailer](/nodes/FaceDetailer/) / 手部细化 [HandDetailer](/nodes/HandDetailer/)（社区 Impact Pack） | 检测 → 裁出放大 → 重绘 → 羽化贴回 | `guide_size`、`denoise`、`feather`、`bbox_threshold` |
 
 端口细节：[ImagePadForOutpaint](/nodes/ImagePadForOutpaint/) · [ImageCropV2](/nodes/ImageCropV2/) · [CropMask](/nodes/CropMask/) · [ImageCompositeMasked](/nodes/ImageCompositeMasked/) · [FaceDetailer](/nodes/FaceDetailer/) · [HandDetailer](/nodes/HandDetailer/)
 
@@ -106,7 +107,7 @@ LoadImage.IMAGE ──▶ ImageCompositeMasked.destination；x,y = 裁剪坐标�
 
 | 要点 | 说明 |
 |---|---|
-| 安装 | **Impact Pack 与 Impact Subpack 两个都要装**：`UltralyticsDetectorProvider`（加载检测模型的节点）在 Subpack 里，V8.0 起不再随 Pack 自动安装。Impact Pack 对 ComfyUI 版本有要求（V8.24 起需 0.3.63+，以其 README 为准） |
+| 安装 | **Impact Pack 与 Impact Subpack 两个都要装**：[UltralyticsDetectorProvider](/nodes/UltralyticsDetectorProvider/)（加载检测模型的节点）在 Subpack 里，V8.0 起不再随 Pack 自动安装。Impact Pack 对 ComfyUI 版本有要求（V8.24 起需 0.3.63+，以其 README 为准） |
 | 检测模型 | 如 `face_yolov8m.pt`、`hand_yolov8s.pt`，放 `ComfyUI/models/ultralytics/bbox/`，可由 Manager 下载 |
 | 连线 | `VAEDecode.IMAGE ──▶ FaceDetailer.image`；`UltralyticsDetectorProvider.BBOX_DETECTOR ──▶ bbox_detector`；model / clip / vae / positive / negative 与 K采样器 相同 |
 | 关键参数 | `guide_size`（检测框放大到多大再重绘，约 512）、`denoise`（0.4 ~ 0.5）、`feather`（贴回羽化）、`bbox_threshold`（检测阈值，漏检就降）；正负提示词**只写这张脸 / 手该有的样子**（如 `detailed face, looking at viewer`），不写整图 |

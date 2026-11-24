@@ -49,3 +49,5 @@ verified: 2026-11-24
 | VAE解码（分块） | 大图解码不爆显存 |
 | 蒸馏版模型（Turbo）+ CFG 1 + 基本引导器 | 步数少 + 少算一路，数倍提速 |
 | 先 Turbo 试稿、定稿再换完整模型 | 官方推荐的工作节奏 |
+
+节点侧还不够，再动启动参数（`--cpu-vae`、`--reserve-vram`、`--fp8_e4m3fn-unet`、Attention 后端等）：改的是整个进程，要重启且所有工作流一起受影响。清单见[启动参数与 Attention 后端](/resources/startup-args/)。

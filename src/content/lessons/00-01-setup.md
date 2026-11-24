@@ -11,6 +11,7 @@ nodes:
   - UNETLoader
   - CLIPLoader
   - VAELoader
+  - CheckpointLoaderSimple
 tags: []
 deliverable: 用官方模板出的第一张图，以及建好的实验记录本（E001 空表）。
 acceptance:
@@ -42,6 +43,9 @@ sources:
   - badge: 官方
     url: https://docs.comfy.org/zh/tutorials/image/anima/anima
     note: ComfyUI 官方 Anima 教程
+  - badge: 官方
+    url: https://docs.comfy.org/zh/interface/overview
+    note: "界面地图、快捷键、队列与工作流保存（《节点详解》§2）"
   - badge: 官方
     url: https://docs.comfy.org/en/installation/desktop
     note: 桌面版安装与模型共享目录
@@ -94,7 +98,7 @@ verified: 2026-11-24
     └── anima-turbo-lora-v0.2.safetensors     (142 MB)
 ```
 
-⚠️ **不要放到 `checkpoints/`**。Anima 是拆分模型，不是 SD 那种三合一 checkpoint。
+⚠️ **不要放到 `checkpoints/`**。Anima 是拆分模型，不是 SD 那种由 [Checkpoint加载器（简易）](/nodes/CheckpointLoaderSimple/) 一个节点交出 MODEL / CLIP / VAE 的三合一 checkpoint。
 
 > 📂 **`ComfyUI/models` 到底在哪，取决于安装方式**（"放错目录"的根源往往是这个）：
 
@@ -151,6 +155,8 @@ verified: 2026-11-24
 3. **运行期间不要关那个命令行窗口**，关了 ComfyUI 就停了。
 4. 更新：双击 `update/update_comfyui.bat`。`update_comfyui_and_python_dependencies.bat` 会重装 PyTorch 等依赖，**有风险，仅在环境坏掉时用**。
 
+> 要加**启动参数**（显存、端口、Attention 后端、排错开关）：便携版编辑 `.bat` 里 `python -s main.py` 之后那一段，桌面版在启动器的 Startup arguments。参数清单与"先节点、后启动参数"的顺序见[启动参数与 Attention 后端](/resources/startup-args/)。
+
 > **Anima 需要较新的 ComfyUI**。桌面版稳定通道可能滞后，找不到 Anima 模板时切到"GitHub 最新版"。手动安装的，`git pull` 后一定要 `pip install -r requirements.txt`，否则前端、模板、节点文档会滞后。
 
 ## 界面速查
@@ -162,12 +168,22 @@ verified: 2026-11-24
 | 右侧面板 | 选中节点的**参数**、**信息**（= 该节点的内置文档）、**设置**；以及**问题 / 错误**标签页（缺失模型、缺失节点包、报错） |
 | 右键画布 / 双击空白处 | 添加节点菜单 / 搜索并添加节点（输英文类名如 `KSampler` 也能搜到） |
 | 从输出圆点拖线到空白处松手 | 弹出节点搜索，选中即自动连好线 |
-| `Ctrl+Enter` | 运行 |
-| `Ctrl+S` / `Ctrl+O` | 保存 / 加载工作流 |
+| 断开连线 | 点住输入圆点拖走；或框选连线后按 `Delete` |
+| `Ctrl+Enter` / `Ctrl+Alt+Enter` | 运行 / 中断 |
+| `Ctrl+S` / `Ctrl+O` | 保存 / 加载工作流。保存的 JSON 在 `ComfyUI/user/default/workflows/`（桌面版在共享目录的 `user/` 下） |
+| `Ctrl+Z` / `Ctrl+Y` | 撤销 / 重做 |
+| `Ctrl+C` / `Ctrl+V` | 复制 / 粘贴选中节点（**不带**外部连线） |
+| `Ctrl+C` / `Ctrl+Shift+V` | 复制 / 粘贴并**保持与外部输出的连线**——[L2](/lessons/02-01-l2-sweeps/) 搭参数扫描时复制分支就靠它 |
+| `Ctrl`+点击 / `Shift`+点击 | 把节点加入 / 移出当前选择 |
 | `Ctrl+B` / `Ctrl+M` | **忽略**（Bypass：不执行但数据透传，A/B 对比神器）/ 禁用（Mute：下游断粮） |
+| `Ctrl+G` | 给选中节点加框（Group）；`Alt+C` 折叠 / 展开选中节点 |
+| 从模型库拖文件到画布 | 自动生成对应的加载器并选好文件（`diffusion_models` → UNet加载器）。注意 `loras` 拖出来的是带 CLIP 输入的 加载LoRA，Anima 要换成 [LoRA加载器（仅模型）](/nodes/LoraLoaderModelOnly/)（见 [LoRA 课](/lessons/03-02-l3-lora/)） |
+| Reroute（转接点） | 从连线或端口上拖出，把长绕的线"折一下"；右键可设垂直 / 水平 |
 | `R` | 重新扫描模型文件夹（放好模型后按一下） |
 | `.` | 让整张工作流适应屏幕 |
-| `Ctrl+G` | 给选中节点加框（Group） |
+| `Ctrl+Shift+K` | 打开底部快捷键面板。所有快捷键都可在 设置 → 快捷键 里改并存成预设；macOS 把 `Ctrl` 换成 `Cmd`、`Alt` 换成 `Option` |
+| Run 栏：批量次数 / 队列模式 | 批量次数 = 点一次 Run 排几次；队列模式 `Run`（点了才跑）/ `Run (On Change)`（一有改动就自动跑）/ `Run (Instant)`（上一次一结束立刻再跑）；**按住 `Shift` 点 Run 插队**到最前 |
+| 工作流标签页菜单 → 导出 | 导出"工作流图像"：一张画布截图 PNG，同样内嵌工作流，适合发给别人 |
 | 种子控件右侧 | `fixed` / `increment` / `decrement` / `randomize`——想复现就设 **fixed** |
 | 输出位置 | `ComfyUI/output/`，文件名 `ComfyUI_00001_.png` 递增；保存图像节点可自定义前缀 |
 
@@ -222,7 +238,7 @@ PNG 里嵌的工作流能还原"当时怎么连的"，但还原不了"你在对�
 | 加载节点变红，提示 missing | 文件没下 / 放错目录 | 对照目录表；放好后按 `R` |
 | 找不到 "Anima" 模板 | ComfyUI 或模板依赖太旧 | 更新 ComfyUI 及依赖；桌面版切到 GitHub 最新版 |
 | 加载工作流提示节点缺失 | 用了含第三方节点的工作流 | 看右侧面板缺哪个节点，用 Manager 装 |
-| 启动日志有 `import failed` | 自定义节点依赖缺失或与新版本不兼容 | 用 `--disable-all-custom-nodes` 排查，逐个定位 |
+| 启动日志有 `import failed` | 自定义节点依赖缺失或与新版本不兼容 | 用 `--disable-all-custom-nodes` 排查，逐个定位（见[启动参数](/resources/startup-args/)） |
 | 显存不足（OOM） | 分辨率 / 模型太大 | 降到 768×1024、用 Turbo 8 步、关掉其他占显存程序 |
 | 浏览器界面错乱 | Chrome 版本太低 | 升级到 Chrome 143+ |
 

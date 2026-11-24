@@ -1,7 +1,7 @@
 ---
 symptom: "启动日志有 import failed"
 area: 环境
-first: "--disable-all-custom-nodes 逐个定位"
+first: "--disable-all-custom-nodes 逐个定位；配合 --whitelist-custom-nodes 放回（见[启动参数](/resources/startup-args/)）"
 then: "Manager 更新 / 重装该节点"
 dont: ""
 sources:

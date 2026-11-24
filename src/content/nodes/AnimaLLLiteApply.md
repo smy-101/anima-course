@@ -21,7 +21,7 @@ outputs:
   - { name: MODEL, type: MODEL, desc: "已注入控制的模型，接 K采样器（或继续串第二个 LLLite）" }
 ---
 
-Anima 的 ControlNet。与 SD 系的"应用ControlNet"不同：它**改 MODEL 而不是改条件**，所以串在 UNet加载器 与 K采样器 之间（L1 里就是放在 UNETLoader 与 Turbo LoRA 开关之间）。
+Anima 的 ControlNet。与 SD 系"[加载ControlNet模型](/nodes/ControlNetLoader/) → 应用ControlNet"那条路不同：它**改 MODEL 而不是改条件**，所以串在 UNet加载器 与 K采样器 之间（L1 里就是放在 UNETLoader 与 Turbo LoRA 开关之间）。
 
 源码里的三条规矩：
 

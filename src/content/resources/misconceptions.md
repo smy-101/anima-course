@@ -41,16 +41,15 @@ verified: 2026-11-24
 | "fp8 / fp16 省显存没代价" | Anima 支持 bf16 / fp16 / fp32；源码里 fp16 的显存估算系数 ×1.4，日常保持 `default`；fp8 可用但有画质代价 |
 | "Anima 2.9B" | **不是官方版本**：官方仓库当日只有 2B 的 Base / Aesthetic / Turbo / Preview；相关"六工作流"文章自述未运行验证 |
 | "Civitai 33857 是模型作者的提示词指南" | 该系列是社区作者 **Volnovik** 写的，不是模型作者 tdrussell。两者推荐值有差异，引用必须区分 |
-| "Anima 用应用ControlNet 节点接 ControlNet" | Anima 走**模型补丁**路线：`ModelPatchLoader → AnimaLLLiteApply` 接在 UNETLoader 与 K采样器之间，改的是 MODEL 不是条件 |
+| "Anima 用 加载ControlNet模型 + 应用ControlNet 节点接 ControlNet" | Anima 走**模型补丁**路线：[加载模型补丁](/nodes/ModelPatchLoader/) → [应用 Anima LLLite](/nodes/AnimaLLLiteApply/) 接在 UNETLoader 与 K采样器之间，改的是 MODEL 不是条件。[加载ControlNet模型](/nodes/ControlNetLoader/) 那条路是 SD / SDXL 系的 |
 | "桌面版模型放在程序目录里" | 当前桌面版在独立的共享目录 `%LOCALAPPDATA%\Comfy-Desktop\ComfyUI-Shared`，不在程序目录 |
 | "denoise 值越低，与输入图像的关联性越小" | 个别中文文档译反了。正确：值越低，越接近输入图 |
 | "图生图要把大图直接喂进去，出来的就是大图" | 输入图的尺寸就是输出尺寸；3000×4000 直接编码得到的是一张构图崩坏的图。先缩到约 1 MP，想要大图走放大 |
 | "Turbo 起稿后同 seed 换 Aesthetic，构图一定一样" | 同架构、同文本编码器，构图**往往相近但不保证相同**。要保留构图就用潜空间精修（第二段 denoise 0.35 ~ 0.5） |
-| "Anima 用 加载LoRA 挂 LoRA" | Anima 是拆分模型，只用 LoRA加载器（仅模型）；`LoraLoader` 的 clip 输入必填，没接会报缺少输入 |
+| "Anima 用 加载LoRA 挂 LoRA" | Anima 是拆分模型，只用 [LoRA加载器（仅模型）](/nodes/LoraLoaderModelOnly/)；[加载LoRA](/nodes/LoraLoader/) `LoraLoader` 的 clip 输入必填，没接会报缺少输入 |
 | "放大倍率越大越好，一次 ×2" | 1024² 起步单段 ≤ 1.5×，1536² 起步约 1.3×；再大分两段或分块放大（UltimateSDUpscale） |
 | "二次采样 denoise 越高细节越多" | 0.35 ~ 0.45 补细节不改构图；> 0.6 构图漂移 |
 | "放大模型能顺手把手崩修好" | 放大模型只重建边缘；手脸要先重绘 / Detailer 修掉再放大，否则接缝和错误一并放大 |
-| "Anima 的 ControlNet 用 应用ControlNet 节点" | 走模型补丁：ModelPatchLoader → AnimaLLLiteApply 接在 UNETLoader 与 K采样器 之间，改的是 MODEL 不是条件 |
 | "LLLite 的 mask 可以羽化得软一点" | LLLite 在 0.5 处二值化 mask，软边等于没有；要比目标区域**涂大一圈**（扩展遮罩 8 ~ 16） |
 | "LLLite 权重放 controlnet 目录" | 必须 `models/model_patches/`，用 加载模型补丁 读取；Pose 权重在 Preview3 代训的，v1.0 上偏弱 |
 | "重绘时提示词照抄整图" | 局部重绘只写遮罩里要出现的东西；扩图才写整张画面 |

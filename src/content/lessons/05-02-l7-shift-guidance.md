@@ -19,6 +19,10 @@ nodes:
   - SelfAttentionGuidance
   - CFGGuider
   - KSampler
+  - BasicScheduler
+  - SplitSigmas
+  - ManualSigmas
+  - KarrasScheduler
 tags:
   - twins
 deliverable: 一张 shift 3 / 5 / 7 对照图；一张"挂一个引导补丁 vs 不挂"的对照图，能说出补丁做了什么、值不值得留。
@@ -109,7 +113,7 @@ UNETLoader.MODEL ──▶ ModelSamplingSD3(shift 3.0) ──▶ APG ──▶ N
 | `ModelSamplingSD3.shift` | 3.0 | 2 ~ 7 | 高分辨率可试更高；LLLite v2 权重按 3.0 训练 |
 | `CFGOverride` 窗口 | 不用 | 前 5% ~ 15% 强制 cfg 1 | 减轻早期过饱和 |
 | `SplitSigmas` / K采样器（高级）切点 | 50% | 30% ~ 70% | 两段用不同模型 / CFG 时才需要 |
-| 手写 Sigmas `ManualSigmas` / `KarrasScheduler` | 不用 | — | 自定义时间表，研究用 |
+| 手写 Sigmas [ManualSigmas](/nodes/ManualSigmas/) / [KarrasScheduler](/nodes/KarrasScheduler/) | 不用 | — | 自定义时间表，研究用 |
 
 ## 动手步骤
 

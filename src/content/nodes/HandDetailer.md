@@ -17,4 +17,4 @@ outputs:
   - { name: cropped_refined, type: IMAGE, desc: "单独的重绘小图" }
 ---
 
-与 FaceDetailer 同构，检测模型换成 `hand_yolov8s.pt`。提示词只写手该有的样子（如 `detailed hands, own hands together`），不写整图。修手的第一选择；修完再放大。
+与 FaceDetailer 同构，检测模型换成 `hand_yolov8s.pt`（同样由 [UltralyticsDetectorProvider](/nodes/UltralyticsDetectorProvider/) 加载）。提示词只写手该有的样子（如 `detailed hands, own hands together`），不写整图。修手的第一选择；修完再放大。
