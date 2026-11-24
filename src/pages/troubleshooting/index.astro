@@ -1,0 +1,88 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+import { AREAS } from '../../content.config';
+
+const entries = await Promise.all(
+  (await getCollection('troubleshooting')).map(async (e) => ({ e, Content: (await render(e)).Content })),
+);
+entries.sort((a, b) => {
+  const da = AREAS.indexOf(a.e.data.area);
+  const db = AREAS.indexOf(b.e.data.area);
+  return da - db || a.e.data.symptom.localeCompare(b.e.data.symptom);
+});
+
+const byArea = new Map<string, typeof entries>();
+for (const item of entries) {
+  if (!byArea.has(item.e.data.area)) byArea.set(item.e.data.area, []);
+  byArea.get(item.e.data.area)!.push(item);
+}
+const ordered = [...byArea.entries()].sort(
+  ([a], [b]) => AREAS.indexOf(a as (typeof AREAS)[number]) - AREAS.indexOf(b as (typeof AREAS)[number]),
+);
+const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-');
+const hasBody = (e: (typeof entries)[number]['e']) => Boolean(e.body && e.body.trim());
+---
+
+<Base title="排错与调参速查" description="现象 → 先调 → 再调 → 不要这样调。" active="troubleshooting" wide>
+  <h1>排错与调参速查</h1>
+  <p class="verified">
+    原则：低阶没调好不要碰高阶——cfg / steps 没定就去调 shift 和分段采样，结果无法归因。每条都按"先调 → 再调 → 不要"排列。
+  </p>
+  <p>
+    <label>
+      筛选：
+      <input id="ts-filter" type="search" placeholder="描述你看到的现象" style="font: inherit; padding: 0.3rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--fg)" />
+    </label>
+  </p>
+
+  {ordered.map(([area, list]) => (
+    <section data-ts-group>
+      <h2>{area}</h2>
+      <div class="cards">
+        {list.map(({ e, Content }) => (
+          <article
+            class="card"
+            id={slug(e.data.symptom)}
+            data-ts-search={`${e.data.symptom} ${e.data.first} ${e.data.then} ${e.data.dont} ${e.body ?? ''}`}
+          >
+            <h3>{e.data.symptom}</h3>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>先调</th><td>{e.data.first}</td></tr>
+                  {e.data.then && <tr><th>再调</th><td>{e.data.then}</td></tr>}
+                  {e.data.dont && <tr><th>不要</th><td>{e.data.dont}</td></tr>}
+                </tbody>
+              </table>
+            </div>
+            {hasBody(e) && (
+              <div class="prose" style="font-size: 0.92rem">
+                <Content />
+              </div>
+            )}
+            <div class="meta">
+              {e.data.sources.map((s) => <span class={`badge badge-${s.badge}`}>{s.badge}</span>)}
+              <span class="verified">核实于 {e.data.verified}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  ))}
+</Base>
+
+<script>
+  const input = document.getElementById('ts-filter') as HTMLInputElement | null;
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-ts-search]'));
+  const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-ts-group]'));
+  function filter() {
+    const q = (input?.value ?? '').trim().toLowerCase();
+    for (const c of cards) c.style.display = !q || (c.dataset.tsSearch ?? '').toLowerCase().includes(q) ? '' : 'none';
+    for (const g of groups) {
+      const visible = Array.from(g.querySelectorAll<HTMLElement>('[data-ts-search]')).some((c) => c.style.display !== 'none');
+      g.style.display = visible ? '' : 'none';
+    }
+  }
+  input?.addEventListener('input', filter);
+</script>

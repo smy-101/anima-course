@@ -1,0 +1,96 @@
+---
+import Base from '../../layouts/Base.astro';
+import SourceBadge from '../../components/SourceBadge.astro';
+import AgeGate from '../../components/AgeGate';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { NSFW_SECTIONS } from '../../content.config';
+import { url, NSFW_ENABLED } from '../../lib/env';
+
+// NSFW=false 时整条路由不生成
+export async function getStaticPaths() {
+  if (!NSFW_ENABLED) return [];
+  const entries = (await getCollection('nsfw')).sort((a, b) => {
+    const sa = NSFW_SECTIONS.indexOf(a.data.section);
+    const sb = NSFW_SECTIONS.indexOf(b.data.section);
+    return sa - sb || a.data.order - b.data.order;
+  });
+  return [
+    { params: { path: undefined }, props: { index: true, entries } },
+    ...entries.map((entry) => ({ params: { path: entry.id }, props: { index: false, entry, entries } })),
+  ];
+}
+
+interface Props {
+  index: boolean;
+  entry?: CollectionEntry<'nsfw'>;
+  entries: CollectionEntry<'nsfw'>[];
+}
+
+const { index, entry, entries } = Astro.props;
+const d = entry?.data;
+const Content = entry ? (await render(entry)).Content : null;
+
+const bySection = new Map<string, CollectionEntry<'nsfw'>[]>();
+for (const e of entries) {
+  if (!bySection.has(e.data.section)) bySection.set(e.data.section, []);
+  bySection.get(e.data.section)!.push(e);
+}
+const orderedSections = NSFW_SECTIONS.filter((s) => bySection.has(s)).map((s) => [s, bySection.get(s)!] as const);
+const excerpt = (e: CollectionEntry<'nsfw'>) => {
+  const text = (e.body ?? '').replace(/\s+/g, ' ').trim();
+  return text.length > 110 ? `${text.slice(0, 110)}…` : text;
+};
+---
+
+<Base
+  title={index ? '成人附录' : (d?.title ?? '成人附录')}
+  description="成人内容附录（需确认）"
+  noindex
+  noSearch
+>
+  <AgeGate client:load targetId="nsfw-body" backHref={url('')} />
+  <div id="nsfw-body" hidden>
+    <noscript><p class="note note-warn">需要启用 JavaScript 才能进入本附录。</p></noscript>
+    <div class="nsfw-disclaimer">
+      <strong>说明：</strong>本附录是 Anima 提示词体系中涉及成人内容的标签与规则的词典式参考资料——解释含义、来源与常见误用，用于理解与排错。
+      不含图片。模型为非商业许可；生成与传播内容须遵守你所在地区与平台的规定。涉及未成年人的性内容在任何情况下都不应生成。
+    </div>
+
+    {index ? (
+      <>
+        <h1>成人附录</h1>
+        <p class="verified">
+          主线课程只保留了所有用户都用得到的部分（安全等级四选一、必须写 <code>safe</code>、等级与画面匹配）。
+          以下是与成人内容相关的规则、词表与模板，按章节排列。
+        </p>
+        {orderedSections.map(([section, list]) => (
+          <section>
+            <h2>{section}</h2>
+            <div class="cards">
+              {list.map((e) => (
+                <a class="card" href={url(`nsfw/${e.id}/`)}>
+                  <h3>{e.data.title}</h3>
+                  <p>{excerpt(e)}</p>
+                  <div class="meta"><span class="verified">核实于 {e.data.verified}</span></div>
+                </a>
+              ))}
+            </div>
+          </section>
+        ))}
+        <p><a href={url('')}>返回课程</a></p>
+      </>
+    ) : (
+      entry && d && Content && (
+        <>
+          <nav class="crumbs" aria-label="面包屑"><a href={url('nsfw/')}>成人附录</a> › {d.section}</nav>
+          <h1>{d.title}</h1>
+          <div class="prose">
+            <Content />
+          </div>
+          <SourceBadge sources={d.sources} verified={d.verified} />
+          <p><a href={url('nsfw/')}>返回附录目录</a></p>
+        </>
+      )
+    )}
+  </div>
+</Base>

@@ -1,0 +1,58 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { LEVELS } from '../../content.config';
+import { url } from '../../lib/env';
+
+const entries = (await getCollection('nodes')).sort((a, b) => a.id.localeCompare(b.id));
+
+const byCategory = new Map<string, typeof entries>();
+for (const e of entries) {
+  if (!byCategory.has(e.data.category)) byCategory.set(e.data.category, []);
+  byCategory.get(e.data.category)!.push(e);
+}
+
+// 节点 × 级别矩阵：由 first_level 自动生成
+const matrix = LEVELS.map((lvl) => ({ lvl, nodes: entries.filter((e) => e.data.first_level === lvl) }));
+---
+
+<Base title="节点字典" description="ComfyUI 节点的端口、参数与取值；按首次出现的级别反向链回课程。" active="nodes" wide>
+  <h1>节点字典</h1>
+  <p class="verified">
+    每张卡片给出端口、参数、默认值与取值范围（以源码为准，模板里的预设值可能不同）。搜索节点时在 ComfyUI 里输英文类名一定能找到。
+    目前收录 {entries.length} 个节点，按课程迁移进度逐步补充。
+  </p>
+
+  <h2>节点 × 级别矩阵</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>级别</th><th>节点</th></tr></thead>
+      <tbody>
+        {matrix.map(({ lvl, nodes }) => (
+          <tr>
+            <td><strong>{lvl}</strong></td>
+            <td>{nodes.length === 0 ? <span class="verified">待迁移</span> : nodes.map((n, i) => (<>{i > 0 && ' '}<a class="pill" href={url(`nodes/${n.id}/`)}>{n.id}</a></>))}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  {[...byCategory.entries()].map(([category, list]) => (
+    <>
+      <h2>{category}</h2>
+      <div class="cards">
+        {list.map((e) => (
+          <a class="card" href={url(`nodes/${e.id}/`)}>
+            <h3>{e.data.name_zh} <code>{e.id}</code></h3>
+            <p>{e.body?.replace(/\s+/g, ' ').trim().slice(0, 90)}{((e.body ?? '').length > 90) ? '…' : ''}</p>
+            <div class="meta">
+              <span class="pill">{e.data.first_level}</span>
+              {e.data.experimental && <span class="pill pill-todo">实验性</span>}
+            </div>
+          </a>
+        ))}
+      </div>
+    </>
+  ))}
+</Base>

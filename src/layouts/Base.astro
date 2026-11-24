@@ -1,0 +1,76 @@
+---
+import '../styles/global.css';
+import { url, NSFW_ENABLED } from '../lib/env';
+
+interface Props {
+  title: string;
+  description?: string;
+  active?: 'course' | 'nodes' | 'tags' | 'troubleshooting' | 'resources' | 'search';
+  /** noindex：不进搜索引擎 */
+  noindex?: boolean;
+  /** noSearch：不进 Pagefind 索引 */
+  noSearch?: boolean;
+  /** wide：正文用全宽（表格、网格页） */
+  wide?: boolean;
+}
+
+const {
+  title,
+  description = 'Anima × ComfyUI 循序渐进课程：固定种子、一次只改一个变量、用对照图说话。教方法，不教参数。',
+  active = '',
+  noindex = false,
+  noSearch = false,
+  wide = false,
+} = Astro.props;
+
+const NAV: Array<[NonNullable<Props['active']>, string, string]> = [
+  ['course', '课程', url('')],
+  ['nodes', '节点', url('nodes/')],
+  ['tags', '标签', url('tags/')],
+  ['troubleshooting', '排错', url('troubleshooting/')],
+  ['resources', '资源', url('resources/')],
+  ['search', '搜索', url('search/')],
+];
+
+const fullTitle = title ? `${title} · Anima × ComfyUI 课程` : 'Anima × ComfyUI 学习课程';
+---
+
+<!doctype html>
+<html lang="zh-CN" data-pagefind-ignore={noSearch ? 'all' : undefined}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="inner">
+        <a class="brand" href={url('')}>
+          Anima × ComfyUI 课程<small>教方法，不教参数</small>
+        </a>
+        <nav class="site-nav" aria-label="主导航">
+          {NAV.map(([key, label, href]) => (
+            <a href={href} class:list={[{ active: key === active }]} aria-current={key === active ? 'page' : undefined}>
+              {label}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </header>
+
+    <main class="page">
+      <div class:list={['content', { wide }]}><slot /></div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="inner">
+        <span>各页标注核实日期；参数均为起点值，以固定种子实测为准。</span>
+        {NSFW_ENABLED && <a href={url('nsfw/')}>成人附录（需确认）</a>}
+        <a href="https://github.com/" rel="noopener">仓库</a>
+      </div>
+    </footer>
+  </body>
+</html>

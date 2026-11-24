@@ -1,0 +1,39 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { RESOURCE_KINDS } from '../../content.config';
+import { url } from '../../lib/env';
+
+const entries = (await getCollection('resources')).sort(
+  (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title),
+);
+const byKind = new Map<string, typeof entries>();
+for (const e of entries) {
+  if (!byKind.has(e.data.kind)) byKind.set(e.data.kind, []);
+  byKind.get(e.data.kind)!.push(e);
+}
+const ordered = [...byKind.entries()].sort(
+  ([a], [b]) => RESOURCE_KINDS.indexOf(a as (typeof RESOURCE_KINDS)[number]) - RESOURCE_KINDS.indexOf(b as (typeof RESOURCE_KINDS)[number]),
+);
+---
+
+<Base title="资源" description="参数基线、模型文件清单、提示词模板、常见误区、工具与链接。" active="resources" wide>
+  <h1>资源</h1>
+  <p class="verified">
+    这里的数值都是<strong>起点值</strong>：来自模型卡、官方模板与源码，社区数值只当起点，结论以你自己的固定种子对照图为准。
+  </p>
+  {ordered.map(([kind, list]) => (
+    <>
+      <h2>{kind}</h2>
+      <div class="cards">
+        {list.map((e) => (
+          <a class="card" href={url(`resources/${e.id}/`)}>
+            <h3>{e.data.title}</h3>
+            <p>{e.body?.replace(/\s+/g, ' ').trim().slice(0, 110)}{((e.body ?? '').length > 110) ? '…' : ''}</p>
+            <div class="meta"><span class="verified">核实于 {e.data.verified}</span></div>
+          </a>
+        ))}
+      </div>
+    </>
+  ))}
+</Base>

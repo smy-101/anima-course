@@ -1,0 +1,95 @@
+---
+import Base from '../../layouts/Base.astro';
+import SourceBadge from '../../components/SourceBadge.astro';
+import { getCollection, render } from 'astro:content';
+import { STAGES } from '../../stages';
+import { url } from '../../lib/env';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('nodes');
+  return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+
+const lessons = (await getCollection('lessons')).sort(
+  (a, b) => a.data.stage - b.data.stage || a.data.order - b.data.order,
+);
+const usedIn = lessons.filter((l) => l.data.nodes.includes(entry.id));
+const stage = STAGES.find((st) => st.levels.includes(d.first_level));
+---
+
+<Base title={`${d.name_zh} ${entry.id}`} description={`${d.name_zh}（${entry.id}）节点的端口与参数说明。`} active="nodes">
+  <nav class="crumbs" aria-label="面包屑"><a href={url('nodes/')}>节点字典</a></nav>
+  <h1>{d.name_zh} <code>{entry.id}</code></h1>
+  <p class="badges">
+    <span class="pill">{d.category}</span>
+    <span class="pill">首次出现：{d.first_level}{stage && ` · 阶段 ${stage.id}`}</span>
+    {d.experimental && <span class="pill pill-todo">实验性</span>}
+  </p>
+
+  <div class="prose">
+    <Content />
+  </div>
+
+  {d.inputs.length > 0 && (
+    <>
+      <h2>输入</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>端口</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+          <tbody>
+            {d.inputs.map((i) => (
+              <tr><td><code>{i.name}</code></td><td>{i.type}</td><td>{i.required ? '是' : '否'}</td><td>{i.desc}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )}
+
+  {d.params.length > 0 && (
+    <>
+      <h2>参数</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>参数</th><th>默认</th><th>取值 / 范围</th><th>说明</th></tr></thead>
+          <tbody>
+            {d.params.map((p) => (
+              <tr><td><code>{p.name}</code></td><td>{p.default ?? '—'}</td><td>{p.range ?? p.type ?? '—'}</td><td>{p.desc}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )}
+
+  {d.outputs.length > 0 && (
+    <>
+      <h2>输出</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>端口</th><th>类型</th><th>说明</th></tr></thead>
+          <tbody>
+            {d.outputs.map((o) => (
+              <tr><td><code>{o.name}</code></td><td>{o.type}</td><td>{o.desc}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )}
+
+  {usedIn.length > 0 && (
+    <>
+      <h2>出现在这些课程</h2>
+      <ul>
+        {usedIn.map((l) => <li><a href={url(`lessons/${l.id}/`)}>{l.data.title}</a></li>)}
+      </ul>
+    </>
+  )}
+
+  <SourceBadge sources={d.sources} verified={d.verified} />
+</Base>

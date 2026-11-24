@@ -1,0 +1,74 @@
+---
+import Base from '../../layouts/Base.astro';
+import SourceBadge from '../../components/SourceBadge.astro';
+import { getCollection, render } from 'astro:content';
+import { url } from '../../lib/env';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('tags');
+  return entries.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+
+const lessons = (await getCollection('lessons')).sort(
+  (a, b) => a.data.stage - b.data.stage || a.data.order - b.data.order,
+);
+const usedIn = lessons.filter((l) => l.data.tags.includes(entry.id));
+const versions = d.versions
+  ? [
+      ['Base', d.versions.base],
+      ['Aesthetic', d.versions.aesthetic],
+      ['Turbo', d.versions.turbo],
+    ].filter(([, v]) => v)
+  : [];
+---
+
+<Base title={d.tag} description={d.meaning} active="tags">
+  <nav class="crumbs" aria-label="面包屑"><a href={url('tags/')}>标签字典</a></nav>
+  <h1><code>{d.tag}</code></h1>
+  <p class="badges">
+    <span class="pill">{d.category}</span>
+    <span class="pill">{d.polarity === '皆可' ? '正向 / 负向皆可' : `${d.polarity}向`}</span>
+    {d.trap && <span class="pill pill-todo" title="看起来是普通英文词，实际会定义整张图">陷阱</span>}
+  </p>
+  <p style="font-size: 1.05rem">{d.meaning}</p>
+
+  {versions.length > 0 && (
+    <>
+      <h2>按版本</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>版本</th><th>用法</th></tr></thead>
+          <tbody>
+            {versions.map(([v, text]) => <tr><td><strong>{v}</strong></td><td>{text}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+    </>
+  )}
+
+  {d.trap && (
+    <div class="note note-warn">
+      <div class="note-title">陷阱标签</div>
+      这个词看起来是普通英文，但在 booru 里有精确含义。把它当形容词写进句子，整张图会被"吸"到那个特定样子。想要那个效果就<strong>有意</strong>用标签，否则别提。
+    </div>
+  )}
+
+  <div class="prose">
+    <Content />
+  </div>
+
+  {usedIn.length > 0 && (
+    <>
+      <h2>出现在这些课程</h2>
+      <ul>{usedIn.map((l) => <li><a href={url(`lessons/${l.id}/`)}>{l.data.title}</a></li>)}</ul>
+    </>
+  )}
+
+  {d.wiki && <p><a href={d.wiki} rel="noopener" target="_blank">Danbooru wiki 词条</a></p>}
+
+  <SourceBadge sources={d.sources} verified={d.verified} />
+</Base>

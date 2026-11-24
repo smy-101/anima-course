@@ -1,0 +1,171 @@
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f6f7f9;
+  --fg: #1f2328;
+  --fg-muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #0969da;
+  --accent-soft: #ddf4ff;
+  --ok: #1a7f37;
+  --warn: #9a6700;
+  --danger: #cf222e;
+  --todo: #bf8700;
+  --todo-bg: #fff8c5;
+  --radius: 8px;
+  --maxw: 78rem;
+  --content-w: 46rem;
+  --font: "Noto Sans CJK SC", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Source Han Sans SC", system-ui, sans-serif;
+  --mono: ui-monospace, "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, "Noto Sans Mono CJK SC", monospace;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --bg-soft: #161b22;
+    --fg: #e6edf3;
+    --fg-muted: #8d96a0;
+    --border: #30363d;
+    --accent: #4493f8;
+    --accent-soft: #121d2f;
+    --ok: #3fb950;
+    --warn: #d29922;
+    --danger: #f85149;
+    --todo: #d29922;
+    --todo-bg: #2a2111;
+  }
+}
+
+* { box-sizing: border-box; }
+html { font-family: var(--font); line-height: 1.75; -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-size: 16px; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code, pre, kbd { font-family: var(--mono); font-size: 0.9em; }
+code { background: var(--bg-soft); padding: 0.1em 0.35em; border-radius: 4px; border: 1px solid var(--border); }
+pre { padding: 1rem; border-radius: var(--radius); border: 1px solid var(--border); overflow-x: auto; line-height: 1.5; }
+pre code { background: none; border: 0; padding: 0; }
+kbd { border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 0.35em; background: var(--bg-soft); }
+h1, h2, h3, h4 { line-height: 1.3; margin: 1.6em 0 0.6em; }
+h1 { font-size: 1.9rem; margin-top: 0; }
+h2 { font-size: 1.4rem; padding-bottom: 0.25em; border-bottom: 1px solid var(--border); }
+h3 { font-size: 1.15rem; }
+p, ul, ol { margin: 0.6em 0; }
+ul, ol { padding-left: 1.6em; }
+li + li { margin-top: 0.25em; }
+blockquote { margin: 1em 0; padding: 0.4em 1em; border-left: 4px solid var(--border); color: var(--fg-muted); background: var(--bg-soft); border-radius: 0 var(--radius) var(--radius) 0; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
+img { max-width: 100%; height: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+
+/* 表格：小屏横向滚动 */
+.table-wrap { overflow-x: auto; margin: 1em 0; }
+table { border-collapse: collapse; width: 100%; font-size: 0.95em; }
+th, td { border: 1px solid var(--border); padding: 0.45em 0.7em; text-align: left; vertical-align: top; }
+th { background: var(--bg-soft); white-space: nowrap; }
+tbody tr:nth-child(even) { background: color-mix(in srgb, var(--bg-soft) 60%, transparent); }
+
+/* 布局 */
+.site-header { border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 10; }
+.site-header .inner { max-width: var(--maxw); margin: 0 auto; padding: 0.6rem 1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.brand { font-weight: 700; color: var(--fg); }
+.brand small { color: var(--fg-muted); font-weight: 400; margin-left: 0.5rem; }
+.site-nav { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-left: auto; }
+.site-nav a { color: var(--fg-muted); }
+.site-nav a.active, .site-nav a:hover { color: var(--accent); text-decoration: none; }
+.page { max-width: var(--maxw); margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+.content { max-width: var(--content-w); }
+.content.wide { max-width: var(--maxw); }
+.site-footer { border-top: 1px solid var(--border); color: var(--fg-muted); font-size: 0.9rem; }
+.site-footer .inner { max-width: var(--maxw); margin: 0 auto; padding: 1.2rem 1rem; display: flex; gap: 1.5rem; flex-wrap: wrap; }
+
+/* 面包屑、翻页 */
+.crumbs { color: var(--fg-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+.pager { display: flex; justify-content: space-between; gap: 1rem; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
+.pager a { max-width: 48%; }
+.pager .next { margin-left: auto; text-align: right; }
+
+/* 来源徽章与核实日期 */
+.badges { display: inline-flex; gap: 0.3rem; flex-wrap: wrap; vertical-align: middle; }
+.badge { display: inline-block; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.02em; padding: 0.05em 0.5em; border-radius: 999px; border: 1px solid currentColor; line-height: 1.6; white-space: nowrap; }
+.badge-官方 { color: var(--ok); }
+.badge-源码 { color: var(--accent); }
+.badge-作者 { color: #8250df; }
+.badge-平台 { color: #1b7c83; }
+.badge-社区 { color: var(--warn); }
+.badge-Danbooru { color: var(--fg-muted); }
+.verified { color: var(--fg-muted); font-size: 0.85rem; }
+.provenance { margin: 2rem 0 0; padding: 0.8rem 1rem; border: 1px dashed var(--border); border-radius: var(--radius); font-size: 0.88rem; color: var(--fg-muted); }
+
+/* 待补图占位 */
+.figure { margin: 1.2rem 0; }
+.figure-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1rem; }
+.figure figcaption { font-size: 0.88rem; color: var(--fg-muted); margin-top: 0.4rem; }
+.figure-placeholder { aspect-ratio: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; text-align: center; padding: 1rem; border: 2px dashed var(--todo); border-radius: var(--radius); background: var(--todo-bg); color: var(--fg); }
+.figure-placeholder .tag { font-size: 0.75rem; font-weight: 700; color: var(--todo); letter-spacing: 0.08em; }
+.figure-group-title { font-size: 0.95rem; font-weight: 600; margin: 1.2rem 0 0.2rem; color: var(--fg-muted); }
+
+/* 卡片网格 */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.card { display: block; border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.1rem; color: var(--fg); background: var(--bg); }
+.card:hover { border-color: var(--accent); text-decoration: none; }
+.card h3 { margin: 0 0 0.3rem; font-size: 1.05rem; }
+.card p { margin: 0; color: var(--fg-muted); font-size: 0.92rem; }
+.card .meta { margin-top: 0.6rem; font-size: 0.8rem; color: var(--fg-muted); display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.pill { display: inline-block; font-size: 0.75rem; padding: 0 0.55em; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-soft); color: var(--fg-muted); line-height: 1.7; }
+.pill-ok { color: var(--ok); border-color: var(--ok); }
+.pill-todo { color: var(--todo); border-color: var(--todo); }
+.pill-pending { color: var(--fg-muted); }
+
+/* 提示块 */
+.note { border-left: 4px solid var(--accent); background: var(--accent-soft); padding: 0.7rem 1rem; border-radius: 0 var(--radius) var(--radius) 0; margin: 1rem 0; }
+.note-warn { border-left-color: var(--warn); }
+.note-danger { border-left-color: var(--danger); }
+.note-title { font-weight: 600; margin-bottom: 0.2rem; }
+
+/* 验收清单 */
+.acceptance { border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.2rem; margin: 2rem 0; }
+.acceptance h2 { border: 0; margin: 0 0 0.5rem; font-size: 1.1rem; padding: 0; }
+.acceptance ul { list-style: none; padding: 0; margin: 0.5rem 0; }
+.acceptance li { display: flex; gap: 0.6rem; align-items: flex-start; padding: 0.25rem 0; cursor: pointer; }
+.acceptance li input { margin-top: 0.45rem; }
+.acceptance li.done span { text-decoration: line-through; color: var(--fg-muted); }
+.acceptance .progress { font-size: 0.85rem; color: var(--fg-muted); }
+.acceptance .actions { font-size: 0.8rem; margin-top: 0.5rem; display: flex; gap: 1rem; }
+.acceptance .actions button { background: none; border: 0; color: var(--accent); cursor: pointer; padding: 0; font: inherit; }
+.acceptance .actions button:hover { text-decoration: underline; }
+
+/* 首页阶段地图 */
+.hero { padding: 1rem 0 2rem; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
+.hero h1 { font-size: 2.2rem; }
+.hero p { max-width: var(--content-w); color: var(--fg-muted); }
+.stages { display: grid; gap: 1rem; }
+.stage { border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.2rem; }
+.stage-head { display: flex; align-items: baseline; gap: 0.8rem; flex-wrap: wrap; }
+.stage-head h2 { border: 0; margin: 0; padding: 0; font-size: 1.2rem; }
+.stage-head .meta { color: var(--fg-muted); font-size: 0.88rem; }
+.lesson-list { list-style: none; padding: 0; margin: 0.8rem 0 0; display: grid; gap: 0.4rem; }
+.lesson-list li { display: flex; gap: 0.8rem; align-items: baseline; padding: 0.35rem 0; border-top: 1px dashed var(--border); }
+.lesson-list .done-mark { color: var(--ok); min-width: 1.2em; }
+.lesson-list .l-summary { color: var(--fg-muted); font-size: 0.9rem; }
+.disciplines { margin-top: 2.5rem; }
+.disciplines ol { padding-left: 1.4rem; }
+.progress-bar { height: 6px; background: var(--bg-soft); border-radius: 3px; overflow: hidden; border: 1px solid var(--border); }
+.progress-bar > span { display: block; height: 100%; background: var(--ok); width: 0; }
+
+/* 年龄确认 */
+.agegate { max-width: 32rem; margin: 3rem auto; border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+.agegate h1 { font-size: 1.4rem; }
+.agegate label { display: flex; gap: 0.6rem; align-items: flex-start; margin: 1rem 0; cursor: pointer; }
+.agegate button { background: var(--accent); color: #fff; border: 0; border-radius: 6px; padding: 0.5rem 1.2rem; font: inherit; cursor: pointer; }
+.agegate button:disabled { opacity: 0.5; cursor: not-allowed; }
+.agegate .back { margin-left: 1rem; }
+.nsfw-disclaimer { border: 1px solid var(--warn); background: color-mix(in srgb, var(--warn) 10%, transparent); padding: 0.7rem 1rem; border-radius: var(--radius); font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+/* 搜索 */
+#search { min-height: 10rem; }
+:root { --pagefind-ui-scale: 0.9; --pagefind-ui-primary: var(--accent); --pagefind-ui-text: var(--fg); --pagefind-ui-background: var(--bg); --pagefind-ui-border: var(--border); --pagefind-ui-border-width: 1px; --pagefind-ui-border-radius: var(--radius); --pagefind-ui-image-border-radius: var(--radius); --pagefind-ui-font: var(--font); }
+
+@media (max-width: 640px) {
+  html { font-size: 15px; }
+  .pager a { max-width: 100%; }
+}

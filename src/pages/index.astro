@@ -1,0 +1,116 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { STAGES, STAGE_STATUS_LABEL, DISCIPLINES } from '../stages';
+import { url } from '../lib/env';
+
+const lessons = (await getCollection('lessons')).sort(
+  (a, b) => a.data.stage - b.data.stage || a.data.order - b.data.order,
+);
+const byStage = new Map<number, typeof lessons>();
+for (const l of lessons) {
+  if (!byStage.has(l.data.stage)) byStage.set(l.data.stage, []);
+  byStage.get(l.data.stage)!.push(l);
+}
+const totalItems = lessons.reduce((n, l) => n + l.data.acceptance.length, 0);
+
+const reference = [
+  { href: url('nodes/'), title: '节点字典', desc: '每个节点、每个端口、每个参数在做什么；按首次出现的级别反向链回课程。' },
+  { href: url('tags/'), title: '标签字典', desc: '标签的含义、正负向与版本差异；陷阱标签单独标出。' },
+  { href: url('troubleshooting/'), title: '排错与调参速查', desc: '现象 → 先调 → 再调 → 不要这样调。' },
+  { href: url('resources/'), title: '资源', desc: '三版本参数基线、模型文件清单、提示词模板、常见误区、工具与链接。' },
+];
+---
+
+<Base title="" active="course" wide>
+  <section class="hero">
+    <h1>Anima × ComfyUI 学习课程</h1>
+    <p>
+      以 Anima 为载体学 AI 生图：14 天、六个阶段、一条双轨路径（工作流 + 提示词）。
+      这里的每个参数都是<strong>起点值</strong>，练习的目的是让你用固定种子做出自己的对照图。
+    </p>
+    <p class="verified">验收进度：<span id="progress-count">{totalItems} 项待完成</span></p>
+    <div class="progress-bar" aria-hidden="true"><span id="progress-bar"></span></div>
+  </section>
+
+  <section class="stages" aria-label="课程阶段">
+    {STAGES.map((stage) => {
+      const ls = byStage.get(stage.id) ?? [];
+      return (
+        <section class="stage" id={`stage-${stage.id}`}>
+          <div class="stage-head">
+            <h2>阶段 {stage.id} · {stage.title}</h2>
+            <span class={`pill ${stage.status === 'ready' ? 'pill-ok' : 'pill-pending'}`}>{STAGE_STATUS_LABEL[stage.status]}</span>
+            <span class="meta">{stage.days}{stage.levels !== '—' && <> · {stage.levels}</>}</span>
+          </div>
+          <p class="verified">{stage.short}</p>
+          {ls.length > 0 ? (
+            <ol class="lesson-list">
+              {ls.map((l) => (
+                <li data-lesson-id={l.id} data-acceptance-count={l.data.acceptance.length}>
+                  <span class="done-mark" aria-hidden="true"></span>
+                  <a href={url(`lessons/${l.id}/`)}>{l.data.title}</a>
+                  <span class="l-summary">{l.data.summary}</span>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p class="verified">内容迁移中。原始笔记见仓库 <code>source/</code> 目录。</p>
+          )}
+        </section>
+      );
+    })}
+  </section>
+
+  <h2>参考层</h2>
+  <p class="verified">课程页只讲"这一级需要知道的"；参数细节与词表在这里查，每个条目都反向链回它首次出现的课程。</p>
+  <section class="cards" aria-label="参考层">
+    {reference.map((r) => (
+      <a class="card" href={r.href}>
+        <h3>{r.title}</h3>
+        <p>{r.desc}</p>
+      </a>
+    ))}
+  </section>
+
+  <section class="disciplines">
+    <h2>四条纪律</h2>
+    <ol>
+      {DISCIPLINES.map((d) => <li>{d}</li>)}
+    </ol>
+  </section>
+</Base>
+
+<script>
+  const KEY = 'anima:acceptance';
+
+  function render() {
+    const items = Array.from(document.querySelectorAll<HTMLElement>('[data-lesson-id]'));
+    let total = 0;
+    let doneItems = 0;
+    for (const li of items) {
+      const count = Number(li.dataset.acceptanceCount ?? 0);
+      total += count;
+      let saved: boolean[] = [];
+      try {
+        saved = JSON.parse(localStorage.getItem(KEY) ?? '{}')?.[li.dataset.lessonId ?? ''] ?? [];
+      } catch {
+        saved = [];
+      }
+      const done = count > 0 && saved.slice(0, count).filter(Boolean).length >= count;
+      doneItems += saved.slice(0, count).filter(Boolean).length;
+      const mark = li.querySelector<HTMLElement>('.done-mark');
+      if (mark) mark.textContent = done ? '✓' : '';
+      li.classList.toggle('done', done);
+    }
+    const count = document.getElementById('progress-count');
+    const bar = document.getElementById('progress-bar');
+    const pct = total ? Math.round((doneItems / total) * 100) : 0;
+    if (count) count.textContent = `${doneItems} / ${total} 项已验收（${pct}%）`;
+    if (bar) bar.style.width = `${pct}%`;
+  }
+
+  render();
+  window.addEventListener('anima:progress', render);
+  window.addEventListener('storage', render);
+</script>

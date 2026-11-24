@@ -1,0 +1,57 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Fig {
+  id: string;
+  src?: ImageMetadata;
+  caption: string;
+  group?: string;
+}
+
+interface Props {
+  figures: Fig[];
+}
+
+const { figures } = Astro.props;
+
+// 按 group 分组，保持声明顺序
+const groups = new Map<string | undefined, Fig[]>();
+for (const f of figures) {
+  if (!groups.has(f.group)) groups.set(f.group, []);
+  groups.get(f.group)!.push(f);
+}
+const todo = figures.filter((f) => !f.src).length;
+---
+
+{
+  figures.length > 0 && (
+    <section class="figures" aria-labelledby="figures-h">
+      <h2 id="figures-h">对照图</h2>
+      <p class="verified">
+        所有对照图固定种子、固定提示词。ComfyUI 直出的 PNG 内嵌工作流，拖回画布即可还原该级工作流。
+        {todo > 0 && <> 目前还有 {todo} 张待补，占位块上写着要补什么。</>}
+      </p>
+      {[...groups.entries()].map(([group, figs]) => (
+        <div class="figure-group">
+          {group && <div class="figure-group-title">{group}</div>}
+          <div class="figure-grid">
+            {figs.map((f) => (
+              <figure class="figure" data-figure-id={f.id} data-figure-group={group}>
+                {f.src ? (
+                  <Image src={f.src} alt={f.caption} widths={[320, 480, 640]} sizes="(max-width: 640px) 100vw, 18rem" />
+                ) : (
+                  <div class="figure-placeholder" data-figure-todo={f.caption}>
+                    <span class="tag">待补图</span>
+                    <span>{f.caption}</span>
+                  </div>
+                )}
+                <figcaption>{f.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      ))}
+    </section>
+  )
+}

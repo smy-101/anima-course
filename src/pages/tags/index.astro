@@ -1,0 +1,81 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { TAG_CATEGORIES } from '../../content.config';
+import { url } from '../../lib/env';
+
+const entries = (await getCollection('tags')).sort((a, b) => a.id.localeCompare(b.id));
+
+const byCategory = new Map<string, typeof entries>();
+for (const e of entries) {
+  if (!byCategory.has(e.data.category)) byCategory.set(e.data.category, []);
+  byCategory.get(e.data.category)!.push(e);
+}
+const ordered = [...byCategory.entries()].sort(
+  ([a], [b]) => TAG_CATEGORIES.indexOf(a as (typeof TAG_CATEGORIES)[number]) - TAG_CATEGORIES.indexOf(b as (typeof TAG_CATEGORIES)[number]),
+);
+const traps = entries.filter((e) => e.data.trap);
+const searchKey = (e: (typeof entries)[number]) => `${e.data.tag} ${e.data.meaning}`.toLowerCase();
+---
+
+<Base title="标签字典" description="Anima 提示词标签的含义、正负向与版本差异。" active="tags" wide>
+  <h1>标签字典</h1>
+  <p class="verified">
+    释义依据优先级：Danbooru wiki → 模型卡 → 社区实测。写进提示词时全小写、空格代替下划线（<code>score_N</code> 除外）。
+    目前收录 {entries.length} 个标签。
+  </p>
+  <p>
+    <label>
+      筛选：
+      <input id="tag-filter" type="search" placeholder="输入标签或含义的一部分" style="font: inherit; padding: 0.3rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--fg)" />
+    </label>
+  </p>
+
+  {traps.length > 0 && (
+    <section data-tag-group>
+      <h2>陷阱标签</h2>
+      <p class="verified">这些"普通英文词"其实是标签，写进句子会定义整张图。写提示词前和排错时都对照一遍。</p>
+      <div class="cards">
+        {traps.map((e) => (
+          <a class="card" href={url(`tags/${e.id}/`)} data-tag-search={searchKey(e)}>
+            <h3><code>{e.data.tag}</code></h3>
+            <p>{e.data.meaning}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {ordered.map(([category, list]) => (
+    <section data-tag-group>
+      <h2>{category}</h2>
+      <div class="cards">
+        {list.map((e) => (
+          <a class="card" href={url(`tags/${e.id}/`)} data-tag-search={searchKey(e)}>
+            <h3><code>{e.data.tag}</code></h3>
+            <p>{e.data.meaning}</p>
+            <div class="meta">
+              <span class="pill">{e.data.polarity === '皆可' ? '正 / 负' : `${e.data.polarity}向`}</span>
+              {e.data.trap && <span class="pill pill-todo">陷阱</span>}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+</Base>
+
+<script>
+  const input = document.getElementById('tag-filter') as HTMLInputElement | null;
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-tag-search]'));
+  const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-tag-group]'));
+  function filter() {
+    const q = (input?.value ?? '').trim().toLowerCase();
+    for (const c of cards) c.style.display = !q || (c.dataset.tagSearch ?? '').includes(q) ? '' : 'none';
+    for (const g of groups) {
+      const visible = Array.from(g.querySelectorAll<HTMLElement>('[data-tag-search]')).some((c) => c.style.display !== 'none');
+      g.style.display = visible ? '' : 'none';
+    }
+  }
+  input?.addEventListener('input', filter);
+</script>

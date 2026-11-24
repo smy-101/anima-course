@@ -1,0 +1,40 @@
+---
+import type { Badge } from '../content.config';
+
+interface Props {
+  sources?: Array<{ badge: Badge; url?: string; note?: string }>;
+  verified: string;
+}
+
+const { sources = [], verified } = Astro.props;
+const withUrl = sources.filter((s) => s.url);
+const cls = (b: string) => `badge badge-${b}`;
+---
+
+<div class="provenance">
+  {sources.length > 0 && (
+    <div class="badges" aria-label="来源">
+      {sources.map((s) => (
+        <span class={cls(s.badge)} title={s.note}>{s.badge}</span>
+      ))}
+    </div>
+  )}
+  <div class="verified">
+    核实于 {verified}。标为"起点值"的参数请用固定种子自行验证；数值随 ComfyUI / 模型版本变化，以你的对照图为准。
+  </div>
+  {withUrl.length > 0 && (
+    <details>
+      <summary>来源链接</summary>
+      <ul>
+        {withUrl.map((s) => (
+          <li>
+            <span class={cls(s.badge)}>{s.badge}</span>
+            {' '}
+            <a href={s.url} rel="noopener" target="_blank">{s.url}</a>
+            {s.note && <> — {s.note}</>}
+          </li>
+        ))}
+      </ul>
+    </details>
+  )}
+</div>

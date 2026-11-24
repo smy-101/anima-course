@@ -1,0 +1,119 @@
+---
+import Base from '../../layouts/Base.astro';
+import SourceBadge from '../../components/SourceBadge.astro';
+import FigureGallery from '../../components/FigureGallery.astro';
+import Acceptance from '../../components/Acceptance';
+import { getCollection, render } from 'astro:content';
+import { STAGES } from '../../stages';
+import { url } from '../../lib/env';
+
+export async function getStaticPaths() {
+  const lessons = (await getCollection('lessons')).sort(
+    (a, b) => a.data.stage - b.data.stage || a.data.order - b.data.order,
+  );
+  return lessons.map((lesson, i) => ({
+    params: { id: lesson.id },
+    props: { lesson, prev: lessons[i - 1] ?? null, next: lessons[i + 1] ?? null },
+  }));
+}
+
+const { lesson, prev, next } = Astro.props;
+const { Content } = await render(lesson);
+const d = lesson.data;
+const stage = STAGES[d.stage];
+
+const nodeEntries = await getCollection('nodes');
+const tagEntries = await getCollection('tags');
+const lessonEntries = (await getCollection('lessons')).sort(
+  (a, b) => a.data.stage - b.data.stage || a.data.order - b.data.order,
+);
+const nodeLinks = d.nodes.map((n) => ({ name: n, entry: nodeEntries.find((e) => e.id === n) }));
+const tagLinks = d.tags.map((t) => ({ slug: t, label: t.replace(/-/g, ' '), entry: tagEntries.find((e) => e.id === t) }));
+const prereqs = d.prerequisites
+  .map((p) => lessonEntries.find((l) => l.id === p))
+  .filter((l): l is NonNullable<typeof l> => Boolean(l));
+---
+
+<Base title={d.title} description={d.summary} active="course" wide>
+  <div class="content">
+    <nav class="crumbs" aria-label="面包屑">
+      <a href={url('')}>课程</a> › <a href={url(`#stage-${d.stage}`)}>阶段 {d.stage} · {stage.title}</a>
+    </nav>
+    <h1>{d.title}</h1>
+    <p class="badges" style="margin: 0.5rem 0 1rem">
+      {d.levels.length > 0 && <span class="pill">工作流 {d.levels.join(' / ')}</span>}
+      {d.days.length > 0 && <span class="pill">第 {d.days.join('、')} 天</span>}
+      {d.promptTrack && <span class="pill">含提示词练习</span>}
+      <span class={`pill ${stage.status === 'ready' ? 'pill-ok' : 'pill-pending'}`}>阶段 {d.stage}</span>
+    </p>
+    {d.summary && <p style="font-size: 1.05rem">{d.summary}</p>}
+    {prereqs.length > 0 && (
+      <p class="verified">前置：<>{prereqs.map((p, i) => (<>{i > 0 && '、'}<a href={url(`lessons/${p.id}/`)}>{p.data.title}</a></>))}</></p>
+    )}
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {d.transfers && (
+      <div class="note">
+        <div class="note-title">概念可迁移</div>
+        本课的概念（采样、引导强度、种子、潜空间等）在其它扩散模型里同样存在，换模型时只是节点名与参数范围不同，方法不变。
+      </div>
+    )}
+
+    {(nodeLinks.length > 0 || tagLinks.length > 0) && (
+      <section aria-label="本课涉及的节点与标签">
+        <h2>本课涉及</h2>
+        {nodeLinks.length > 0 && (
+          <p>
+            <strong>节点：</strong>
+            {nodeLinks.map(({ name, entry }, i) => (
+              <>
+                {i > 0 && ' '}
+                {entry ? (
+                  <a class="pill" href={url(`nodes/${entry.id}/`)} title={entry.data.name_zh}>{name}</a>
+                ) : (
+                  <span class="pill" title="卡片待迁移">{name}</span>
+                )}
+              </>
+            ))}
+          </p>
+        )}
+        {tagLinks.length > 0 && (
+          <p>
+            <strong>标签：</strong>
+            {tagLinks.map(({ label, entry }, i) => (
+              <>
+                {i > 0 && ' '}
+                {entry ? (
+                  <a class="pill" href={url(`tags/${entry.id}/`)}>{entry.data.tag}</a>
+                ) : (
+                  <span class="pill" title="卡片待迁移">{label}</span>
+                )}
+              </>
+            ))}
+          </p>
+        )}
+      </section>
+    )}
+  </div>
+
+  <FigureGallery figures={d.figures} />
+
+  {d.deliverable && (
+    <div class="note">
+      <div class="note-title">本课产出</div>
+      {d.deliverable}
+    </div>
+  )}
+
+  {d.acceptance.length > 0 && <Acceptance client:load lessonId={lesson.id} items={d.acceptance} />}
+
+  <SourceBadge sources={d.sources} verified={d.verified} />
+
+  <nav class="pager" aria-label="上一课 / 下一课">
+    {prev ? <a href={url(`lessons/${prev.id}/`)}>← 上一课：{prev.data.title}</a> : <a href={url('')}>← 返回课程</a>}
+    {next ? <a class="next" href={url(`lessons/${next.id}/`)}>下一课：{next.data.title} →</a> : <span class="next"></span>}
+  </nav>
+</Base>

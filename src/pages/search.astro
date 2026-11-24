@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/env';
+---
+
+<Base title="搜索" description="全站搜索（构建后生成索引）" active="search">
+  <h1>搜索</h1>
+  <link rel="stylesheet" href={url('pagefind/pagefind-ui.css')} />
+  <div id="search"></div>
+  <p class="verified" id="search-hint">搜索索引在构建后生成。本地开发时请运行 <code>npm run build &amp;&amp; npm run preview</code>。</p>
+
+  <script is:inline define:vars={{ base: url('') }}>
+    (async function () {
+      try {
+        var ui = await import(base + 'pagefind/pagefind-ui.js');
+        new ui.PagefindUI({
+          element: '#search',
+          showSubResults: true,
+          translations: {
+            placeholder: '搜索课程、节点、标签、现象…',
+            clear_search: '清除',
+            load_more: '加载更多结果',
+            search_label: '搜索本站',
+            filters_label: '筛选',
+            zero_results: '没有找到 [SEARCH_TERM]',
+            many_results: '找到 [COUNT] 条关于 [SEARCH_TERM] 的结果',
+            one_result: '找到 [COUNT] 条关于 [SEARCH_TERM] 的结果',
+            alt_search: '没有找到 [SEARCH_TERM]，显示 [DIFFERENT_TERM] 的结果',
+            search_suggestion: '没有找到 [SEARCH_TERM]，试试：',
+            searching: '正在搜索 [SEARCH_TERM]…',
+          },
+        });
+        var hint = document.getElementById('search-hint');
+        if (hint) hint.hidden = true;
+      } catch (e) {
+        /* pagefind 尚未构建（开发模式） */
+      }
+    })();
+  </script>
+</Base>
