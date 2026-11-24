@@ -9,8 +9,17 @@ sources:
   - badge: 源码
     url: https://github.com/comfyanonymous/ComfyUI/blob/master/comfy/samplers.py
     note: "KSampler.set_steps；text_encoders/anima.py"
+  - badge: 源码
+    url: https://github.com/comfyanonymous/ComfyUI/blob/master/comfy/ldm/anima/lllite.py
+    note: "AnimaLLLiteApply：mask 二值化、控制图中心裁剪"
+  - badge: 源码
+    url: https://github.com/comfyanonymous/ComfyUI/blob/master/nodes.py
+    note: "KSamplerAdvanced 起止步按全表索引截取"
+  - badge: 官方
+    url: https://docs.comfy.org/zh/interface/features/subgraph
+    note: 子图蓝图副本相互独立
   - badge: 社区
-    note: "Civitai 33857 系列作者为 Volnovik，非模型作者"
+    note: "Civitai 33857 系列作者为 Volnovik，非模型作者；放大倍率上限来自 HF 讨论区 #163 / #204 / #165"
 verified: 2026-11-24
 ---
 
@@ -35,3 +44,19 @@ verified: 2026-11-24
 | "Anima 用应用ControlNet 节点接 ControlNet" | Anima 走**模型补丁**路线：`ModelPatchLoader → AnimaLLLiteApply` 接在 UNETLoader 与 K采样器之间，改的是 MODEL 不是条件 |
 | "桌面版模型放在程序目录里" | 当前桌面版在独立的共享目录 `%LOCALAPPDATA%\Comfy-Desktop\ComfyUI-Shared`，不在程序目录 |
 | "denoise 值越低，与输入图像的关联性越小" | 个别中文文档译反了。正确：值越低，越接近输入图 |
+| "图生图要把大图直接喂进去，出来的就是大图" | 输入图的尺寸就是输出尺寸；3000×4000 直接编码得到的是一张构图崩坏的图。先缩到约 1 MP，想要大图走放大 |
+| "Turbo 起稿后同 seed 换 Aesthetic，构图一定一样" | 同架构、同文本编码器，构图**往往相近但不保证相同**。要保留构图就用潜空间精修（第二段 denoise 0.35 ~ 0.5） |
+| "Anima 用 加载LoRA 挂 LoRA" | Anima 是拆分模型，只用 LoRA加载器（仅模型）；`LoraLoader` 的 clip 输入必填，没接会报缺少输入 |
+| "放大倍率越大越好，一次 ×2" | 1024² 起步单段 ≤ 1.5×，1536² 起步约 1.3×；再大分两段或分块放大（UltimateSDUpscale） |
+| "二次采样 denoise 越高细节越多" | 0.35 ~ 0.45 补细节不改构图；> 0.6 构图漂移 |
+| "放大模型能顺手把手崩修好" | 放大模型只重建边缘；手脸要先重绘 / Detailer 修掉再放大，否则接缝和错误一并放大 |
+| "Anima 的 ControlNet 用 应用ControlNet 节点" | 走模型补丁：ModelPatchLoader → AnimaLLLiteApply 接在 UNETLoader 与 K采样器 之间，改的是 MODEL 不是条件 |
+| "LLLite 的 mask 可以羽化得软一点" | LLLite 在 0.5 处二值化 mask，软边等于没有；要比目标区域**涂大一圈**（扩展遮罩 8 ~ 16） |
+| "LLLite 权重放 controlnet 目录" | 必须 `models/model_patches/`，用 加载模型补丁 读取；Pose 权重在 Preview3 代训的，v1.0 上偏弱 |
+| "重绘时提示词照抄整图" | 局部重绘只写遮罩里要出现的东西；扩图才写整张画面 |
+| "脸 / 手留到放大后再修" | 放大后再修会把接缝和风格差一并放大；在放大**之前**用裁剪法或 FaceDetailer |
+| "两段采样每段 steps 填 30 就是各 30 步" | K采样器（高级）的 start / end 按全表索引截取，第二段真的只跑一半；想各 30 步两段都设 60。这与 K采样器 denoise 不减步数不同 |
+| "基本引导器到哪都能用" | 它只跑一路条件，等效 CFG 1：Turbo 用它省一半；Base / Aesthetic 要负向、或挂 NAG 时必须用 CFG引导器 |
+| "shift 调高更稳，所以越高越好" | Anima 默认 3.0（源码写死）；调高把步数留在高噪声段，步数固定时低噪声段变少会糊；LLLite v2 权重按 3.0 训练 |
+| "NAG 在 Turbo 上也能让负向生效" | NAG 要求 CFG > 1（需要正负两路，会关闭 CFG 1 优化）；Turbo 下无意义 |
+| "从蓝图拖出来的子图副本会跟着蓝图一起变" | 副本相互独立，可单独编辑；要统一更新就改节点库里的蓝图再重新拖 |

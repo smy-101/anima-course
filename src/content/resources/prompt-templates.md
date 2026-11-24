@@ -69,6 +69,32 @@ worst quality, low quality, score_1, score_2, score_3, blurry, jpeg artifacts, c
 
 用法：先复制 A 跑一张，固定种子，再依次换 B、C，对比差异——这就是阶段 1 的提示词练习。
 
+## 成品模板 E（Aesthetic 定稿，CFG 4、30 步）
+
+Turbo 试稿选定 seed 后，换 Aesthetic 出成品时提示词要跟着改。只有几处不同，但每一处都有原因（见 [L3](/lessons/03-01-l3-img2img/)）：
+
+```
+正向前缀：masterpiece, best quality, safe, detailed background,
+          1girl, solo, …（四段式照常：人数 → 角色 → 作品 → @画师 → 通用标签 → 自然语言）
+负向：    worst quality, low quality, blurry, jpeg artifacts, chromatic aberration
+```
+
+| 与 Turbo 试稿的差别 | 怎么改 | 为什么 |
+|---|---|---|
+| `score_*` | **正负向都不要** | Aesthetic 训练时去掉了全部质量标签，score 会把画面推成"AI 味" |
+| `masterpiece, best quality` | 可留；**想固定某画师风格就去掉** | 有质量标签时画师画风会"漂移"（社区）；质量标签还会让扁平风过于锐利 |
+| 背景 | 写具体，加 `detailed background` / `scenery` | 成品阶段背景一片白是最常见的翻车点 |
+| 负向 | 去掉 `score_*` 项 | 负向不要堆，Anima 对负向敏感 |
+
+## 重绘与扩图怎么写
+
+| 场景 | 写什么 | 不要写 |
+|---|---|---|
+| 局部重绘（换表情 / 加物件 / 修手） | **只写遮罩里要出现的东西**：`smile, open mouth, looking at viewer` / `a red paper umbrella` / `detailed hands, own hands together` | 整张图的描述、人数、背景；"看不见的东西" |
+| 扩图 | **整张画面**（含新区域），四段式照常 | 只写新区域的内容 |
+
+官方 Inpainting 模板的示例正向只有 `girl with red eyes`。见 [L6 重绘](/lessons/04-02-l6-inpaint/)与[扩图](/lessons/04-03-l6-outpaint/)。
+
 ## 各来源推荐负向
 
 | 来源 | 负向 | 适用 |

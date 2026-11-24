@@ -49,3 +49,20 @@ verified: 2026-11-24
 | `euler` | 比 er_sde 略有创意 | 配 Turbo / Aesthetic 很好；官方模板默认 |
 
 调参口诀：一次只改一个变量、固定种子。画面过曝 / 色彩过艳 → 降 CFG（如 3.5）；特征缺失 → 小幅升 CFG 或改提示词；线条不喜欢 → 换采样器；细节不够 → 加步数或后期放大。
+
+### 阶段 3–5 的起点值
+
+| 参数 | 起点 | 说明 | 课程 |
+|---|---|---|---|
+| 图生图 `denoise` | 0.4 ~ 0.6 细化；0.2 ~ 0.35 微调 | Anima 在 ≤ 0.35 基本只补细节不改五官 | [L3](/lessons/03-01-l3-img2img/) |
+| Turbo → Aesthetic 潜空间精修 `denoise` | 0.35 ~ 0.5 | 越低越像 Turbo 那张（含默认风格） | [L3](/lessons/03-01-l3-img2img/) |
+| LoRA 强度 | 风格 0.6 ~ 1.0；角色 1.0 起 | 先单独挂再叠加，`Ctrl+B` 看贡献 | [LoRA](/lessons/03-02-l3-lora/) |
+| 放大倍率（单段） | 1024² 起 ≤ 1.5×；1536² 起约 1.3× | 更大分两段或分块 | [L4](/lessons/03-04-l4-upscale/) |
+| 二次采样 `denoise` / cfg / steps | 0.35 ~ 0.45 / 4 / 20 ~ 30 | 第二段指定尺寸时 denoise 0.3 | [L4](/lessons/03-04-l4-upscale/) |
+| 分块放大 | tile 1024、padding 32 ~ 64、denoise 0.3 ~ 0.5、Chess | 接缝明显就加 padding | [两段与分块](/lessons/03-05-l4-large/) |
+| LLLite `strength` / `start` / `end` | 1.0 / 0 / 1.0 | 不听话 1.2 ~ 1.5；死板 0.6 ~ 0.8 | [L5](/lessons/04-01-l5-lllite/) |
+| 重绘遮罩 | 扩展遮罩 8；`grow_mask_by` 6 | 有接缝 8 → 16、6 → 12；LLLite 路线不吃羽化 | [L6](/lessons/04-02-l6-inpaint/) |
+| Detailer `denoise` / `guide_size` | 0.35（→ 0.45）/ 512 | 在放大**之前**做 | [L6](/lessons/04-03-l6-outpaint/) |
+| 两段采样切点 | 50%（15 / 30） | 起止步按全表索引截取 | [L7](/lessons/05-01-l7-custom-sampler/) |
+| `shift` | 3.0（Anima 默认） | 对照 3 / 5 / 7；LLLite v2 权重按 3.0 训练 | [L7](/lessons/05-02-l7-shift-guidance/) |
+| APG / NAG | `eta 1 / norm 5 / momentum 0`；`scale 5 / alpha 0.5 / tau 1.5` | NAG 需 CFG > 1 | [L7](/lessons/05-02-l7-shift-guidance/) |

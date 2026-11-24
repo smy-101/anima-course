@@ -2,7 +2,7 @@
 symptom: "背景一片白"
 area: 提示词
 first: "提示词里具体描述背景（内容、光线、纵深）/ 加 scenery、detailed background"
-then: "负向 simple background；LLLite 深度控制（阶段 4）"
+then: "负向 simple background；[LLLite 深度控制](/lessons/04-01-l5-lllite/)"
 dont: "堆质量标签"
 sources:
   - { badge: 官方, url: https://huggingface.co/circlestone-labs/Anima, note: "模型卡" }

@@ -33,8 +33,11 @@ verified: 2026-11-24
 | `anima-lllite-lineart-1` / `pose-1` / `scribble-1` | `models/model_patches/` | — | L5（Preview3 代） |
 | `anima-lllite-inpainting-v2.safetensors` | `models/model_patches/` | 62.7 MB | L6 |
 | `depth_anything_3_mono_large.safetensors`（`Comfy-Org/Depth-Anything-3`） | `models/geometry_estimation/` | 1.24 GB | L5 深度预处理 |
+| `face_yolov8m.pt` / `hand_yolov8s.pt`（Ultralytics 检测模型） | `models/ultralytics/bbox/` | — | L6 FaceDetailer / HandDetailer（需 Impact Pack + Subpack） |
 
 **不要放到 `checkpoints/`**——Anima 是拆分模型。
+
+LLLite 权重清单与各自吃的控制图（线稿 / 深度 / 涂鸦 / 姿势 / 重绘）见课程 [L5](/lessons/04-01-l5-lllite/)；Depth Anything 3 模型由官方蓝图在节点里提示下载。
 
 分词器文件不用下载：Qwen3 与 T5 的分词器内置在 ComfyUI 仓库中（`comfy/text_encoders/qwen25_tokenizer`、`t5_tokenizer`），`qwen_3_06b_base.safetensors` 只含 LM 权重。
 

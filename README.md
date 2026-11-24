@@ -34,8 +34,8 @@ npm run preview      # 预览 dist/，地址同上
 ```
 source/                 原始 7 份笔记（一手资料）
 src/content/            内容（六个 Content Collections，schema 见 src/content.config.ts）
-  lessons/              课程：阶段 0–2 已迁移，3–5 待迁移
-  nodes/                节点卡，文件名 = 英文类名
+  lessons/              课程：18 篇，阶段 0–5 已全部迁移（14 天路径）
+  nodes/                节点卡（76 张，L0–L8 + 社区节点），文件名 = 英文类名
   tags/                 标签卡，文件名 = slug
   troubleshooting/      排错条目：现象 → 先调 → 再调 → 不要
   resources/            参数基线、模型清单、模板、误区、链接
@@ -61,6 +61,19 @@ scripts/                check-site.mjs（构建后检查）、satteri-base-links
 推到 `main` 自动走 `.github/workflows/deploy.yml`（`withastro/action` → `actions/deploy-pages`）。仓库 Settings → Pages → Source 选 **GitHub Actions**。`BASE_PATH` / `SITE_URL` 由 workflow 从仓库名自动推出；要下线成人附录，把 workflow 里的 `NSFW` 改为 `'false'`。
 
 示例图原图（内嵌工作流的 PNG）放 GitHub Releases，站内只提交优化副本。
+
+## 迁移状态
+
+| 内容 | 状态 |
+|---|---|
+| 课程阶段 0–5（18 篇） | 已迁移 |
+| 节点卡 L0–L8 + 社区节点（UltimateSDUpscale、FaceDetailer 等） | 已迁移 |
+| 标签字典 | 核心 40 张；成人词表待补 |
+| 排错速查 | 51 条 |
+| 成人附录 | 规则与合规两页；词表 / 负向 / 模板待补（纯文字） |
+| 开发者选修（《补充B》：HTTP API / 无界面 / 自定义节点） | 待迁移 |
+| 示例图（76 处占位，清单见 `npm run check:site`） | 待换机器补图 |
+| L0–L8 工作流 JSON、四个工具（实验记录本 / 提示词检查器 / 排错向导 / 误区自测） | 待做 |
 
 ## 技术栈
 

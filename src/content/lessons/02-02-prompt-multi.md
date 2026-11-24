@@ -162,4 +162,4 @@ Digital painting of a fiery dragon with glowing yellow eyes, black horns, and a 
 
 - 一张不串特征的两人互动图 + 三张对照（逗号 / and / 调序）。
 - 用排错清单修好过至少一个问题，并在记录本里写下"为什么"。
-- 阶段 2 到此结束。下一阶段[从草稿到成品](/#stage-3)（L3–L4：img2img、LoRA、放大）内容迁移中，可先读原始笔记《递进报告》L3–L4。
+- 阶段 2 到此结束。下一阶段[从草稿到成品](/#stage-3)：[L3 · 图生图与「Turbo 起稿 → Aesthetic 定稿」](/lessons/03-01-l3-img2img/)。
