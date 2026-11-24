@@ -39,7 +39,7 @@ src/content/            内容（六个 Content Collections，schema 见 src/con
   tags/                 标签卡（340 张：四段式全部 SFW 标签 + 常用负向项），文件名 = slug
   troubleshooting/      排错条目：现象 → 先调 → 再调 → 不要
   resources/            参数基线、启动参数、模型清单、模板、误区、链接、换模型时什么不变
-  nsfw/                 成人附录（构建开关 NSFW）
+  nsfw/                 成人附录（构建开关 NSFW）：规则、词表、负向、模板、合规
 src/pages/              路由：/ 阶段地图、/lessons/[id]、/nodes、/tags、/troubleshooting、/resources、/nsfw、/search
 src/components/         FigureGallery、SourceBadge、Acceptance、AgeGate
 scripts/                check-site.mjs（构建后检查）、satteri-base-links.mjs（正文链接加 base）
@@ -72,7 +72,7 @@ scripts/                check-site.mjs（构建后检查）、satteri-base-links
 | 排错速查 | 51 条 |
 | 启动参数与 Attention 后端（《节点详解》§5.5） | 已迁移（`resources/startup-args.md`） |
 | 概念可迁移：换模型时什么不变、什么要换（《节点详解》§4.1–4.9） | 已迁移（`resources/transfer.md`） |
-| 成人附录 | 规则与合规两页；词表 / 负向 / 模板待补（纯文字） |
+| 成人附录 | 规则、合规、词表（到 `nsfw` 级：表情 / 身体 / 衣物 / 展示与暗示）、负向、sensitive～nsfw 级模板（纯文字）；性行为 / 体液 / 群交 / 癖好 / 极端标签不进站 |
 | 开发者选修（《补充B》：HTTP API / 无界面 / 自定义节点） | 待迁移 |
 | 示例图（76 处占位，清单见 `npm run check:site`） | 待换机器补图 || L0–L8 工作流 JSON、四个工具（实验记录本 / 提示词检查器 / 排错向导 / 误区自测） | 待做 |
 

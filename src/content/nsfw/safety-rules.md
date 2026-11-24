@@ -86,6 +86,9 @@ verified: 2026-11-24
 
 其余陷阱（`wet`、`lace`、`cosplay`、`1other`、`high contrast`、`lineart`、`monochrome` 等）见[标签字典](/tags/)。
 
-## 待迁移
+## 收录范围
 
-词表（表情 / 身体 / 衣物状态 / 性行为 / 多人 / 杂项）、各版本模板 B–F、极端标签识别表仍在原始笔记《Anima提示词总结报告》§5、§10，按课程进度补充。
+- 词表收到 `nsfw` 级别为止：[表情、身体与衣物状态](/nsfw/vocab-body-clothing/)、[展示、暗示与事后](/nsfw/vocab-framing/)
+- 负向：[成人内容的负向提示词](/nsfw/negative/)
+- 模板：[sensitive～nsfw 级模板与露骨模板的写法要点](/nsfw/templates/)
+- 性行为、体液、群交、癖好与极端标签不进站。
