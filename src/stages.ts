@@ -14,7 +14,7 @@ export const STAGES: Stage[] = [
   { id: 2, title: '像做实验一样调参', short: 'L2 批量与参数扫描；多人与场景', days: 'Day 3–4', levels: 'L2', status: 'ready' },
   { id: 3, title: '从草稿到成品', short: 'L3–L4 图生图、LoRA、复盘收子图、放大到 2048²', days: 'Day 5–9', levels: 'L3–L4', status: 'ready' },
   { id: 4, title: '精确控制', short: 'L5–L6 LLLite 结构控制、局部重绘、扩图与自动修脸手', days: 'Day 10–11', levels: 'L5–L6', status: 'ready' },
-  { id: 5, title: '拆开采样器·流水线化', short: 'L7–L8 自定义采样、shift 与引导补丁、子图蓝图、完整流水线', days: 'Day 12–14', levels: 'L7–L8', status: 'ready' },
+  { id: 5, title: '拆开采样器·流水线化', short: 'L7–L8 自定义采样、shift 与引导补丁、子图蓝图、完整流水线；结业后有两篇开发者选修（脚本调用、自定义节点）', days: 'Day 12–14', levels: 'L7–L8', status: 'ready' },
 ];
 
 export const STAGE_STATUS_LABEL: Record<Stage['status'], string> = {

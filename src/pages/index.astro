@@ -12,7 +12,7 @@ for (const l of lessons) {
   if (!byStage.has(l.data.stage)) byStage.set(l.data.stage, []);
   byStage.get(l.data.stage)!.push(l);
 }
-const totalItems = lessons.reduce((n, l) => n + l.data.acceptance.length, 0);
+const totalItems = lessons.reduce((n, l) => n + (l.data.elective ? 0 : l.data.acceptance.length), 0);
 
 const reference = [
   { href: url('nodes/'), title: '节点字典', desc: '每个节点、每个端口、每个参数在做什么；按首次出现的级别反向链回课程。' },
@@ -47,9 +47,10 @@ const reference = [
           {ls.length > 0 ? (
             <ol class="lesson-list">
               {ls.map((l) => (
-                <li data-lesson-id={l.id} data-acceptance-count={l.data.acceptance.length}>
+                <li data-lesson-id={l.id} data-acceptance-count={l.data.elective ? 0 : l.data.acceptance.length} class={l.data.elective ? 'elective' : undefined}>
                   <span class="done-mark" aria-hidden="true"></span>
                   <a href={url(`lessons/${l.id}/`)}>{l.data.title}</a>
+                  {l.data.elective && <span class="pill" title="不在 14 天路径里，按需选读">选修</span>}
                   <span class="l-summary">{l.data.summary}</span>
                 </li>
               ))}

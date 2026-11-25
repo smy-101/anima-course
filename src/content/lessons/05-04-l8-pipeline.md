@@ -114,7 +114,7 @@ verified: 2026-11-24
 
 | 方向 | 做什么 | 从哪开始 |
 |---|---|---|
-| 把流水线跑成批量 | 用 HTTP API 脚本跑扫描、无界面常驻、自己写节点 | 开发者选修（原始笔记《补充B》，站内内容待迁移） |
+| 把流水线跑成批量 | 用 HTTP API 脚本跑扫描、无界面常驻、自己写节点 | 选修 [A · HTTP API 与无界面批量](/lessons/05-05-elective-api/)、[B · 自定义节点](/lessons/05-06-elective-custom-node/) |
 | 训自己的 LoRA | 在 **Base** 上训；**不要训练 LLM adapter**（`llm_adapter_lr=0`）；rank 32 的 LoRA 学习率从 `2e-5` 起 | 模型卡 |
 | 复核 | 站内每页带核实日期；ComfyUI 版本、模板、节点参数都会变，季度回来对照一次 | 各页的"核实于"徽章 |
 

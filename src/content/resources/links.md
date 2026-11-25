@@ -32,4 +32,4 @@ verified: 2026-11-24
 | 放大 / 重绘 / 扩图官方教程 | https://docs.comfy.org/zh/tutorials/basic/upscale 、/inpaint 、/outpaint ；放大总览 https://docs.comfy.org/zh/tutorials/utility/image-upscale ；博客《AI 放大完全手册》 https://blog.comfy.org/p/upscaling-in-comfyui |
 | LLLite 权重与说明 | https://huggingface.co/Comfy-Org/Anima-LLLite ；https://huggingface.co/kohya-ss/Anima-LLLite ；训练 / 推理指南 https://github.com/kohya-ss/sd-scripts/blob/main/docs/anima_train_control_net_lllite.md |
 | 社区放大经验 | DXMPie《Anima Made Easy》 https://civitai.com/articles/37140 ；HKMC_AILab《A Complete Guide to Anima Upscaling》 https://note.com/hkmclab/n/ne39ca8184d79 ；nobin《5 Tips》 https://note.com/nobinlog/n/n3620e68d1590 （均非模型作者） |
-| 开发者：HTTP API / 无界面批量 / 自定义节点 | 开发者选修（原始笔记《补充B》，站内内容待迁移） |
+| 开发者：HTTP API / 无界面批量 / 自定义节点 | 选修 [A · HTTP API 与无界面批量](/lessons/05-05-elective-api/)、[B · 自定义节点](/lessons/05-06-elective-custom-node/)；官方文档：服务器路由 https://docs.comfy.org/zh/development/comfyui-server/comms_routes 、自定义节点 https://docs.comfy.org/zh/development/core-concepts/custom-nodes 、发布到 Registry https://docs.comfy.org/registry/overview |

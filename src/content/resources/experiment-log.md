@@ -34,7 +34,7 @@ PNG 里嵌的工作流能还原"当时怎么连的"，但还原不了"你在对�
 
 - `SaveImage.filename_prefix` 支持变量：`%date:yyyy-MM-dd%`、`%节点名.参数%`。设成 `Anima/E001/%KSampler.cfg%` 就自动按 cfg 分目录。
 - 用 L2 的创建列表做扫描时，**列表顺序 = 输出顺序**，表里按同一顺序记即可。
-- 要全自动化：用 HTTP API 跑扫描，脚本顺手把参数写进 CSV（开发者选修）。
+- 要全自动化：用 HTTP API 跑扫描，脚本顺手把参数写进 CSV（[选修 A](/lessons/05-05-elective-api/)）。
 
 ## 每日复盘（5 分钟）
 

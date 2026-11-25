@@ -109,5 +109,6 @@ verified: 2026-11-24
 | `--disable-all-custom-nodes` | 不加载任何自定义节点。配合 `--whitelist-custom-nodes <目录>` 逐个放回，定位是哪个包把 ComfyUI 搞坏的 |
 | `--deterministic` | 尽量让结果可复现。更慢，且不保证完全一致；**同机同种子本来就一致**，跨显卡 / 跨版本才需要它 |
 | `--verbose DEBUG` / `--verbose DETAIL` | 更详细的日志。`DETAIL` 会在采样第一步打印模型、采样器、步数、cfg、seed、latent 形状——写实验记录本时可直接抄 |
+| `--force-output-rerun` | 即使结果已缓存，每次也重新执行输出节点（保存 / 预览）以写出文件；上游节点照常缓存。用脚本重复提交同一份 JSON 却不出新文件时用它（见[选修 A · HTTP API](/lessons/05-05-elective-api/)） |
 
 `import failed`、缺失节点等报错的读法见[我想要……该调什么 · 调试方法](/resources/tuning-goals/)与[排错速查](/troubleshooting/)。

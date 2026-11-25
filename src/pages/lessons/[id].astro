@@ -44,9 +44,16 @@ const prereqs = d.prerequisites
       {d.levels.length > 0 && <span class="pill">工作流 {d.levels.join(' / ')}</span>}
       {d.days.length > 0 && <span class="pill">第 {d.days.join('、')} 天</span>}
       {d.promptTrack && <span class="pill">含提示词练习</span>}
+      {d.elective && <span class="pill pill-todo">选修 · 不在 14 天路径里</span>}
       <span class={`pill ${stage.status === 'ready' ? 'pill-ok' : 'pill-pending'}`}>阶段 {d.stage}</span>
     </p>
     {d.summary && <p style="font-size: 1.05rem">{d.summary}</p>}
+    {d.elective && (
+      <div class="note">
+        <div class="note-title">选修</div>
+        这一课不在 14 天路径里，也不计入首页的验收进度（本页的清单照常可勾选）。面向会写 Python、想把 ComfyUI 当作"可编程的生图后端"的学习者；四条纪律与调参顺序在这里同样适用——脚本只是把"一次只改一个变量"做得更快。
+      </div>
+    )}
     {prereqs.length > 0 && (
       <p class="verified">前置：<>{prereqs.map((p, i) => (<>{i > 0 && '、'}<a href={url(`lessons/${p.id}/`)}>{p.data.title}</a></>))}</></p>
     )}

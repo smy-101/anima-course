@@ -68,6 +68,8 @@ const lessons = defineCollection({
         .default([]),
       /** 是否显示"概念可迁移"提示 */
       transfers: z.boolean().default(false),
+      /** 选修：不在 14 天路径里（days 为空），排在所属阶段末尾，不计入首页验收进度 */
+      elective: z.boolean().default(false),
     }),
 });
 
