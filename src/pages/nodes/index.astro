@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
 import { getCollection } from 'astro:content';
 import { LEVELS } from '../../content.config';
 import { url } from '../../lib/env';
@@ -14,45 +15,99 @@ for (const e of entries) {
 
 // 节点 × 级别矩阵：由 first_level 自动生成
 const matrix = LEVELS.map((lvl) => ({ lvl, nodes: entries.filter((e) => e.data.first_level === lvl) }));
+const searchKey = (e: (typeof entries)[number]) => `${e.id} ${e.data.name_zh} ${e.data.category}`.toLowerCase();
+/** 摘要：去掉代码块、链接语法与强调符等 Markdown 记号后再截断 */
+const plain = (s: string) => s.replace(/`{3,}[\s\S]*$/g, '').replace(/!?:?\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/[*`#>|]/g, '').replace(/\s+/g, ' ').trim();
+const excerpt = (body: string | undefined) => {
+  const text = plain(body ?? '');
+  return text.length > 90 ? `${text.slice(0, 90)}…` : text;
+};
 ---
 
 <Base title="节点字典" description="ComfyUI 节点的端口、参数与取值；按首次出现的级别反向链回课程。" active="nodes" wide>
-  <h1>节点字典</h1>
-  <p class="verified">
-    每张卡片给出端口、参数、默认值与取值范围（以源码为准，模板里的预设值可能不同）。搜索节点时在 ComfyUI 里输英文类名一定能找到。
-    目前收录 {entries.length} 个节点：L0–L8 课程用到的核心节点，以及 UltimateSDUpscale、FaceDetailer / HandDetailer 三个常用社区节点。
+  <header class="page-head">
+    <h1>节点字典</h1>
+    <p class="lead">
+      每张卡片给出端口、参数、默认值与取值范围（以源码为准，模板里的预设值可能不同）。搜索节点时在 ComfyUI 里输英文类名一定能找到。
+    </p>
+    <p class="lead">
+      目前收录 {entries.length} 个节点：L0–L8 课程用到的核心节点，以及 UltimateSDUpscale、FaceDetailer / HandDetailer 三个常用社区节点。
+    </p>
+  </header>
+
+  <div class="filter-bar">
+    <label class="filter">
+      <Icon name="search" size={18} />
+      <span class="sr-only">筛选节点</span>
+      <input id="node-filter" type="search" placeholder="中文名或英文类名，如 采样、KSampler" autocomplete="off" />
+    </label>
+    <p class="filter-status" aria-live="polite">
+      <span id="node-count">{entries.length} / {entries.length} 个节点</span>
+    </p>
+  </div>
+  <p class="filter-empty" id="node-empty" hidden>
+    没有匹配「<q data-filter-query></q>」的节点。<button type="button" class="link-btn">清除筛选</button>，或换个关键词：中文名如「采样器」，英文类名如
+    <code>KSampler</code>。
   </p>
 
-  <h2>节点 × 级别矩阵</h2>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>级别</th><th>节点</th></tr></thead>
-      <tbody>
-        {matrix.map(({ lvl, nodes }) => (
-          <tr>
-            <td><strong>{lvl}</strong></td>
-            <td>{nodes.length === 0 ? <span class="verified">待迁移</span> : nodes.map((n, i) => (<>{i > 0 && ' '}<a class="pill" href={url(`nodes/${n.id}/`)}>{n.id}</a></>))}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
+  <section class="dict-group" aria-labelledby="matrix-h" data-node-group>
+    <h2 id="matrix-h">节点 × 级别矩阵<span class="chip-n">按首次出现的级别</span></h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>级别</th><th>节点</th></tr></thead>
+        <tbody>
+          {matrix.map(({ lvl, nodes }) => (
+            <tr>
+              <td><strong>{lvl}</strong></td>
+              <td>
+                {nodes.length === 0 ? (
+                  <span class="verified">待迁移</span>
+                ) : (
+                  <div class="badges">
+                    {nodes.map((n) => (
+                      <a class="pill" href={url(`nodes/${n.id}/`)} data-node-search={searchKey(n)}>{n.id}</a>
+                    ))}
+                  </div>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
 
   {[...byCategory.entries()].map(([category, list]) => (
-    <>
-      <h2>{category}</h2>
+    <section class="dict-group" aria-labelledby={`cat-h-${category}`} data-node-group>
+      <h2 id={`cat-h-${category}`}>
+        {category}<span class="chip-n">{list.length} 个</span>
+      </h2>
       <div class="cards">
         {list.map((e) => (
-          <a class="card" href={url(`nodes/${e.id}/`)}>
+          <a class="card" href={url(`nodes/${e.id}/`)} data-node-search={searchKey(e)}>
             <h3>{e.data.name_zh} <code>{e.id}</code></h3>
-            <p>{e.body?.replace(/\s+/g, ' ').trim().slice(0, 90)}{((e.body ?? '').length > 90) ? '…' : ''}</p>
+            <p>{excerpt(e.body)}</p>
             <div class="meta">
-              <span class="pill">{e.data.first_level}</span>
+              <span class="pill">首次出现 {e.data.first_level}</span>
               {e.data.experimental && <span class="pill pill-todo">实验性</span>}
             </div>
           </a>
         ))}
       </div>
-    </>
+    </section>
   ))}
 </Base>
+
+<script>
+  import { setupFilter } from '../../lib/client-filter';
+
+  setupFilter({
+    input: 'node-filter',
+    attr: 'nodeSearch',
+    item: '[data-node-search]',
+    group: '[data-node-group]',
+    noun: '个节点',
+    count: 'node-count',
+    empty: 'node-empty',
+  });
+</script>

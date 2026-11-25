@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
 import { getCollection } from 'astro:content';
 import { STAGES, STAGE_STATUS_LABEL, DISCIPLINES } from '../stages';
 import { url } from '../lib/env';
@@ -13,115 +14,314 @@ for (const l of lessons) {
   byStage.get(l.data.stage)!.push(l);
 }
 const totalItems = lessons.reduce((n, l) => n + (l.data.elective ? 0 : l.data.acceptance.length), 0);
+const firstLesson = lessons.find((l) => !l.data.elective)!;
 
 const reference = [
-  { href: url('nodes/'), title: '节点字典', desc: '每个节点、每个端口、每个参数在做什么；按首次出现的级别反向链回课程。' },
-  { href: url('tags/'), title: '标签字典', desc: '标签的含义、正负向与版本差异；陷阱标签单独标出。' },
-  { href: url('troubleshooting/'), title: '排错与调参速查', desc: '现象 → 先调 → 再调 → 不要这样调。' },
-  { href: url('resources/'), title: '资源', desc: '三版本参数基线、模型文件清单、提示词模板、常见误区、工具与链接。' },
-];
+  { href: url('nodes/'), icon: 'box', title: '节点字典', desc: '每个节点、每个端口、每个参数在做什么；按首次出现的级别反向链回课程。' },
+  { href: url('tags/'), icon: 'tag', title: '标签字典', desc: '标签的含义、正负向与版本差异；陷阱标签单独标出。' },
+  { href: url('troubleshooting/'), icon: 'life-buoy', title: '排错与调参速查', desc: '现象 → 先调 → 再调 → 不要这样调。' },
+  { href: url('resources/'), icon: 'folder', title: '资源', desc: '三版本参数基线、模型文件清单、提示词模板、常见误区、工具与链接。' },
+] as const;
+
+const tools = [
+  { href: url('tools/prompt-lint/'), icon: 'clipboard-check', title: '提示词检查器', desc: '贴上正负向，查出下划线、逗号空格、画师缺 @、陷阱标签、等级冲突……能自动修的一键修。' },
+  { href: url('tools/'), icon: 'wrench', title: '全部工具', desc: '误区自测、排错向导在路线上。' },
+] as const;
+
+/** 首页底部的管线示意：L0 从零搭出的六段（《节点详解》§1.1），每段链到节点卡 */
+const flow = [
+  { no: 1, title: '加载模型', node: 'UNETLoader', out: 'MODEL' },
+  { no: 2, title: '编码提示词', node: 'CLIPTextEncode', out: 'CONDITIONING' },
+  { no: 3, title: '起始画布', node: 'EmptyLatentImage', out: 'LATENT' },
+  { no: 4, title: '采样', node: 'KSampler', out: 'LATENT' },
+  { no: 5, title: '解码', node: 'VAEDecode', out: 'IMAGE' },
+  { no: 6, title: '保存', node: 'SaveImage', out: '' },
+] as const;
+
+/** 纪律文案形如"固定种子：……"，冒号前是要点 */
+const disciplines = DISCIPLINES.map((d) => {
+  const i = d.indexOf('：');
+  return i > 0 ? { name: d.slice(0, i), body: d.slice(i + 1) } : { name: '', body: d };
+});
 ---
 
 <Base title="" active="course" wide>
   <section class="hero">
-    <h1>Anima × ComfyUI 学习课程</h1>
-    <p>
-      以 Anima 为载体学 AI 生图：14 天、六个阶段、一条双轨路径（工作流 + 提示词）。
-      这里的每个参数都是<strong>起点值</strong>，练习的目的是让你用固定种子做出自己的对照图。
-    </p>
-    <p class="verified">验收进度：<span id="progress-count">{totalItems} 项待完成</span></p>
-    <div class="progress-bar" aria-hidden="true"><span id="progress-bar"></span></div>
+    <div class="hero-copy">
+      <p class="eyebrow">Anima × ComfyUI 学习课程</p>
+      <h1>以 Anima 为载体，<br class="hero-br" />学会 AI 生图的一般方法</h1>
+      <p class="lead">
+        14 天、六个阶段、一条双轨路径（工作流 + 提示词）。这里的每个参数都是<strong>起点值</strong>，练习的目的是让你用固定种子做出自己的对照图。
+      </p>
+      <div class="hero-actions">
+        <a
+          class="btn btn-primary"
+          id="cta-start"
+          href={url(`lessons/${firstLesson.id}/`)}
+          data-start-href={url(`lessons/${firstLesson.id}/`)}
+        >
+          从阶段 0 开始
+        </a>
+        <a class="btn" href="#roadmap">查看 14 天路线图</a>
+      </div>
+
+      <ol class="flow" aria-label="L0 从零搭出的六段管线">
+        {flow.map((f) => (
+          <li>
+            <a class="flow-node" href={url(`nodes/${f.node}/`)} title={`${f.node} 节点卡`}>
+              <span class="flow-no" aria-hidden="true">{f.no}</span>
+              {f.title}
+              <small>
+                {f.out ? (
+                  <><span class="port" data-type={f.out} aria-hidden="true" />{f.out}</>
+                ) : (
+                  <><span class="sr-only">输出</span>PNG</>
+                )}
+              </small>
+            </a>
+          </li>
+        ))}
+      </ol>
+      <p class="flow-caption">
+        L0 要从空白画布搭出的六段管线——圆点的颜色就是画布上的端口颜色。学完这一课，你能指着每条线说出它传的是什么。
+        <a href={url('lessons/01-01-l0-minimal/')}>去看怎么搭</a>
+      </p>
+    </div>
+
+    <div class="hero-panel">
+      <form class="hero-search" role="search" action={url('search/')} method="get">
+        <Icon name="search" size={18} class="filter-icon" />
+        <label class="sr-only" for="hero-q">搜索课程、节点、标签、现象</label>
+        <input id="hero-q" type="search" name="q" placeholder="搜索节点、标签、现象…" autocomplete="off" />
+        <button class="btn btn-primary" type="submit">搜索</button>
+      </form>
+      <section class="hero-progress" aria-labelledby="progress-h">
+        <div class="hero-progress-head">
+          <h2 id="progress-h">验收进度</h2>
+          <p class="hero-progress-num" hidden>
+            <b id="progress-done">0</b> / {totalItems} 项<span id="progress-pct"></span>
+          </p>
+        </div>
+        <div
+          class="progress-bar"
+          role="progressbar"
+          aria-labelledby="progress-h"
+          aria-valuemin="0"
+          aria-valuemax={totalItems}
+          aria-valuenow="0"
+        >
+          <span id="progress-bar"></span>
+        </div>
+        <p class="hero-progress-note">在各课底部勾选验收清单，这里和路线图会同步更新；进度只保存在你的浏览器里，可导出。</p>
+      </section>
+    </div>
   </section>
 
-  <section class="stages" aria-label="课程阶段">
-    {STAGES.map((stage) => {
-      const ls = byStage.get(stage.id) ?? [];
-      return (
-        <section class="stage" id={`stage-${stage.id}`}>
-          <div class="stage-head">
-            <h2>阶段 {stage.id} · {stage.title}</h2>
-            <span class={`pill ${stage.status === 'ready' ? 'pill-ok' : 'pill-pending'}`}>{STAGE_STATUS_LABEL[stage.status]}</span>
-            <span class="meta">{stage.days}{stage.levels !== '—' && <> · {stage.levels}</>}</span>
-          </div>
-          <p class="verified">{stage.short}</p>
-          {ls.length > 0 ? (
-            <ol class="lesson-list">
-              {ls.map((l) => (
-                <li data-lesson-id={l.id} data-acceptance-count={l.data.elective ? 0 : l.data.acceptance.length} class={l.data.elective ? 'elective' : undefined}>
-                  <span class="done-mark" aria-hidden="true"></span>
-                  <a href={url(`lessons/${l.id}/`)}>{l.data.title}</a>
-                  {l.data.elective && <span class="pill" title="不在 14 天路径里，按需选读">选修</span>}
-                  <span class="l-summary">{l.data.summary}</span>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p class="verified">内容迁移中。原始笔记见仓库 <code>source/</code> 目录。</p>
-          )}
-        </section>
-      );
-    })}
+  <section class="roadmap home-section" id="roadmap" aria-labelledby="roadmap-h">
+    <div class="section-head">
+      <h2 id="roadmap-h">14 天路线图</h2>
+      <p>点任一阶段跳到详情。每课末尾都有可勾选的验收清单，勾完这一课的圆环就变绿。</p>
+      <p class="legend" aria-label="图例">
+        <span><i aria-hidden="true" />工作流轨</span>
+        <span class="legend-prompt"><i aria-hidden="true" />提示词轨</span>
+      </p>
+    </div>
+
+    <ol class="stage-strip">
+      {STAGES.map((stage) => (
+        <li>
+          <a class="stage-tile" href={`#stage-${stage.id}`} data-stage-tile={stage.id}>
+            <span class="stage-no">阶段 {stage.id}</span>
+            <span class="stage-name">{stage.title}</span>
+            <span class="stage-days">{stage.days}</span>
+            <span class="stage-bar" aria-hidden="true"><span /></span>
+          </a>
+        </li>
+      ))}
+    </ol>
+
+    <div class="stages">
+      {STAGES.map((stage) => {
+        const ls = byStage.get(stage.id) ?? [];
+        return (
+          <section class="stage" id={`stage-${stage.id}`} data-stage={stage.id} aria-labelledby={`stage-h-${stage.id}`}>
+            <div class="stage-rail" aria-hidden="true">
+              <span class="stage-dot">{stage.id}</span>
+            </div>
+            <div class="stage-body">
+              <div class="stage-head">
+                <h2 id={`stage-h-${stage.id}`}>阶段 {stage.id} · {stage.title}</h2>
+                <span class={`pill ${stage.status === 'ready' ? 'pill-ok' : 'pill-todo'}`}>{STAGE_STATUS_LABEL[stage.status]}</span>
+                <span class="stage-meta">{stage.days}{stage.levels !== '—' && <> · {stage.levels}</>}</span>
+              </div>
+              <p class="stage-short">{stage.short}</p>
+              {ls.length > 0 ? (
+                <ol class="lesson-list">
+                  {ls.map((l) => (
+                    <li
+                      class="lesson-row"
+                      data-lesson-id={l.id}
+                      data-stage={stage.id}
+                      data-acceptance-count={l.data.elective ? 0 : l.data.acceptance.length}
+                      data-lesson-href={url(`lessons/${l.id}/`)}
+                      data-lesson-title={l.data.title}
+                      data-elective={l.data.elective ? '1' : undefined}
+                    >
+                      <a class="lesson-link" href={url(`lessons/${l.id}/`)}>
+                        <span class="lesson-title">{l.data.title}</span>
+                        {l.data.summary && <span class="lesson-summary">{l.data.summary}</span>}
+                      </a>
+                      <span class="lesson-tags">
+                        {l.data.promptTrack && (
+                          <span class="pill pill-prompt">
+                            <Icon name="pen" size={14} />提示词练习
+                          </span>
+                        )}
+                        {l.data.elective && <span class="pill" title="不在 14 天路径里，按需选读">选修</span>}
+                      </span>
+                      <span class="lesson-progress" hidden>
+                        <span class="lesson-ring" role="img" aria-label="验收进度">
+                          <span>0</span>
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p class="stage-empty">内容迁移中。原始笔记见仓库 <code>source/</code> 目录。</p>
+              )}
+            </div>
+          </section>
+        );
+      })}
+    </div>
   </section>
 
-  <h2>参考层</h2>
-  <p class="verified">课程页只讲"这一级需要知道的"；参数细节与词表在这里查，每个条目都反向链回它首次出现的课程。</p>
-  <section class="cards" aria-label="参考层">
-    {reference.map((r) => (
-      <a class="card" href={r.href}>
-        <h3>{r.title}</h3>
-        <p>{r.desc}</p>
-      </a>
-    ))}
+  <section class="home-section" aria-labelledby="ref-h">
+    <div class="section-head">
+      <h2 id="ref-h">参考层</h2>
+      <p>课程页只讲"这一级需要知道的"；参数细节与词表在这里查，每个条目都反向链回它首次出现的课程。</p>
+    </div>
+    <div class="cards">
+      {reference.map((r) => (
+        <a class="card" href={r.href}>
+          <span class="card-icon"><Icon name={r.icon} /></span>
+          <h3>{r.title}</h3>
+          <p>{r.desc}</p>
+          <span class="card-arrow"><Icon name="arrow-right" size={18} /></span>
+        </a>
+      ))}
+    </div>
   </section>
 
-  <h2>工具</h2>
-  <p class="verified">纯前端的小工具：不上传，数据只存在你的浏览器里；规则来自课程，每条提示链回讲原理的页面。</p>
-  <section class="cards" aria-label="工具">
-    <a class="card" href={url('tools/prompt-lint/')}>
-      <h3>提示词检查器</h3>
-      <p>贴上正负向，查出下划线、逗号空格、画师缺 @、陷阱标签、等级冲突……能自动修的一键修。</p>
-    </a>
-    <a class="card" href={url('tools/')}>
-      <h3>全部工具</h3>
-      <p>实验记录本、误区自测、排错向导在路线上。</p>
-    </a>
+  <section class="home-section" aria-labelledby="tools-h">
+    <div class="section-head">
+      <h2 id="tools-h">工具</h2>
+      <p>纯前端的小工具：不上传，数据只存在你的浏览器里；规则来自课程，每条提示链回讲原理的页面。</p>
+    </div>
+    <div class="cards">
+      {tools.map((t) => (
+        <a class="card" href={t.href}>
+          <span class="card-icon"><Icon name={t.icon} /></span>
+          <h3>{t.title}</h3>
+          <p>{t.desc}</p>
+          <span class="card-arrow"><Icon name="arrow-right" size={18} /></span>
+        </a>
+      ))}
+    </div>
   </section>
 
-  <section class="disciplines">
-    <h2>四条纪律</h2>
-    <ol>
-      {DISCIPLINES.map((d) => <li>{d}</li>)}
+  <section class="home-section" aria-labelledby="disc-h">
+    <div class="section-head">
+      <h2 id="disc-h">四条纪律</h2>
+      <p>贯穿全部级别。调参结果说不清，多半是其中一条没守住。</p>
+    </div>
+    <ol class="disciplines">
+      {disciplines.map((d, i) => (
+        <li class="discipline">
+          <span class="discipline-no" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          {d.name && <h3>{d.name}</h3>}
+          <p>{d.body}</p>
+        </li>
+      ))}
     </ol>
   </section>
 </Base>
 
 <script>
+  // 首页进度：读 localStorage（anima:acceptance，由课程页的验收清单写入），同步到进度面板、
+  // 阶段概览条、每课圆环和"继续学习"按钮。没有 JS 或没有记录时，页面保持服务端渲染的样子。
   const KEY = 'anima:acceptance';
 
-  function render() {
-    const items = Array.from(document.querySelectorAll<HTMLElement>('[data-lesson-id]'));
-    let total = 0;
-    let doneItems = 0;
-    for (const li of items) {
-      const count = Number(li.dataset.acceptanceCount ?? 0);
-      total += count;
-      let saved: boolean[] = [];
-      try {
-        saved = JSON.parse(localStorage.getItem(KEY) ?? '{}')?.[li.dataset.lessonId ?? ''] ?? [];
-      } catch {
-        saved = [];
-      }
-      const done = count > 0 && saved.slice(0, count).filter(Boolean).length >= count;
-      doneItems += saved.slice(0, count).filter(Boolean).length;
-      const mark = li.querySelector<HTMLElement>('.done-mark');
-      if (mark) mark.textContent = done ? '✓' : '';
-      li.classList.toggle('done', done);
+  function load(): Record<string, boolean[]> {
+    try {
+      const v = JSON.parse(localStorage.getItem(KEY) ?? '{}');
+      return v && typeof v === 'object' ? v : {};
+    } catch {
+      return {};
     }
-    const count = document.getElementById('progress-count');
+  }
+
+  const show = (el: Element | null) => el?.removeAttribute('hidden');
+  const shortTitle = (t: string) => {
+    const head = t.split('：')[0];
+    return head.length <= 18 ? head : t;
+  };
+
+  function render() {
+    const saved = load();
+    const perStage = new Map<number, { done: number; total: number }>();
+    let total = 0;
+    let doneTotal = 0;
+    let next: HTMLElement | null = null;
+
+    for (const li of document.querySelectorAll<HTMLElement>('[data-lesson-id]')) {
+      const count = Number(li.dataset.acceptanceCount ?? 0);
+      const done = (saved[li.dataset.lessonId ?? ''] ?? []).slice(0, count).filter(Boolean).length;
+      total += count;
+      doneTotal += done;
+      const stage = Number(li.dataset.stage);
+      perStage.set(stage, { done: (perStage.get(stage)?.done ?? 0) + done, total: (perStage.get(stage)?.total ?? 0) + count });
+
+      const complete = count > 0 && done >= count;
+      li.classList.toggle('done', complete);
+      const ring = li.querySelector<HTMLElement>('.lesson-ring');
+      if (ring && count > 0) {
+        ring.style.setProperty('--p', String(Math.round((done / count) * 100)));
+        ring.setAttribute('aria-label', `已验收 ${done} / ${count} 项`);
+        const n = ring.querySelector('span');
+        if (n) n.textContent = String(done);
+        show(li.querySelector('.lesson-progress'));
+      }
+      if (!next && !complete && count > 0 && !li.dataset.elective) next = li;
+    }
+
+    const pct = total ? Math.round((doneTotal / total) * 100) : 0;
+    const doneEl = document.getElementById('progress-done');
+    if (doneEl) doneEl.textContent = String(doneTotal);
+    const pctEl = document.getElementById('progress-pct');
+    if (pctEl) pctEl.textContent = ` · ${pct}%`;
+    show(document.querySelector('.hero-progress-num'));
     const bar = document.getElementById('progress-bar');
-    const pct = total ? Math.round((doneItems / total) * 100) : 0;
-    if (count) count.textContent = `${doneItems} / ${total} 项已验收（${pct}%）`;
     if (bar) bar.style.width = `${pct}%`;
+    document.querySelector('.hero-progress .progress-bar')?.setAttribute('aria-valuenow', String(doneTotal));
+
+    for (const el of document.querySelectorAll<HTMLElement>('[data-stage-tile], .stage[data-stage]')) {
+      const id = Number(el.dataset.stageTile ?? el.dataset.stage);
+      const s = perStage.get(id);
+      if (!s || s.total === 0) continue;
+      const p = Math.round((s.done / s.total) * 100);
+      const fill = el.querySelector<HTMLElement>('.stage-bar > span');
+      if (fill) fill.style.width = `${p}%`;
+      el.dataset.state = p >= 100 ? 'done' : p > 0 ? 'partial' : 'none';
+    }
+
+    const cta = document.getElementById('cta-start') as HTMLAnchorElement | null;
+    // 有进度（哪怕一项）才换成"继续学习"；否则保持"从阶段 0 开始"
+    if (cta && next && doneTotal > 0) {
+      cta.href = next.dataset.lessonHref ?? cta.href;
+      cta.textContent = `继续学习：${shortTitle(next.dataset.lessonTitle ?? '')}`;
+    }
   }
 
   render();

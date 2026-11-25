@@ -147,7 +147,7 @@ export default function PromptLint({ basePath, traps, tags }: Props) {
             ))}
           </select>
         </label>
-        <button type="button" onClick={fixAll} disabled={fixable.length === 0}>
+        <button type="button" className="primary" onClick={fixAll} disabled={fixable.length === 0}>
           一键修正（{fixable.length} 类）
         </button>
         <button type="button" onClick={() => { setPositive(EXAMPLE.positive); setNegative(EXAMPLE.negative); setVersion(EXAMPLE.version); }}>
@@ -213,7 +213,7 @@ export default function PromptLint({ basePath, traps, tags }: Props) {
 
       {grouped.map(([field, list]) => (
         <section key={field}>
-          <h3 className="lint-h">{field === 'positive' ? '正向' : '负向'}</h3>
+          <h2 className="lint-h">{field === 'positive' ? '正向' : '负向'}</h2>
           <ol className="lint-findings">
             {list.map((f, i) => (
               <li key={`${f.rule}-${i}`} className={`lint-finding ${f.severity}`}>

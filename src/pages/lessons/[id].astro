@@ -1,8 +1,10 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
 import SourceBadge from '../../components/SourceBadge.astro';
 import FigureGallery from '../../components/FigureGallery.astro';
 import Acceptance from '../../components/Acceptance';
+import Toc from '../../components/Toc.astro';
 import { getCollection, render } from 'astro:content';
 import { STAGES } from '../../stages';
 import { url } from '../../lib/env';
@@ -18,7 +20,7 @@ export async function getStaticPaths() {
 }
 
 const { lesson, prev, next } = Astro.props;
-const { Content } = await render(lesson);
+const { Content, headings } = await render(lesson);
 const d = lesson.data;
 const stage = STAGES[d.stage];
 
@@ -32,95 +34,181 @@ const tagLinks = d.tags.map((t) => ({ slug: t, label: t.replace(/-/g, ' '), entr
 const prereqs = d.prerequisites
   .map((p) => lessonEntries.find((l) => l.id === p))
   .filter((l): l is NonNullable<typeof l> => Boolean(l));
+
+/** 本页目录：正文的二、三级标题（render() 给的字段是 slug），加上正文之后的两个固定区块 */
+const toc = [
+  ...headings
+    .filter((h) => h.depth === 2 || h.depth === 3)
+    .map((h) => ({ depth: h.depth, id: h.slug, text: h.text })),
+  ...(d.figures.length > 0 ? [{ depth: 2, id: 'figures-h', text: '对照图' }] : []),
+  ...(d.acceptance.length > 0 ? [{ depth: 2, id: 'acceptance-h', text: '验收清单' }] : []),
+];
+const days = d.days.map((n) => `第 ${n} 天`).join('、');
 ---
 
 <Base title={d.title} description={d.summary} active="course" wide>
-  <div class="content">
-    <nav class="crumbs" aria-label="面包屑">
-      <a href={url('')}>课程</a> › <a href={url(`#stage-${d.stage}`)}>阶段 {d.stage} · {stage.title}</a>
-    </nav>
-    <h1>{d.title}</h1>
-    <p class="badges" style="margin: 0.5rem 0 1rem">
-      {d.levels.length > 0 && <span class="pill">工作流 {d.levels.join(' / ')}</span>}
-      {d.days.length > 0 && <span class="pill">第 {d.days.join('、')} 天</span>}
-      {d.promptTrack && <span class="pill">含提示词练习</span>}
-      {d.elective && <span class="pill pill-todo">选修 · 不在 14 天路径里</span>}
-      <span class={`pill ${stage.status === 'ready' ? 'pill-ok' : 'pill-pending'}`}>阶段 {d.stage}</span>
-    </p>
-    {d.summary && <p style="font-size: 1.05rem">{d.summary}</p>}
-    {d.elective && (
-      <div class="note">
-        <div class="note-title">选修</div>
-        这一课不在 14 天路径里，也不计入首页的验收进度（本页的清单照常可勾选）。面向会写 Python、想把 ComfyUI 当作"可编程的生图后端"的学习者；四条纪律与调参顺序在这里同样适用——脚本只是把"一次只改一个变量"做得更快。
-      </div>
-    )}
-    {prereqs.length > 0 && (
-      <p class="verified">前置：<>{prereqs.map((p, i) => (<>{i > 0 && '、'}<a href={url(`lessons/${p.id}/`)}>{p.data.title}</a></>))}</></p>
-    )}
+  <div class="lesson">
+    <article class="lesson-main">
+      <nav class="crumbs" aria-label="面包屑">
+        <a href={url('')}>课程</a>
+        <span aria-hidden="true">›</span>
+        <a href={url(`#stage-${d.stage}`)}>阶段 {d.stage} · {stage.title}</a>
+      </nav>
 
-    <div class="prose">
-      <Content />
-    </div>
-
-    {d.transfers && (
-      <div class="note">
-        <div class="note-title">概念可迁移</div>
-        本课的概念（采样、引导强度、种子、潜空间等）在其它扩散模型里同样存在，换模型时只是节点名与参数范围不同，方法不变。哪些不变、哪些要换见<a href={url('resources/transfer/')}>换一个模型时，什么不变、什么要换</a>。
-      </div>
-    )}
-
-    {(nodeLinks.length > 0 || tagLinks.length > 0) && (
-      <section aria-label="本课涉及的节点与标签">
-        <h2>本课涉及</h2>
-        {nodeLinks.length > 0 && (
-          <p>
-            <strong>节点：</strong>
-            {nodeLinks.map(({ name, entry }, i) => (
-              <>
-                {i > 0 && ' '}
-                {entry ? (
-                  <a class="pill" href={url(`nodes/${entry.id}/`)} title={entry.data.name_zh}>{name}</a>
-                ) : (
-                  <span class="pill" title="卡片待迁移">{name}</span>
-                )}
-              </>
-            ))}
+      <header class="page-head">
+        <h1>{d.title}</h1>
+        {d.summary && <p class="lead">{d.summary}</p>}
+        <div class="meta-row">
+          {d.levels.length > 0 && <span class="pill">工作流 {d.levels.join(' / ')}</span>}
+          {d.days.length > 0 && <span class="pill">{days}</span>}
+          {d.promptTrack && (
+            <span class="pill pill-prompt">
+              <Icon name="pen" size={14} />提示词练习
+            </span>
+          )}
+          {d.elective && <span class="pill pill-todo">选修 · 不在 14 天路径里</span>}
+        </div>
+        {prereqs.length > 0 && (
+          <p class="prereq">
+            前置：<>{prereqs.map((p, i) => (<>{i > 0 && '、'}<a href={url(`lessons/${p.id}/`)}>{p.data.title}</a></>))}</>
           </p>
         )}
-        {tagLinks.length > 0 && (
-          <p>
-            <strong>标签：</strong>
-            {tagLinks.map(({ label, entry }, i) => (
-              <>
-                {i > 0 && ' '}
-                {entry ? (
-                  <a class="pill" href={url(`tags/${entry.id}/`)}>{entry.data.tag}</a>
-                ) : (
-                  <span class="pill" title="卡片待迁移">{label}</span>
-                )}
-              </>
-            ))}
-          </p>
+      </header>
+
+      {toc.length > 1 && (
+        <details class="toc-inline">
+          <summary><Icon name="list" size={18} />本页目录</summary>
+          <Toc items={toc} />
+        </details>
+      )}
+
+      {d.elective && (
+        <div class="note">
+          <div class="note-title">选修</div>
+          这一课不在 14 天路径里，也不计入首页的验收进度（本页的清单照常可勾选）。面向会写 Python、想把 ComfyUI 当作"可编程的生图后端"的学习者；四条纪律与调参顺序在这里同样适用——脚本只是把"一次只改一个变量"做得更快。
+        </div>
+      )}
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      {d.transfers && (
+        <div class="note">
+          <div class="note-title">概念可迁移</div>
+          本课的概念（采样、引导强度、种子、潜空间等）在其它扩散模型里同样存在，换模型时只是节点名与参数范围不同，方法不变。哪些不变、哪些要换见<a href={url('resources/transfer/')}>换一个模型时，什么不变、什么要换</a>。
+        </div>
+      )}
+
+      {(nodeLinks.length > 0 || tagLinks.length > 0) && (
+        <section aria-labelledby="involves-h">
+          <h2 id="involves-h">本课涉及</h2>
+          {nodeLinks.length > 0 && (
+            <p>
+              <strong>节点：</strong>
+              {nodeLinks.map(({ name, entry }, i) => (
+                <>
+                  {i > 0 && ' '}
+                  {entry ? (
+                    <a class="pill" href={url(`nodes/${entry.id}/`)} title={entry.data.name_zh}>{name}</a>
+                  ) : (
+                    <span class="pill" title="卡片待迁移">{name}</span>
+                  )}
+                </>
+              ))}
+            </p>
+          )}
+          {tagLinks.length > 0 && (
+            <p>
+              <strong>标签：</strong>
+              {tagLinks.map(({ label, entry }, i) => (
+                <>
+                  {i > 0 && ' '}
+                  {entry ? (
+                    <a class="pill" href={url(`tags/${entry.id}/`)}>{entry.data.tag}</a>
+                  ) : (
+                    <span class="pill" title="卡片待迁移">{label}</span>
+                  )}
+                </>
+              ))}
+            </p>
+          )}
+        </section>
+      )}
+
+      <FigureGallery figures={d.figures} />
+
+      {d.deliverable && (
+        <div class="note">
+          <div class="note-title">本课产出</div>
+          {d.deliverable}
+        </div>
+      )}
+
+      {d.acceptance.length > 0 && <Acceptance client:load lessonId={lesson.id} items={d.acceptance} />}
+
+      <SourceBadge sources={d.sources} verified={d.verified} />
+
+      <nav class="pager" aria-label="上一课 / 下一课">
+        {prev ? (
+          <a class="pager-link" href={url(`lessons/${prev.id}/`)} rel="prev">
+            <span class="pager-label"><Icon name="arrow-left" size={16} />上一课</span>
+            <span class="pager-title">{prev.data.title}</span>
+          </a>
+        ) : (
+          <a class="pager-link" href={url('')}>
+            <span class="pager-label"><Icon name="arrow-left" size={16} />返回</span>
+            <span class="pager-title">课程首页</span>
+          </a>
         )}
-      </section>
+        {next && (
+          <a class="pager-link next" href={url(`lessons/${next.id}/`)} rel="next">
+            <span class="pager-label">下一课<Icon name="arrow-right" size={16} /></span>
+            <span class="pager-title">{next.data.title}</span>
+          </a>
+        )}
+      </nav>
+    </article>
+
+    {toc.length > 1 && (
+      <aside class="toc-side">
+        <Toc items={toc} labelledBy="toc-h" title="本页目录" />
+      </aside>
     )}
   </div>
-
-  <FigureGallery figures={d.figures} />
-
-  {d.deliverable && (
-    <div class="note">
-      <div class="note-title">本课产出</div>
-      {d.deliverable}
-    </div>
-  )}
-
-  {d.acceptance.length > 0 && <Acceptance client:load lessonId={lesson.id} items={d.acceptance} />}
-
-  <SourceBadge sources={d.sources} verified={d.verified} />
-
-  <nav class="pager" aria-label="上一课 / 下一课">
-    {prev ? <a href={url(`lessons/${prev.id}/`)}>← 上一课：{prev.data.title}</a> : <a href={url('')}>← 返回课程</a>}
-    {next ? <a class="next" href={url(`lessons/${next.id}/`)}>下一课：{next.data.title} →</a> : <span class="next"></span>}
-  </nav>
 </Base>
+
+<script>
+  // 目录随滚动高亮当前小节（宽屏侧栏与窄屏折叠目录同步）
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.toc a[href^="#"]'));
+  const pairs = links
+    .map((a) => ({ a, target: document.getElementById((a.getAttribute('href') ?? '').slice(1)) }))
+    .filter((p): p is { a: HTMLAnchorElement; target: HTMLElement } => Boolean(p.target));
+
+  let frame = 0;
+  const update = () => {
+    frame = 0;
+    if (pairs.length === 0) return;
+    const headerH = document.querySelector('.site-header')?.getBoundingClientRect().height ?? 56;
+    const line = headerH + 28;
+    let current = pairs[0].target;
+    for (const { target } of pairs) {
+      if (target.getBoundingClientRect().top - line <= 0) current = target;
+      else break;
+    }
+    // 滚到底时，让最后一个小节高亮（它可能永远到不了顶部）
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) current = pairs[pairs.length - 1].target;
+    for (const { a, target } of pairs) {
+      const active = target === current;
+      a.classList.toggle('active', active);
+      if (active) a.setAttribute('aria-current', 'location');
+      else a.removeAttribute('aria-current');
+    }
+  };
+  const schedule = () => {
+    if (!frame) frame = requestAnimationFrame(update);
+  };
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
+  update();
+</script>

@@ -1,8 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
 import { getCollection } from 'astro:content';
 import { TAG_CATEGORIES } from '../../content.config';
-import { url } from '../../lib/env';
+import { url, emphasis } from '../../lib/env';
 
 const entries = (await getCollection('tags')).sort((a, b) => a.id.localeCompare(b.id));
 
@@ -16,33 +17,59 @@ const ordered = [...byCategory.entries()].sort(
 );
 const traps = entries.filter((e) => e.data.trap);
 const searchKey = (e: (typeof entries)[number]) => `${e.data.tag} ${e.data.meaning}`.toLowerCase();
+const polarityLabel = (p: string) => (p === '皆可' ? '正 / 负皆可' : `${p}向`);
 ---
 
 <Base title="标签字典" description="Anima 提示词标签的含义、正负向与版本差异。" active="tags" wide>
-  <h1>标签字典</h1>
-  <p class="verified">
-    释义依据优先级：Danbooru wiki → 模型卡 → 社区实测。写进提示词时全小写、空格代替下划线（<code>score_N</code> 除外）。
-    目前收录 {entries.length} 个标签。
-  </p>
-  <p class="crumbs" aria-label="分类导航">
-    分类：{ordered.map(([category], i) => (<>{i > 0 && ' · '}<a href={url(`tags/#cat-${category}`)}>{category}</a></>))}
-  </p>
-  <p>
-    <label>
-      筛选：
-      <input id="tag-filter" type="search" placeholder="输入标签或含义的一部分" style="font: inherit; padding: 0.3rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--fg)" />
+  <header class="page-head">
+    <h1>标签字典</h1>
+    <p class="lead">
+      释义依据优先级：Danbooru wiki → 模型卡 → 社区实测。写进提示词时全小写、空格代替下划线（<code>score_N</code> 除外）。
+    </p>
+    <div class="meta-row">
+      <span class="pill">共 {entries.length} 个标签</span>
+      <span class="pill pill-todo">其中陷阱标签 {traps.length} 个</span>
+    </div>
+  </header>
+
+  <div class="filter-bar">
+    <label class="filter">
+      <Icon name="search" size={18} />
+      <span class="sr-only">筛选标签</span>
+      <input id="tag-filter" type="search" placeholder="输入标签或含义的一部分，如 1girl、校服、眼神" autocomplete="off" />
     </label>
+    <p class="filter-status" aria-live="polite">
+      <span id="tag-count">{entries.length} / {entries.length} 个标签</span>
+    </p>
+  </div>
+  <p class="filter-empty" id="tag-empty" hidden>
+    没有匹配「<q data-filter-query></q>」的标签。<button type="button" class="link-btn">清除筛选</button>，或换个说法：标签用英文写（如
+    <code>school uniform</code>），含义用中文写（如「眼神」「全身」）。
   </p>
 
+  <nav class="cat-nav" aria-label="标签分类">
+    {ordered.map(([category, list]) => (
+      <a class="chip" href={`#cat-${category}`}>
+        {category}<span class="chip-n">{list.length}</span>
+      </a>
+    ))}
+  </nav>
+
   {traps.length > 0 && (
-    <section data-tag-group>
-      <h2>陷阱标签</h2>
+    <section class="dict-group" data-tag-group aria-labelledby="traps-h">
+      <h2 id="traps-h">
+        陷阱标签<span class="pill pill-todo">写提示词前先对照</span>
+      </h2>
       <p class="verified">这些"普通英文词"其实是标签，写进句子会定义整张图。写提示词前和排错时都对照一遍。</p>
-      <div class="cards">
+      <div class="dict">
         {traps.map((e) => (
-          <a class="card" href={url(`tags/${e.id}/`)} data-tag-search={searchKey(e)}>
-            <h3><code>{e.data.tag}</code></h3>
-            <p>{e.data.meaning}</p>
+          <a class="dict-row is-trap" href={url(`tags/${e.id}/`)} data-tag-search={searchKey(e)}>
+            <span class="dict-term">{e.data.tag}</span>
+            <span class="dict-def" set:html={emphasis(e.data.meaning)} />
+            <span class="dict-meta">
+              {polarityLabel(e.data.polarity)}
+              <span class="pill pill-todo">陷阱</span>
+            </span>
           </a>
         ))}
       </div>
@@ -50,17 +77,19 @@ const searchKey = (e: (typeof entries)[number]) => `${e.data.tag} ${e.data.meani
   )}
 
   {ordered.map(([category, list]) => (
-    <section data-tag-group>
-      <h2 id={`cat-${category}`}>{category}<span class="verified">　{list.length} 个</span></h2>
-      <div class="cards">
+    <section class="dict-group" id={`cat-${category}`} data-tag-group aria-labelledby={`cat-h-${category}`}>
+      <h2 id={`cat-h-${category}`}>
+        {category}<span class="chip-n">{list.length} 个</span>
+      </h2>
+      <div class="dict">
         {list.map((e) => (
-          <a class="card" href={url(`tags/${e.id}/`)} data-tag-search={searchKey(e)}>
-            <h3><code>{e.data.tag}</code></h3>
-            <p>{e.data.meaning}</p>
-            <div class="meta">
-              <span class="pill">{e.data.polarity === '皆可' ? '正 / 负' : `${e.data.polarity}向`}</span>
+          <a class="dict-row" href={url(`tags/${e.id}/`)} data-tag-search={searchKey(e)}>
+            <span class="dict-term">{e.data.tag}</span>
+            <span class="dict-def" set:html={emphasis(e.data.meaning)} />
+            <span class="dict-meta">
+              {polarityLabel(e.data.polarity)}
               {e.data.trap && <span class="pill pill-todo">陷阱</span>}
-            </div>
+            </span>
           </a>
         ))}
       </div>
@@ -69,16 +98,15 @@ const searchKey = (e: (typeof entries)[number]) => `${e.data.tag} ${e.data.meani
 </Base>
 
 <script>
-  const input = document.getElementById('tag-filter') as HTMLInputElement | null;
-  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-tag-search]'));
-  const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-tag-group]'));
-  function filter() {
-    const q = (input?.value ?? '').trim().toLowerCase();
-    for (const c of cards) c.style.display = !q || (c.dataset.tagSearch ?? '').includes(q) ? '' : 'none';
-    for (const g of groups) {
-      const visible = Array.from(g.querySelectorAll<HTMLElement>('[data-tag-search]')).some((c) => c.style.display !== 'none');
-      g.style.display = visible ? '' : 'none';
-    }
-  }
-  input?.addEventListener('input', filter);
+  import { setupFilter } from '../../lib/client-filter';
+
+  setupFilter({
+    input: 'tag-filter',
+    attr: 'tagSearch',
+    item: '[data-tag-search]',
+    group: '[data-tag-group]',
+    noun: '个标签',
+    count: 'tag-count',
+    empty: 'tag-empty',
+  });
 </script>

@@ -1,10 +1,17 @@
 ---
 import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
 import { url } from '../lib/env';
 ---
 
 <Base title="页面不存在" description="404">
-  <h1>页面不存在</h1>
-  <p>这个地址没有对应的内容。可能是链接写错了，或者这一页还在迁移中。</p>
-  <p><a href={url('')}>返回课程</a> · <a href={url('search/')}>搜索</a></p>
+  <div class="notfound">
+    <p class="notfound-code" aria-hidden="true">404</p>
+    <h1>页面不存在</h1>
+    <p>这个地址没有对应的内容。可能是链接写错了，或者这一页还在迁移中。</p>
+    <div class="notfound-actions">
+      <a class="btn btn-primary" href={url('')}><Icon name="home" size={18} />返回课程</a>
+      <a class="btn" href={url('search/')}><Icon name="search" size={18} />去搜索</a>
+    </div>
+  </div>
 </Base>

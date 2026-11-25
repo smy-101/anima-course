@@ -19,40 +19,59 @@ const lessons = (await getCollection('lessons')).sort(
 );
 const usedIn = lessons.filter((l) => l.data.nodes.includes(entry.id));
 const stage = STAGES.find((st) => st.levels.includes(d.first_level));
+
+/** 端口类型 → 配色的键：去掉数组后缀与多选（FLOAT[] / INT,FLOAT），其余保持原样（未知类型画空心圈） */
+const portKey = (t: string) => t.replace(/\[\]/g, '').split(/[,|]/)[0].trim().toUpperCase();
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const typeCell = (t: string) => `<span class="port" data-type="${esc(portKey(t))}" aria-hidden="true"></span><code>${esc(t)}</code>`;
 ---
 
 <Base title={`${d.name_zh} ${entry.id}`} description={`${d.name_zh}（${entry.id}）节点的端口与参数说明。`} active="nodes">
-  <nav class="crumbs" aria-label="面包屑"><a href={url('nodes/')}>节点字典</a></nav>
-  <h1>{d.name_zh} <code>{entry.id}</code></h1>
-  <p class="badges">
-    <span class="pill">{d.category}</span>
-    <span class="pill">首次出现：{d.first_level}{stage && ` · 阶段 ${stage.id}`}</span>
-    {d.experimental && <span class="pill pill-todo">实验性</span>}
-  </p>
+  <nav class="crumbs" aria-label="面包屑">
+    <a href={url('nodes/')}>节点字典</a>
+  </nav>
+
+  <header class="page-head">
+    <h1>{d.name_zh} <code>{entry.id}</code></h1>
+    <div class="meta-row">
+      <span class="pill">{d.category}</span>
+      <span class="pill">首次出现：{d.first_level}{stage && ` · 阶段 ${stage.id}`}</span>
+      {d.experimental && <span class="pill pill-todo">实验性</span>}
+    </div>
+    <p class="prereq">
+      端口旁的圆点是它在画布上的颜色——只有颜色相同的端口才能相连。
+      <a href={url('lessons/01-01-l0-minimal/')}>怎么对着端口颜色认类型</a>
+    </p>
+  </header>
 
   <div class="prose">
     <Content />
   </div>
 
   {d.inputs.length > 0 && (
-    <>
-      <h2>输入</h2>
+    <section aria-labelledby="inputs-h">
+      <h2 id="inputs-h">输入</h2>
       <div class="table-wrap">
         <table>
           <thead><tr><th>端口</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
           <tbody>
             {d.inputs.map((i) => (
-              <tr><td><code>{i.name}</code></td><td>{i.type}</td><td>{i.required ? '是' : '否'}</td><td>{i.desc}</td></tr>
+              <tr>
+                <td><code>{i.name}</code></td>
+                <td set:html={typeCell(i.type)} />
+                <td>{i.required ? '是' : '否'}</td>
+                <td>{i.desc}</td>
+              </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </>
+    </section>
   )}
 
   {d.params.length > 0 && (
-    <>
-      <h2>参数</h2>
+    <section aria-labelledby="params-h">
+      <h2 id="params-h">参数</h2>
       <div class="table-wrap">
         <table>
           <thead><tr><th>参数</th><th>默认</th><th>取值 / 范围</th><th>说明</th></tr></thead>
@@ -63,32 +82,32 @@ const stage = STAGES.find((st) => st.levels.includes(d.first_level));
           </tbody>
         </table>
       </div>
-    </>
+    </section>
   )}
 
   {d.outputs.length > 0 && (
-    <>
-      <h2>输出</h2>
+    <section aria-labelledby="outputs-h">
+      <h2 id="outputs-h">输出</h2>
       <div class="table-wrap">
         <table>
           <thead><tr><th>端口</th><th>类型</th><th>说明</th></tr></thead>
           <tbody>
             {d.outputs.map((o) => (
-              <tr><td><code>{o.name}</code></td><td>{o.type}</td><td>{o.desc}</td></tr>
+              <tr><td><code>{o.name}</code></td><td set:html={typeCell(o.type)} /><td>{o.desc}</td></tr>
             ))}
           </tbody>
         </table>
       </div>
-    </>
+    </section>
   )}
 
   {usedIn.length > 0 && (
-    <>
-      <h2>出现在这些课程</h2>
+    <section aria-labelledby="usedin-h">
+      <h2 id="usedin-h">出现在这些课程</h2>
       <ul>
         {usedIn.map((l) => <li><a href={url(`lessons/${l.id}/`)}>{l.data.title}</a></li>)}
       </ul>
-    </>
+    </section>
   )}
 
   <SourceBadge sources={d.sources} verified={d.verified} />

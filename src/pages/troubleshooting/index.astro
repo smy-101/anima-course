@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
 import { getCollection, render } from 'astro:content';
 import { AREAS } from '../../content.config';
 import { inlineLinks } from '../../lib/env';
@@ -21,49 +22,77 @@ for (const item of entries) {
 const ordered = [...byArea.entries()].sort(
   ([a], [b]) => AREAS.indexOf(a as (typeof AREAS)[number]) - AREAS.indexOf(b as (typeof AREAS)[number]),
 );
-const hasBody = (e: (typeof entries)[number]['e']) => Boolean(e.body && e.body.trim());
+type Item = (typeof entries)[number];
+const hasBody = (e: Item['e']) => Boolean(e.body && e.body.trim());
+const plain = (s: string) => s.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1');
+const searchKey = (e: Item['e']) =>
+  `${e.data.symptom} ${e.data.area} ${plain(e.data.first)} ${plain(e.data.then)} ${plain(e.data.dont)} ${e.body ?? ''}`.toLowerCase();
 ---
 
 <Base title="排错与调参速查" description="现象 → 先调 → 再调 → 不要这样调。" active="troubleshooting" wide>
-  <h1>排错与调参速查</h1>
-  <p class="verified">
-    原则：低阶没调好不要碰高阶——cfg / steps 没定就去调 shift 和分段采样，结果无法归因。每条都按"先调 → 再调 → 不要"排列。
-  </p>
-  <p>
-    <label>
-      筛选：
-      <input id="ts-filter" type="search" placeholder="描述你看到的现象" style="font: inherit; padding: 0.3rem 0.6rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--fg)" />
+  <header class="page-head">
+    <h1>排错与调参速查</h1>
+    <p class="lead">
+      原则：低阶没调好不要碰高阶——cfg / steps 没定就去调 shift 和分段采样，结果无法归因。每条都按"先调 → 再调 → 不要"排列。
+    </p>
+    <nav class="cat-nav" aria-label="按领域跳转">
+      {ordered.map(([area, list]) => (
+        <a class="chip" href={`#area-${area}`}>
+          {area}<span class="chip-n">{list.length}</span>
+        </a>
+      ))}
+    </nav>
+  </header>
+
+  <div class="filter-bar">
+    <label class="filter">
+      <Icon name="search" size={18} />
+      <span class="sr-only">筛选排错条目</span>
+      <input id="ts-filter" type="search" placeholder="描述你看到的现象，如 模糊、过饱和、发色" autocomplete="off" />
     </label>
+    <p class="filter-status" aria-live="polite">
+      <span id="ts-count">{entries.length} / {entries.length} 条</span>
+    </p>
+  </div>
+  <p class="filter-empty" id="ts-empty" hidden>
+    没有匹配「<q data-filter-query></q>」的条目。<button type="button" class="link-btn">清除筛选</button>，或只输现象里最关键的词——比如画面「糊」就搜「模糊」，颜色太艳就搜「过饱和」。
   </p>
 
   {ordered.map(([area, list]) => (
-    <section data-ts-group>
-      <h2>{area}</h2>
-      <div class="cards">
+    <section class="ts-group" id={`area-${area}`} data-ts-group aria-labelledby={`area-h-${area}`}>
+      <h2 id={`area-h-${area}`}>
+        {area}<span class="chip-n">{list.length} 条</span>
+      </h2>
+      <div class="ts-grid">
         {list.map(({ e, Content }) => (
-          <article
-            class="card"
-            id={e.id}
-            data-ts-search={`${e.data.symptom} ${e.data.first} ${e.data.then} ${e.data.dont} ${e.body ?? ''}`}
-          >
+          <article class="ts-card" id={e.id} data-ts-search={searchKey(e)}>
             <h3>{e.data.symptom}</h3>
-            <div class="table-wrap">
-              <table>
-                <tbody>
-                  <tr><th>先调</th><td set:html={inlineLinks(e.data.first)} /></tr>
-                  {e.data.then && <tr><th>再调</th><td set:html={inlineLinks(e.data.then)} /></tr>}
-                  {e.data.dont && <tr><th>不要</th><td set:html={inlineLinks(e.data.dont)} /></tr>}
-                </tbody>
-              </table>
+            <div class="ts-steps">
+              <div class="ts-step">
+                <span class="ts-label"><span class="ts-no" aria-hidden="true">1</span>先调</span>
+                <div set:html={inlineLinks(e.data.first)} />
+              </div>
+              {e.data.then && (
+                <div class="ts-step">
+                  <span class="ts-label"><span class="ts-no" aria-hidden="true">2</span>再调</span>
+                  <div set:html={inlineLinks(e.data.then)} />
+                </div>
+              )}
+              {e.data.dont && (
+                <div class="ts-step dont">
+                  <span class="ts-label"><span class="ts-no"><Icon name="x" size={14} /></span>不要</span>
+                  <div set:html={inlineLinks(e.data.dont)} />
+                </div>
+              )}
             </div>
             {hasBody(e) && (
-              <div class="prose" style="font-size: 0.92rem">
+              <div class="prose">
                 <Content />
               </div>
             )}
             <div class="meta">
               {e.data.sources.map((s) => <span class={`badge badge-${s.badge}`}>{s.badge}</span>)}
-              <span class="verified">核实于 {e.data.verified}</span>
+              <span>核实于 {e.data.verified}</span>
             </div>
           </article>
         ))}
@@ -73,16 +102,15 @@ const hasBody = (e: (typeof entries)[number]['e']) => Boolean(e.body && e.body.t
 </Base>
 
 <script>
-  const input = document.getElementById('ts-filter') as HTMLInputElement | null;
-  const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-ts-search]'));
-  const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-ts-group]'));
-  function filter() {
-    const q = (input?.value ?? '').trim().toLowerCase();
-    for (const c of cards) c.style.display = !q || (c.dataset.tsSearch ?? '').toLowerCase().includes(q) ? '' : 'none';
-    for (const g of groups) {
-      const visible = Array.from(g.querySelectorAll<HTMLElement>('[data-ts-search]')).some((c) => c.style.display !== 'none');
-      g.style.display = visible ? '' : 'none';
-    }
-  }
-  input?.addEventListener('input', filter);
+  import { setupFilter } from '../../lib/client-filter';
+
+  setupFilter({
+    input: 'ts-filter',
+    attr: 'tsSearch',
+    item: '[data-ts-search]',
+    group: '[data-ts-group]',
+    noun: '条',
+    count: 'ts-count',
+    empty: 'ts-empty',
+  });
 </script>

@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
 import SourceBadge from '../../components/SourceBadge.astro';
 import AgeGate from '../../components/AgeGate';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
@@ -37,7 +38,12 @@ for (const e of entries) {
 }
 const orderedSections = NSFW_SECTIONS.filter((s) => bySection.has(s)).map((s) => [s, bySection.get(s)!] as const);
 const excerpt = (e: CollectionEntry<'nsfw'>) => {
-  const text = (e.body ?? '').replace(/\s+/g, ' ').trim();
+  const text = (e.body ?? '')
+    .replace(/```[\s\S]*$/g, '')
+    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/[*`#>|]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
   return text.length > 110 ? `${text.slice(0, 110)}…` : text;
 };
 ---
@@ -58,14 +64,16 @@ const excerpt = (e: CollectionEntry<'nsfw'>) => {
 
     {index ? (
       <>
+        <header class="page-head">
         <h1>成人附录</h1>
-        <p class="verified">
+        <p class="lead">
           主线课程只保留了所有用户都用得到的部分（安全等级四选一、必须写 <code>safe</code>、等级与画面匹配）。
           以下是与成人内容相关的规则、词表与模板，按章节排列。
         </p>
+        </header>
         {orderedSections.map(([section, list]) => (
-          <section>
-            <h2>{section}</h2>
+          <section class="dict-group">
+            <h2>{section}<span class="chip-n">{list.length} 篇</span></h2>
             <div class="cards">
               {list.map((e) => (
                 <a class="card" href={url(`nsfw/${e.id}/`)}>
@@ -77,18 +85,34 @@ const excerpt = (e: CollectionEntry<'nsfw'>) => {
             </div>
           </section>
         ))}
-        <p><a href={url('')}>返回课程</a></p>
+        <nav class="pager" aria-label="返回">
+          <a class="pager-link" href={url('')}>
+            <span class="pager-label"><Icon name="arrow-left" size={16} />返回</span>
+            <span class="pager-title">课程首页</span>
+          </a>
+        </nav>
       </>
     ) : (
       entry && d && Content && (
         <>
           <nav class="crumbs" aria-label="面包屑"><a href={url('nsfw/')}>成人附录</a> › {d.section}</nav>
-          <h1>{d.title}</h1>
+          <header class="page-head">
+            <h1>{d.title}</h1>
+            <div class="meta-row">
+              <span class="pill">{d.section}</span>
+              <span class="pill">核实于 {d.verified}</span>
+            </div>
+          </header>
           <div class="prose">
             <Content />
           </div>
           <SourceBadge sources={d.sources} verified={d.verified} />
-          <p><a href={url('nsfw/')}>返回附录目录</a></p>
+          <nav class="pager" aria-label="返回">
+            <a class="pager-link" href={url('nsfw/')}>
+              <span class="pager-label"><Icon name="arrow-left" size={16} />返回</span>
+              <span class="pager-title">附录目录</span>
+            </a>
+          </nav>
         </>
       )
     )}

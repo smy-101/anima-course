@@ -18,3 +18,14 @@ export const inlineLinks = (s: string): string =>
 
 /** NSFW 附录构建开关：NSFW=false 时 /nsfw/* 不生成、导航不出现。见 astro.config.mjs */
 export const NSFW_ENABLED = (process.env.NSFW ?? 'true').toLowerCase() !== 'false';
+
+/**
+ * 把纯文本字段里的 **强调** 渲染成 <strong>（其余先做 HTML 转义）。
+ * 给标签卡的 meaning 这类不经 Markdown 渲染、却又写了 Markdown 强调的 frontmatter 字段用。
+ */
+export const emphasis = (s: string): string =>
+  s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');

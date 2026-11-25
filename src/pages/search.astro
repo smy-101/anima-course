@@ -1,40 +1,78 @@
 ---
 import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
 import { url } from '../lib/env';
+
+// 常用入口：索引还没建好（开发模式）或搜不到时，至少能走到这几处
+const quick = [
+  { href: url('nodes/KSampler/'), label: 'K采样器' },
+  { href: url('lessons/01-03-prompt-basics/'), label: '提示词基础' },
+  { href: url('troubleshooting/'), label: '排错速查' },
+  { href: url('resources/param-baseline/'), label: '三版本参数基线' },
+];
 ---
 
-<Base title="搜索" description="全站搜索（构建后生成索引）" active="search">
-  <h1>搜索</h1>
+<Base title="搜索" description="全站搜索：课程、节点、标签、排错条目与资源。" active="search">
+  <header class="page-head">
+    <h1>搜索</h1>
+    <p class="lead">
+      课程、节点、标签、排错条目与资源都在索引里，支持中文分词。在本页按 <kbd>/</kbd> 直接聚焦输入框；全站任意页面按
+      <kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>K</kbd> 跳到这里。
+    </p>
+  </header>
+
   <link rel="stylesheet" href={url('pagefind/pagefind-ui.css')} />
   <div id="search"></div>
   <p class="verified" id="search-hint">搜索索引在构建后生成。本地开发时请运行 <code>npm run build &amp;&amp; npm run preview</code>。</p>
 
-  <script is:inline define:vars={{ base: url('') }}>
-    (async function () {
-      try {
-        var ui = await import(base + 'pagefind/pagefind-ui.js');
-        new ui.PagefindUI({
-          element: '#search',
-          showSubResults: true,
-          translations: {
-            placeholder: '搜索课程、节点、标签、现象…',
-            clear_search: '清除',
-            load_more: '加载更多结果',
-            search_label: '搜索本站',
-            filters_label: '筛选',
-            zero_results: '没有找到 [SEARCH_TERM]',
-            many_results: '找到 [COUNT] 条关于 [SEARCH_TERM] 的结果',
-            one_result: '找到 [COUNT] 条关于 [SEARCH_TERM] 的结果',
-            alt_search: '没有找到 [SEARCH_TERM]，显示 [DIFFERENT_TERM] 的结果',
-            search_suggestion: '没有找到 [SEARCH_TERM]，试试：',
-            searching: '正在搜索 [SEARCH_TERM]…',
-          },
-        });
-        var hint = document.getElementById('search-hint');
-        if (hint) hint.hidden = true;
-      } catch (e) {
-        /* pagefind 尚未构建（开发模式） */
-      }
-    })();
-  </script>
+  <section class="home-section" aria-labelledby="search-quick-h">
+    <div class="section-head">
+      <h2 id="search-quick-h">常被查的几处</h2>
+    </div>
+    <div class="cat-nav">
+      {quick.map((q) => (
+        <a class="chip" href={q.href}>{q.label}<Icon name="arrow-right" size={14} /></a>
+      ))}
+    </div>
+  </section>
 </Base>
+
+<script is:inline define:vars={{ base: url('') }}>
+  (async function () {
+    try {
+      // pagefind-ui.js 是 IIFE：把 PagefindUI 挂在 window 上，没有具名导出，所以不能写 new ui.PagefindUI()
+      await import(base + 'pagefind/pagefind-ui.js');
+      var PagefindUI = window.PagefindUI;
+      if (typeof PagefindUI !== 'function') throw new Error('window.PagefindUI 不存在');
+      // 首页搜索框用 GET 跳过来时带着 ?q=：直接出结果，不再抢焦点（免得手机上弹键盘挡住结果）
+      var q = new URLSearchParams(location.search).get('q') || '';
+      // 索引目录要显式给：Pagefind 默认从 <script src> 的地址推断，而这里是 import() 加载的，推断不到就会去站点根下找 /pagefind/
+      var search = new PagefindUI({
+        element: '#search',
+        bundlePath: base + 'pagefind/',
+        showSubResults: true,
+        autofocus: !q,
+        focusOnSlash: true,
+        translations: {
+          placeholder: '搜索课程、节点、标签、现象…',
+          clear_search: '清除',
+          load_more: '加载更多结果',
+          search_label: '搜索本站',
+          filters_label: '筛选',
+          zero_results: '没有找到 [SEARCH_TERM]',
+          many_results: '找到 [COUNT] 条关于 [SEARCH_TERM] 的结果',
+          one_result: '找到 [COUNT] 条关于 [SEARCH_TERM] 的结果',
+          alt_search: '没有找到 [SEARCH_TERM]，显示 [DIFFERENT_TERM] 的结果',
+          search_suggestion: '没有找到 [SEARCH_TERM]，试试：',
+          searching: '正在搜索 [SEARCH_TERM]…',
+        },
+      });
+      if (q) search.triggerSearch(q);
+      var hint = document.getElementById('search-hint');
+      if (hint) hint.hidden = true;
+    } catch (e) {
+      // 开发模式下索引还没生成（404）；其余情况是真实故障，留在控制台里别静默
+      if (location.hostname !== '127.0.0.1' && location.hostname !== 'localhost') console.error('Pagefind 未能初始化', e);
+    }
+  })();
+</script>

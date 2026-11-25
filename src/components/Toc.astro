@@ -1,0 +1,28 @@
+---
+/** 本页目录：由 render(entry).headings 生成（课程页用）。宽屏放在右侧吸顶栏，窄屏折叠在标题下方。 */
+interface Item {
+  id: string;
+  text: string;
+  depth: number;
+}
+
+interface Props {
+  items: Item[];
+  /** 标题的 id，供 aria-labelledby 引用；不传标题时用 aria-label */
+  labelledBy?: string;
+  title?: string;
+}
+
+const { items, labelledBy, title } = Astro.props;
+---
+
+<nav class="toc" aria-labelledby={labelledBy} aria-label={labelledBy ? undefined : '本页目录'}>
+  {title && <p class="toc-title" id={labelledBy}>{title}</p>}
+  <ol>
+    {items.map((h) => (
+      <li class={h.depth === 3 ? 'is-h3' : undefined}>
+        <a href={`#${h.id}`}>{h.text}</a>
+      </li>
+    ))}
+  </ol>
+</nav>

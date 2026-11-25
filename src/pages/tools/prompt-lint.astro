@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
 import PromptLint from '../../components/PromptLint';
 import { getCollection } from 'astro:content';
 import { url } from '../../lib/env';
@@ -14,45 +15,68 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <Base title="提示词检查器" description="贴上正负向提示词，查出下划线、逗号空格、画师缺 @、陷阱标签、等级冲突等问题；能自动修的一键修。纯前端。" active="tools" wide>
-  <nav class="crumbs" aria-label="面包屑"><a href={url('tools/')}>工具</a></nav>
-  <h1>提示词检查器</h1>
-  <p>
-    把正向、负向贴进来，选好版本，下面立刻列出问题。规则全部来自课程里的<a href={url('lessons/01-03-prompt-basics/')}>七条硬规则</a>、安全等级、负向原则与标签字典里的陷阱标签；
-    每条都链回讲原理的地方。<strong>纯前端，不上传</strong>，输入只存在你的浏览器里。
-    红色是会直接画错 / 切错 token 的，黄色是可能让结果偏离的，蓝色是风格与长度提示。
-  </p>
+  <div class="content">
+    <nav class="crumbs" aria-label="面包屑">
+      <a href={url('tools/')}>工具</a>
+    </nav>
+
+    <header class="page-head">
+      <h1>提示词检查器</h1>
+      <p class="lead">
+        把正向、负向贴进来，选好版本，下面立刻列出问题。规则全部来自课程里的<a href={url('lessons/01-03-prompt-basics/')}>提示词规则</a>、安全等级、负向原则与标签字典里的陷阱标签；
+        每条都链回讲原理的地方。<strong>纯前端，不上传</strong>，输入只存在你的浏览器里。
+      </p>
+      <div class="meta-row">
+        <span class="pill pill-danger">错误</span><span class="verified">会直接画错 / 切错 token</span>
+        <span class="pill pill-warn">提醒</span><span class="verified">可能让结果偏离</span>
+        <span class="pill pill-info">提示</span><span class="verified">风格与长度建议</span>
+      </div>
+    </header>
+  </div>
 
   <PromptLint client:load basePath={base} traps={traps} tags={allTags} />
 
-  <h2>查什么</h2>
-  <div class="table-wrap">
-    <table>
-      <thead><tr><th>级别</th><th>查什么</th><th>为什么</th><th>详见</th></tr></thead>
-      <tbody>
-        <tr><td>错误</td><td>下划线标签（<code>score_N</code> 除外）</td><td>Anima 的训练标签用空格；只有 Pony 系美学评分本来带下划线</td><td><a href={url('lessons/01-03-prompt-basics/#七条硬规则')}>七条硬规则</a></td></tr>
-        <tr><td>错误</td><td>逗号后没有空格、全角标点</td><td>分词器不做模糊匹配：<code>masterpiece,best quality</code> 会切出 <code>,b</code>、<code>est</code> 这种怪 token</td><td><a href={url('lessons/01-03-prompt-basics/#逗号后必须有空格这是分词问题')}>逗号后必须有空格</a></td></tr>
-        <tr><td>错误 / 提醒</td><td>Markdown / JSON 字符（<code>#</code>、<code>*</code>、方括号、花括号；整段 JSON）</td><td>模型不认识 Markdown，<code>#</code> 偶尔会直接画进图里；分段用空行</td><td><a href={url('lessons/01-03-prompt-basics/#七条硬规则')}>七条硬规则</a></td></tr>
-        <tr><td>错误</td><td>打码标签（<code>censored</code> 一族）放进了正向</td><td>正向写了就会出打码；去码是放负向</td><td><a href={url('tags/censored/')}>censored</a></td></tr>
-        <tr><td>错误</td><td>写了多个安全等级；<code>safe</code> 与露骨标签同现</td><td>四个等级是类别不是阶梯，只写一个；混用会自相矛盾——发软 / 自动打码</td><td><a href={url('lessons/01-03-prompt-basics/#四段式结构')}>四段式结构</a></td></tr>
-        <tr><td>错误</td><td>Aesthetic 版正负向出现 <code>score_*</code></td><td>Aesthetic 训练时去掉了所有质量标签，score 会把画面推成"AI 味"</td><td><a href={url('resources/param-baseline/')}>三版本参数基线</a></td></tr>
-        <tr><td>提醒</td><td>未转义的括号</td><td>括号会被当成权重语法并被吃掉：<code>toon (style)</code> 要写成 <code>toon \(style\)</code></td><td><a href={url('lessons/01-03-prompt-basics/#七条硬规则')}>七条硬规则</a></td></tr>
-        <tr><td>提醒</td><td>画师名没加 <code>@</code>（"in the style of X" 之类）</td><td>不加 <code>@</code> 效果"非常弱"</td><td><a href={url('lessons/01-03-prompt-basics/#七条硬规则')}>七条硬规则</a></td></tr>
-        <tr><td>提醒</td><td>正向里的陷阱标签（<code>wet</code>、<code>monochrome</code>、<code>high contrast</code>…）</td><td>这些普通英文词在 booru 里有精确含义，会定义整张图</td><td><a href={url('tags/')}>标签字典 · 陷阱标签</a></td></tr>
-        <tr><td>提醒</td><td>负向里有正向想要的东西</td><td>标准负向会破坏你的场景：追黑白风却负向里有 <code>monochrome</code></td><td><a href={url('resources/prompt-templates/')}>负向使用原则</a></td></tr>
-        <tr><td>提醒</td><td>多人场景：发色 / 瞳色不够份数</td><td>连带规则——给一个角色写了就要给所有角色写，否则特征会"串"</td><td><a href={url('lessons/02-02-prompt-multi/')}>多人与传染</a></td></tr>
-        <tr><td>提醒</td><td>空条目（连续逗号、开头逗号）</td><td>会切出空标签</td><td><a href={url('lessons/01-03-prompt-basics/#七条硬规则')}>七条硬规则</a></td></tr>
-        <tr><td>提示</td><td>没写安全等级</td><td>正向写一个等级，不想要的放负向；纯风景可以不写</td><td><a href={url('lessons/01-03-prompt-basics/#四段式结构')}>四段式结构</a></td></tr>
-        <tr><td>提示</td><td>权重 1 ≤ N &lt; 1.5</td><td>双分词器，Qwen 路权重被归 1；1.5 起、2.0 甜点</td><td><a href={url('lessons/01-03-prompt-basics/#双分词器--权重只有一半生效')}>权重只有一半生效</a></td></tr>
-        <tr><td>提示</td><td>多余空格、重复标签、字典里的标签没全小写、标签偏多（&gt; 30）</td><td>标签全小写；重复不加强只占注意力预算；长了不是截断而是稀释</td><td><a href={url('lessons/01-03-prompt-basics/#没有硬上限只有注意力预算')}>注意力预算</a></td></tr>
-        <tr><td>提示</td><td>Turbo 下填了负向；负向偏长（&gt; 40 项）</td><td>CFG 1 下负向无效；Anima 对负向敏感，别堆一两百词</td><td><a href={url('resources/prompt-templates/')}>负向使用原则</a></td></tr>
-      </tbody>
-    </table>
-  </div>
+  <div class="content">
+    <section aria-labelledby="lint-what-h">
+      <h2 id="lint-what-h">查什么</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>级别</th><th>查什么</th><th>为什么</th><th>详见</th></tr></thead>
+          <tbody>
+            <tr><td>错误</td><td>下划线标签（<code>score_N</code> 除外）</td><td>Anima 的训练标签用空格；只有 Pony 系美学评分本来带下划线</td><td><a href={url('lessons/01-03-prompt-basics/#提示词规则')}>提示词规则</a></td></tr>
+            <tr><td>错误</td><td>逗号后没有空格、全角标点</td><td>分词器不做模糊匹配：<code>masterpiece,best quality</code> 会切出 <code>,b</code>、<code>est</code> 这种怪 token</td><td><a href={url('lessons/01-03-prompt-basics/#逗号后的空格')}>逗号后必须有空格</a></td></tr>
+            <tr><td>错误 / 提醒</td><td>Markdown / JSON 字符（<code>#</code>、<code>*</code>、方括号、花括号；整段 JSON）</td><td>模型不认识 Markdown，<code>#</code> 偶尔会直接画进图里；分段用空行</td><td><a href={url('lessons/01-03-prompt-basics/#提示词规则')}>提示词规则</a></td></tr>
+            <tr><td>错误</td><td>打码标签（<code>censored</code> 一族）放进了正向</td><td>正向写了就会出打码；去码是放负向</td><td><a href={url('tags/censored/')}>censored</a></td></tr>
+            <tr><td>错误</td><td>写了多个安全等级；<code>safe</code> 与露骨标签同现</td><td>四个等级是类别不是阶梯，只写一个；混用会自相矛盾——发软 / 自动打码</td><td><a href={url('lessons/01-03-prompt-basics/#提示词结构')}>提示词结构</a></td></tr>
+            <tr><td>错误</td><td>Aesthetic 版正负向出现 <code>score_*</code></td><td>Aesthetic 训练时去掉了所有质量标签，score 会把画面推成"AI 味"</td><td><a href={url('resources/param-baseline/')}>三版本参数基线</a></td></tr>
+            <tr><td>提醒</td><td>未转义的括号</td><td>括号会被当成权重语法并被吃掉：<code>toon (style)</code> 要写成 <code>toon \(style\)</code></td><td><a href={url('lessons/01-03-prompt-basics/#提示词规则')}>提示词规则</a></td></tr>
+            <tr><td>提醒</td><td>画师名没加 <code>@</code>（"in the style of X" 之类）</td><td>不加 <code>@</code> 效果"非常弱"</td><td><a href={url('lessons/01-03-prompt-basics/#提示词规则')}>提示词规则</a></td></tr>
+            <tr><td>提醒</td><td>正向里的陷阱标签（<code>wet</code>、<code>monochrome</code>、<code>high contrast</code>…）</td><td>这些普通英文词在 booru 里有精确含义，会定义整张图</td><td><a href={url('tags/')}>标签字典 · 陷阱标签</a></td></tr>
+            <tr><td>提醒</td><td>负向里有正向想要的东西</td><td>标准负向会破坏你的场景：追黑白风却负向里有 <code>monochrome</code></td><td><a href={url('resources/prompt-templates/')}>负向使用原则</a></td></tr>
+            <tr><td>提醒</td><td>多人场景：发色 / 瞳色不够份数</td><td>连带规则——给一个角色写了就要给所有角色写，否则特征会"串"</td><td><a href={url('lessons/02-02-prompt-multi/')}>多人与传染</a></td></tr>
+            <tr><td>提醒</td><td>空条目（连续逗号、开头逗号）</td><td>会切出空标签</td><td><a href={url('lessons/01-03-prompt-basics/#提示词规则')}>提示词规则</a></td></tr>
+            <tr><td>提示</td><td>没写安全等级</td><td>正向写一个等级，不想要的放负向；纯风景可以不写</td><td><a href={url('lessons/01-03-prompt-basics/#提示词结构')}>提示词结构</a></td></tr>
+            <tr><td>提示</td><td>权重 1 ≤ N &lt; 1.5</td><td>双分词器，Qwen 路权重被归 1；1.5 起、2.0 甜点</td><td><a href={url('lessons/01-03-prompt-basics/#权重只有一半生效')}>权重只有一半生效</a></td></tr>
+            <tr><td>提示</td><td>多余空格、重复标签、字典里的标签没全小写、标签偏多（&gt; 30）</td><td>标签全小写；重复不加强只占注意力预算；长了不是截断而是稀释</td><td><a href={url('lessons/01-03-prompt-basics/#注意力预算')}>注意力预算</a></td></tr>
+            <tr><td>提示</td><td>Turbo 下填了负向；负向偏长（&gt; 40 项）</td><td>CFG 1 下负向无效；Anima 对负向敏感，别堆一两百词</td><td><a href={url('resources/prompt-templates/')}>负向使用原则</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-  <h2>不查什么</h2>
-  <p class="verified">
-    这些要人来判断，工具帮不上：Danbooru 与 Gelbooru 的拼写差异（以 Gelbooru 为准）；"看不见的东西"（面罩后面的眼睛、衣服下面的结构——写了就会画出来）；
-    自然语言的句数与指代（代词经常指错对象，每个细节和角色名写在同一句里）；画师名是否真的存在；以及标签传染本身——工具只能数特征份数。
-  </p>
-  <p><a href={url('tools/')}>返回工具</a></p>
+    <section aria-labelledby="lint-not-h">
+      <h2 id="lint-not-h">不查什么</h2>
+      <p class="lead">
+        这些要人来判断，工具帮不上：Danbooru 与 Gelbooru 的拼写差异（以 Gelbooru 为准）；"看不见的东西"（面罩后面的眼睛、衣服下面的结构——写了就会画出来）；
+        自然语言的句数与指代（代词经常指错对象，每个细节和角色名写在同一句里）；画师名是否真的存在；以及标签传染本身——工具只能数特征份数。
+      </p>
+    </section>
+
+    <nav class="pager" aria-label="返回">
+      <a class="pager-link" href={url('tools/')}>
+        <span class="pager-label"><Icon name="arrow-left" size={16} />返回</span>
+        <span class="pager-title">全部工具</span>
+      </a>
+    </nav>
+  </div>
 </Base>

@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
 import SourceBadge from '../../components/SourceBadge.astro';
 import { getCollection, render } from 'astro:content';
 import { url } from '../../lib/env';
@@ -15,11 +16,34 @@ const { Content } = await render(entry);
 ---
 
 <Base title={d.title} description={`${d.kind}：${d.title}`} active="resources" wide>
-  <nav class="crumbs" aria-label="面包屑"><a href={url('resources/')}>资源</a></nav>
-  <h1>{d.title}</h1>
-  <p class="badges"><span class="pill">{d.kind}</span></p>
-  <div class="prose">
-    <Content />
+  <div class="lesson">
+    <article class="lesson-main">
+      <nav class="crumbs" aria-label="面包屑">
+        <a href={url('resources/')}>资源</a>
+        <span aria-hidden="true">›</span>
+        <a href={url(`resources/#kind-${d.kind}`)}>{d.kind}</a>
+      </nav>
+
+      <header class="page-head">
+        <h1>{d.title}</h1>
+        <div class="meta-row">
+          <span class="pill">{d.kind}</span>
+          <span class="pill">核实于 {d.verified}</span>
+        </div>
+      </header>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      <SourceBadge sources={d.sources} verified={d.verified} />
+
+      <nav class="pager" aria-label="返回">
+        <a class="pager-link" href={url(`resources/#kind-${d.kind}`)}>
+          <span class="pager-label"><Icon name="arrow-left" size={16} />返回</span>
+          <span class="pager-title">资源的「{d.kind}」分类</span>
+        </a>
+      </nav>
+    </article>
   </div>
-  <SourceBadge sources={d.sources} verified={d.verified} />
 </Base>

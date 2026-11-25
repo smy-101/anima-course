@@ -42,9 +42,10 @@ src/content/            内容（六个 Content Collections，schema 见 src/con
   resources/            参数基线、启动参数、模型清单、模板、误区、链接、换模型时什么不变
   nsfw/                 成人附录（构建开关 NSFW）：规则、词表、负向、模板、合规
 src/pages/              路由：/ 阶段地图、/lessons/[id]、/nodes、/tags、/troubleshooting、/resources、/tools、/nsfw、/search
-src/components/         FigureGallery、SourceBadge、Acceptance、AgeGate、PromptLint（提示词检查器）
+src/components/         FigureGallery、Toc（本页目录）、SourceBadge、Icon（内联 SVG）、Acceptance、AgeGate、PromptLint（提示词检查器）、LabLog（实验记录本）
 src/lib/prompt-lint.ts  提示词检查器的规则与修正器（纯函数，tests/ 有测试）
-scripts/                check-site.mjs（构建后检查）、satteri-base-links.mjs（正文链接加 base）
+src/lib/client-filter.ts 列表页的即时筛选（标签 / 节点 / 排错共用：计数、无结果提示）
+scripts/                check-site.mjs（构建后检查）、prose-lint.mjs + prose-lint.config.mjs（文风检查与棘轮名单）、satteri-base-links.mjs（正文链接加 base）、satteri-table-wrap.mjs（正文表格包滚动容器）
 .github/workflows/      deploy.yml → GitHub Pages
 ```
 
@@ -57,6 +58,14 @@ scripts/                check-site.mjs（构建后检查）、satteri-base-links
 - **节点**卡片文件名保留类名大小写；**标签**卡片文件名用小写连字符 slug。
 - `verified` 写 `YYYY-MM-DD`；`sources` 的 `badge` 只能是 官方 / 源码 / 作者 / 平台 / 社区 / Danbooru。
 - 改过 Markdown 处理配置（`astro.config.mjs` 里的 `markdown`）后要清掉内容层缓存：`rm -rf .astro node_modules/.astro`，否则已渲染的正文不会重新处理。
+
+## 界面与样式
+
+- 设计令牌（配色、字号、间距、圆角、动效）全在 `src/styles/global.css` 顶部的 `:root`；页面与组件只用令牌，不写裸色值。深色令牌因选择器不同写了两遍（跟随系统的媒体查询 + 手动切换的 `[data-theme="dark"]`），改一处要同步另一处。
+- 方向是内容优先的极简：中性灰 + 单一主色，层级靠字号 / 间距 / 对比；品红只用于"提示词练习"这一种语义标记。
+- 对比度：正文 ≥ 4.5:1，大字与控件描边、焦点环 ≥ 3:1。状态色因此分成"文字用深色、填充用亮色"两套（`--ok` / `--ok-fill` 等）。最小字号 12px，移动端正文保持 16px。
+- 中文正文用系统自带的 CJK 字体，不加载 Web 字体；图标用 `Icon.astro` 的内联 SVG，不用 emoji。
+- 类名是模板和 React 组件共用的契约，改名要一起改。新页面先用 `global.css` 里已有的组件（`.page-head`、`.cards`、`.pill`、`.note`、`.table-wrap`、`.filter-bar` 等），别另起一套。
 
 ## 部署
 
@@ -76,7 +85,8 @@ scripts/                check-site.mjs（构建后检查）、satteri-base-links
 | 概念可迁移：换模型时什么不变、什么要换（《节点详解》§4.1–4.9） | 已迁移（`resources/transfer.md`） |
 | 成人附录 | 规则、合规、词表（到 `nsfw` 级：表情 / 身体 / 衣物 / 展示与暗示）、负向、sensitive～nsfw 级模板（纯文字）；性行为 / 体液 / 群交 / 癖好 / 极端标签不进站 |
 | 开发者选修（《补充B》：HTTP API / 无界面 / 自定义节点） | 已迁移为阶段 5 末尾的两篇选修课（`elective: true`，不计入 14 天进度） |
-| 示例图（76 处占位，清单见 `npm run check:site`） | 待换机器补图 || L0–L8 工作流 JSON、四个工具（实验记录本 / 提示词检查器 / 排错向导 / 误区自测） | 提示词检查器已做（`/tools/prompt-lint/`，18 条规则）；其余三个工具与工作流 JSON 待做 |
+| 示例图（76 处占位，清单见 `npm run check:site`） | 待换机器补图 |
+| L0–L8 工作流 JSON、四个工具（实验记录本 / 提示词检查器 / 排错向导 / 误区自测） | 提示词检查器已做（`/tools/prompt-lint/`，18 条规则）；其余三个工具与工作流 JSON 待做 |
 
 ## 技术栈
 

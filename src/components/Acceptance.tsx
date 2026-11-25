@@ -48,6 +48,7 @@ export default function Acceptance({ lessonId, items }: Props) {
   }, [state, hydrated, lessonId]);
 
   const done = state.filter(Boolean).length;
+  const complete = items.length > 0 && done === items.length;
   const toggle = (i: number) => setState((s) => s.map((v, j) => (j === i ? !v : v)));
   const reset = () => setState(items.map(() => false));
 
@@ -82,11 +83,21 @@ export default function Acceptance({ lessonId, items }: Props) {
   };
 
   return (
-    <section className="acceptance" aria-labelledby="acceptance-h">
+    <section className={`acceptance${complete ? ' complete' : ''}`} aria-labelledby="acceptance-h">
       <h2 id="acceptance-h">验收</h2>
-      <p className="progress">
-        {done} / {items.length} 已完成{done === items.length && items.length > 0 ? ' — 本课验收通过。' : ''}
+      <p className="progress" aria-live="polite">
+        {done} / {items.length} 已完成{complete ? ' — 本课验收通过。' : ''}
       </p>
+      <div
+        className="progress-bar"
+        role="progressbar"
+        aria-label="本课验收进度"
+        aria-valuemin={0}
+        aria-valuemax={items.length}
+        aria-valuenow={done}
+      >
+        <span style={{ width: `${items.length ? Math.round((done / items.length) * 100) : 0}%` }} />
+      </div>
       <ul>
         {items.map((text, i) => (
           <li key={i} className={state[i] ? 'done' : ''} onClick={() => toggle(i)}>
@@ -102,10 +113,10 @@ export default function Acceptance({ lessonId, items }: Props) {
         ))}
       </ul>
       <div className="actions">
-        <button type="button" onClick={reset}>重置本课</button>
-        <button type="button" onClick={exportAll}>导出全部进度</button>
-        <button type="button" onClick={() => fileRef.current?.click()}>导入进度</button>
-        <button type="button" onClick={resetNsfw}>重置成人附录确认</button>
+        <button type="button" className="link-btn" onClick={reset}>重置本课</button>
+        <button type="button" className="link-btn" onClick={exportAll}>导出全部进度</button>
+        <button type="button" className="link-btn" onClick={() => fileRef.current?.click()}>导入进度</button>
+        <button type="button" className="link-btn" onClick={resetNsfw}>重置成人附录确认</button>
         <input
           ref={fileRef}
           type="file"

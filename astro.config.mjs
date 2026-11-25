@@ -4,6 +4,7 @@ import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import { satteri } from '@astrojs/markdown-satteri';
 import { satteriBaseLinks } from './scripts/satteri-base-links.mjs';
+import { satteriTableWrap } from './scripts/satteri-table-wrap.mjs';
 
 // GitHub Pages 项目站点：https://<user>.github.io/<repo>/
 // 部署前把 SITE_URL 换成你的地址；BASE_PATH 默认为仓库名，两者都可用环境变量覆盖。
@@ -23,8 +24,8 @@ export default defineConfig({
   // Astro 7 起 server 配置同时作用于 `astro dev` 与 `astro preview`，没有单独的 preview 键。
   server: { host: process.env.DEV_HOST ?? '127.0.0.1', port: 4321 },
   markdown: {
-    // Sätteri（默认处理器）+ 给正文链接加 base 的插件
-    processor: satteri({ hastPlugins: [satteriBaseLinks()] }),
+    // Sätteri（默认处理器）+ 两个 hast 插件：正文链接加 base；正文表格包滚动容器
+    processor: satteri({ hastPlugins: [satteriBaseLinks(), satteriTableWrap()] }),
     shikiConfig: { theme: 'github-dark', wrap: true },
   },
 });

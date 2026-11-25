@@ -22,6 +22,8 @@ for (const f of figures) {
   groups.get(f.group)!.push(f);
 }
 const todo = figures.filter((f) => !f.src).length;
+/** 组内张数越多，卡片跨的列越多：1–2 张占 1 列，3–4 张占 2 列，5 张以上占满一行（见 global.css 的容器查询） */
+const spanOf = (n: number) => (n <= 2 ? 1 : n <= 4 ? 2 : 4);
 ---
 
 {
@@ -32,26 +34,27 @@ const todo = figures.filter((f) => !f.src).length;
         所有对照图固定种子、固定提示词。ComfyUI 直出的 PNG 内嵌工作流，拖回画布即可还原该级工作流。
         {todo > 0 && <> 目前还有 {todo} 张待补，占位块上写着要补什么。</>}
       </p>
-      {[...groups.entries()].map(([group, figs]) => (
-        <div class="figure-group">
-          {group && <div class="figure-group-title">{group}</div>}
-          <div class="figure-grid">
-            {figs.map((f) => (
-              <figure class="figure" data-figure-id={f.id} data-figure-group={group}>
-                {f.src ? (
-                  <Image src={f.src} alt={f.caption} widths={[320, 480, 640]} sizes="(max-width: 640px) 100vw, 18rem" />
-                ) : (
-                  <div class="figure-placeholder" data-figure-todo={f.caption}>
-                    <span class="tag">待补图</span>
-                    <span>{f.caption}</span>
-                  </div>
-                )}
-                <figcaption>{f.caption}</figcaption>
-              </figure>
-            ))}
+      <div class="figure-groups">
+        {[...groups.entries()].map(([group, figs]) => (
+          <div class="figure-group" data-span={spanOf(figs.length)}>
+            {group && <div class="figure-group-title">{group}</div>}
+            <div class="figure-grid">
+              {figs.map((f) => (
+                <figure class="figure" data-figure-id={f.id} data-figure-group={group}>
+                  {f.src ? (
+                    <Image src={f.src} alt={f.caption} widths={[320, 480, 640]} sizes="(max-width: 640px) 100vw, 18rem" />
+                  ) : (
+                    <div class="figure-placeholder" data-figure-todo={f.caption}>
+                      <span class="tag">待补图</span>
+                    </div>
+                  )}
+                  <figcaption>{f.caption}</figcaption>
+                </figure>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </section>
   )
 }
