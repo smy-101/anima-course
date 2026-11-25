@@ -5,18 +5,27 @@
  *   - 报告按文件分组写到 reports/prose-lint.json，每条违规带位置与说明；终端打汇总表和每个有违规的文件一行
  *   - 棘轮：scripts/prose-lint.config.mjs 的 rewritten 名单里的文件必须全部通过，否则退出码 1；
  *     名单外的文件只出报告。名单里写了仓库里不存在的条目也退出码 1。
- * 用法：node scripts/prose-lint.mjs
+ * 用法：node scripts/prose-lint.mjs [--config <路径>] [--report <路径>]
+ *   两个可选参数给测试用：换一份名单、把报告写到别处；默认读 scripts/prose-lint.config.mjs、写 reports/prose-lint.json
  */
 import { readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
-import { join, basename } from 'node:path';
+import { join, basename, dirname } from 'node:path';
+import { pathToFileURL, fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
 import { lintProse, LIMITS, RULE_SETS, RULE_TITLE } from '../src/lib/prose-lint.ts';
-import { rewritten } from './prose-lint.config.mjs';
 
 const CONTENT_DIR = 'src/content';
 const RULES = Object.keys(RULE_TITLE);
-const REPORT_DIR = 'reports';
-const REPORT = join(REPORT_DIR, 'prose-lint.json');
+
+/** 命令行：--config / --report 后面跟路径；其余参数不认 */
+function arg(name, fallback) {
+  const i = process.argv.indexOf(name);
+  return i === -1 ? fallback : process.argv[i + 1] ?? fallback;
+}
+const configPath = arg('--config', fileURLToPath(new URL('./prose-lint.config.mjs', import.meta.url)));
+const REPORT = arg('--report', 'reports/prose-lint.json');
+const { rewritten } = await import(pathToFileURL(configPath).href);
+
 /** frontmatter：首行 --- 到下一行 ---，与 Astro 的划分一致 */
 const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/;
 
@@ -51,7 +60,7 @@ for (const collection of Object.keys(RULE_SETS)) {
 }
 
 /** 每个集合：文件数、有违规的文件数、每条规则有违规的文件数（该集合不查的规则为 null） */
-const summary = Object.fromEntries(
+const byCollection = Object.fromEntries(
   Object.keys(RULE_SETS).map((collection) => {
     const rows = results.filter((r) => r.collection === collection);
     return [
@@ -103,7 +112,7 @@ out.push('- 下表是「有该违规的文件数」；— 表示这个集合不�
 out.push('');
 out.push(`| 集合 | 文件 | ${RULES.map((r) => `${r} ${RULE_TITLE[r]}`).join(' | ')} |`);
 out.push(`|---|---|${RULES.map(() => '---').join('|')}|`);
-for (const [collection, s] of Object.entries(summary)) {
+for (const [collection, s] of Object.entries(byCollection)) {
   out.push(`| ${collection} | ${s.files} | ${RULES.map((r) => s.filesByRule[r] ?? '—').join(' | ')} |`);
 }
 const flagged = results.filter((r) => r.findings.length);
@@ -125,7 +134,7 @@ if (!listed.size) {
 if (unknownEntries.length) out.push(`- 名单里没有对应文件的条目：${unknownEntries.join('、')}，退出码 1`);
 console.log(out.join('\n'));
 
-await mkdir(REPORT_DIR, { recursive: true });
+await mkdir(dirname(REPORT), { recursive: true });
 await writeFile(
   REPORT,
   JSON.stringify(
@@ -133,7 +142,7 @@ await writeFile(
       generatedAt: new Date().toISOString(),
       limits: LIMITS,
       rules: RULE_TITLE,
-      summary,
+      byCollection,
       rewritten,
       files: flagged,
       gate: { files: gated.map((r) => r.file), failing: failing.map((r) => r.file), unknownEntries },

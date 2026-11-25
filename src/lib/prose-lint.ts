@@ -30,13 +30,13 @@ export const RULE_TITLE: Record<RuleId, string> = {
 /** 硬规则的暂行数值（docs/文风.md）；试点课校准后在这里改终值 */
 export const LIMITS = { boldPerKilo: 4, titleChars: 20, summaryChars: 70 };
 
-/** H5：页面上已有的固定区块，课程正文的小节不得与之重名 */
-const FIXED_SECTIONS = ['验收', '验收清单', '对照图', '本课涉及'];
+/** H5：页面上已有的固定区块，课程正文的小节不得与之重名（docs/文风.md H5 列的四个：验收清单、对照图、本课涉及、翻页器；「验收」是反例里的写法） */
+const FIXED_SECTIONS = ['验收', '验收清单', '对照图', '本课涉及', '翻页器'];
 /** H3：标题开头的路径前缀，如「L4 · 」，不计入长度 */
 const PATH_PREFIX = /^[A-Z]\d+\s*·\s*/;
 const CJK_CHAR = /[\u4e00-\u9fff]/g;
-/** ATX 二级标题；缩进不超过 3 格，后面不再跟 #（### 不是二级） */
-const H2_HEADING = /^ {0,3}##(?!#)[ \t]*(.*)$/;
+/** Markdown 的二级标题（`##`）；缩进不超过 3 格，后面不再跟 #（### 不是二级）。别与规则 H2（加粗密度）混 */
+const LEVEL2_HEADING = /^ {0,3}##(?!#)[ \t]*(.*)$/;
 /** 围栏代码块的开闭行（``` 或 ~~~，可带语言名） */
 const FENCE = /^ {0,3}(`{3,}|~{3,})(.*)$/;
 
@@ -102,10 +102,10 @@ function countCjk(text: string): number {
 }
 
 /** 正文里的二级标题：行号与去掉收尾 # 的标题文本 */
-function h2Headings(masked: string): Array<{ line: number; text: string }> {
+function level2Headings(masked: string): Array<{ line: number; text: string }> {
   const out: Array<{ line: number; text: string }> = [];
   masked.split('\n').forEach((line, i) => {
-    const m = H2_HEADING.exec(line);
+    const m = LEVEL2_HEADING.exec(line);
     if (m) out.push({ line: i + 1, text: m[1].replace(/[ \t]+#+[ \t]*$/, '').trim() });
   });
   return out;
@@ -144,7 +144,7 @@ export function lintProse(input: LintInput): Finding[] {
   const findings: Finding[] = [];
   const frontmatter = (input.frontmatter ?? {}) as Record<string, unknown>;
   const masked = maskCode(input.body);
-  const headings = rules.includes('H1') || rules.includes('H5') ? h2Headings(masked) : [];
+  const headings = rules.includes('H1') || rules.includes('H5') ? level2Headings(masked) : [];
 
   // H1 无三连目录：「## 目标」或带冒号副题的「## 目标：…」
   if (rules.includes('H1')) {

@@ -1,6 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { parse } from 'yaml';
+import { spawnSync } from 'node:child_process';
+import { mkdtempSync, writeFileSync, readFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { lintProse } from '../src/lib/prose-lint.ts';
 
 const lint = (collection, frontmatter, body) => lintProse({ collection, frontmatter, body });
@@ -88,9 +92,9 @@ test('H4：导语超过 70 字就报；恰好 70 字、没有 summary 字段都�
 });
 
 test('H5：课程正文小节与固定区块重名就报，给出行号与小节名；带后缀的不算重名', () => {
-  const body = '## 验收\n\n都记进实验记录本。\n\n## 本课涉及\n\n## 验收清单怎么用\n';
+  const body = '## 验收\n\n都记进实验记录本。\n\n## 本课涉及\n\n## 翻页器\n\n## 验收清单怎么用\n';
   const h5 = byRule(lesson({}, body), 'H5');
-  assert.deepEqual(h5.map((f) => f.line), [1, 5]);
+  assert.deepEqual(h5.map((f) => f.line), [1, 5, 7]);
   assert.match(h5[0].message, /「验收」/);
   assert.equal(h5[0].severity, 'error');
 });
@@ -147,4 +151,27 @@ test('集合规则集：troubleshooting / resources 查 H2 H3 H4 H6，字段不�
   assert.deepEqual(lint('tags', { tag: 'wet' }, ''), []);
   // 规范外的集合（如 nsfw）不在规则集里：报错，而不是悄悄放过
   assert.throws(() => lint('nsfw', {}, '## 目标'), /nsfw/);
+});
+
+test('棘轮（集成）：名单为空退出码 0；名单里有违规文件退出码 1；名单里有不存在的条目也退出码 1', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'prose-lint-'));
+  const run = (rewritten) => {
+    const config = join(dir, 'config.mjs');
+    const report = join(dir, 'report.json');
+    writeFileSync(config, `export const rewritten = ${JSON.stringify(rewritten)};\n`);
+    const r = spawnSync(process.execPath, ['scripts/prose-lint.mjs', '--config', config, '--report', report], { encoding: 'utf8' });
+    return { status: r.status, report: JSON.parse(readFileSync(report, 'utf8')) };
+  };
+  const empty = run([]);
+  assert.equal(empty.status, 0, '名单为空只报告');
+  assert.equal(empty.report.byCollection.lessons.files, 20, '报告按集合给出文件数');
+  assert.ok(empty.report.files.length > 0, '现状有违规，报告里列出来');
+
+  const gated = run(['01-03-prompt-basics']);
+  assert.equal(gated.status, 1, '名单里的文件有违规就拦截');
+  assert.deepEqual(gated.report.gate.failing, ['src/content/lessons/01-03-prompt-basics.md']);
+
+  const unknown = run(['no-such-lesson']);
+  assert.equal(unknown.status, 1, '名单里写了不存在的条目也拦截');
+  assert.deepEqual(unknown.report.gate.unknownEntries, ['no-such-lesson']);
 });

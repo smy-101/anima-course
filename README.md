@@ -13,9 +13,9 @@
 npm install
 npm run dev          # Windows 浏览器打开 http://localhost:4321/anima-course/（项目在 WSL 也能访问）
 npm run build        # 构建到 dist/，随后 pagefind 自动建索引（postbuild）
-npm run check:site   # 待补图清单 + 死链检查（死链则退出码 1）
+npm run check:site   # 待补图清单 + 死链 + 文风检查（文风违规在 reports/prose-lint.json；死链或名单内违规则退出码 1）
 npm run check        # astro check：TS / .astro 类型检查
-npm test             # 提示词检查器的规则测试（node --test，纯函数）
+npm test             # 提示词检查器与文风检查的规则测试（node --test）
 npm run preview      # 预览 dist/，地址同上
 ```
 

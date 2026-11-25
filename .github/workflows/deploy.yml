@@ -27,8 +27,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: withastro/action@v3
-      - name: 待补图与死链检查
-        run: node scripts/check-site.mjs dist >> "$GITHUB_STEP_SUMMARY"
+        with:
+          node-version: 22
+      - name: 待补图、死链与文风检查
+        # 走 npm script 而不是直接跑 check-site.mjs：文风检查（prose-lint）挂在后面，直接跑会绕过它
+        run: npm run check:site >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

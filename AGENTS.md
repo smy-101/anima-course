@@ -5,9 +5,9 @@
 ## 改动内容后的收尾步骤
 
 1. `npm run build`——frontmatter 不合 schema 会在这里报错，错误信息给出文件与字段。
-2. `npm run check:site`——列出待补图与死链；死链退出码 1。
+2. `npm run check:site`——列出待补图、死链与文风违规；死链退出码 1。
 3. `npx astro check`——类型检查。
-4. `npm test`——提示词检查器的规则测试（`tests/`，改 `src/lib/prompt-lint.ts` 后必跑）。
+4. `npm test`——提示词检查器与文风检查的规则测试（`tests/`，改 `src/lib/prompt-lint.ts` 或 `src/lib/prose-lint.ts` 后必跑）。
 
 四项都过再提交。
 
@@ -26,3 +26,17 @@
 - 节点卡文件名 = 英文类名，保留大小写（loader 用 `generateId` 保住）；标签卡文件名 = 小写连字符 slug。
 - 每个数值都是"起点值"，行文里这样说；每条结论带来源徽章。
 - 笔记里的元信息（勘误表、"对现有笔记的修改建议"、"补充清单"）不进站，勘误改写成 `resources/misconceptions.md` 的条目。
+
+## Agent skills
+
+### Issue tracker
+
+Issues 和 spec 是仓库里的本地 markdown：`.scratch/<feature>/spec.md`、`.scratch/<feature>/issues/NN-<slug>.md`。见 `docs/agents/issue-tracker.md`。
+
+### Triage labels
+
+五个默认角色名即标签名（`needs-triage` / `needs-info` / `ready-for-agent` / `ready-for-human` / `wontfix`），记在票文件的 `Status:` 行。见 `docs/agents/triage-labels.md`。
+
+### Domain docs
+
+单语境：根目录 `GLOSSARY.md`，ADR 在 `docs/adr/`。见 `docs/agents/domain.md`。
