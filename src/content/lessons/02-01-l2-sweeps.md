@@ -144,7 +144,7 @@ KSampler(cfg=4.0) ──▶ VAEDecode ──▶ TextOverlay("cfg 4.0") ─┘
 
 1. 在 L1 上另存为 `L2`，把 `turbo_mode` 关掉（参数对比用 Full 模式做）。
 2. 按连线 A 做一次 cfg 扫描，`ImageGrid.columns` = 值的个数。保存前缀带实验 ID：`Anima/E001`。
-3. 按连线 B 做 cfg × 种子网格。找出"对多数种子都好"的 cfg，记进实验记录本。
+3. 按连线 B 做 cfg × 种子网格。找出"对多数种子都好"的 cfg，记进[实验记录本](/tools/lab-log/)。
 4. 同法扫 steps，再按 T2 做采样器 × 调度器网格。
 5. 做一张带标签的三分支对照（连线 C），给记录本当配图。
 6. 写"今日基线"。

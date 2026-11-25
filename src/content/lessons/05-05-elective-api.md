@@ -168,7 +168,7 @@ if __name__ == "__main__":
 
 ## 对本课程的具体用法
 
-1. **参数扫描脚本化**：L2 的 cfg × seed、采样器 × 调度器网格用上面的循环跑，参数与文件名写进 CSV，配合[实验记录模板](/resources/experiment-log/)。
+1. **参数扫描脚本化**：L2 的 cfg × seed、采样器 × 调度器网格用上面的循环跑，参数与文件名写进 CSV，配合[实验记录模板](/resources/experiment-log/)——CSV 表头照模板的列名写，就能导进[实验记录本](/tools/lab-log/)手写目的与结论。
 2. **提示词 A / B**：一批提示词存成 JSON / YAML，脚本逐条提交，`filename_prefix` 带上提示词 id。
 3. **接进自己的流程**：出图 → 外部处理（拼接、打标签、入库）→ 再提交图生图；两段之间用 `POST /upload/image` 把处理过的图送回 `input/`。
 4. **先画布后脚本**：永远先在画布上把工作流跑通、Export (API)，再写脚本。

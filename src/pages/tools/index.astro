@@ -1,21 +1,32 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
 import { url } from '../../lib/env';
 ---
 
 <Base title="工具" description="提示词检查器等纯前端小工具：规则来自课程，数据只存在你的浏览器里。" active="tools" wide>
-  <h1>工具</h1>
-  <p class="verified">
-    每个工具都是纯前端的小岛屿：<strong>不上传、不记账</strong>，数据只存在你的浏览器里（可导出）。规则全部来自课程，每条提示都链回讲原理的页面。
-  </p>
+  <header class="page-head">
+    <h1>工具</h1>
+    <p class="lead">
+      每个工具都是纯前端的小岛屿：<strong>不上传、不记账</strong>，数据只存在你的浏览器里（可导出）。规则全部来自课程，每条提示都链回讲原理的页面。
+    </p>
+  </header>
+
   <div class="cards">
     <a class="card" href={url('tools/prompt-lint/')}>
+      <span class="card-icon"><Icon name="clipboard-check" /></span>
       <h3>提示词检查器</h3>
       <p>贴上正负向，立刻查出下划线、逗号空格、画师缺 @、陷阱标签、等级冲突、Aesthetic 上的 score_*……能自动修的一键修。</p>
       <div class="meta"><span class="pill">纯前端</span><span class="pill">18 条规则</span></div>
     </a>
+    <a class="card" href={url('tools/lab-log/')}>
+      <span class="card-icon"><Icon name="flask" /></span>
+      <h3>实验记录本</h3>
+      <p>按模板记实验：选变量填取值，一键生成扫描行；查出改了两个变量、结论没写为什么、ID 跨天复用；导出 CSV / Markdown。</p>
+      <div class="meta"><span class="pill">纯前端</span><span class="pill">7 条规则</span></div>
+    </a>
   </div>
   <p class="verified">
-    路线上还有：实验记录本（把<a href={url('resources/experiment-log/')}>实验记录模板</a>做成可导出 CSV / Markdown 的表）、误区自测（<a href={url('resources/misconceptions/')}>常见误区</a>变判断题）、排错向导（<a href={url('troubleshooting/')}>排错速查</a>按症状选择）。
+    路线上还有：误区自测（<a href={url('resources/misconceptions/')}>常见误区</a>变判断题）、排错向导（<a href={url('troubleshooting/')}>排错速查</a>按症状选择）。
   </p>
 </Base>
