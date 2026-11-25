@@ -4,7 +4,7 @@ import { parse } from 'yaml';
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync, writeFileSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import { lintProse } from '../src/lib/prose-lint.ts';
 
 const lint = (collection, frontmatter, body) => lintProse({ collection, frontmatter, body });
@@ -167,10 +167,13 @@ test('棘轮（集成）：名单为空退出码 0；名单里有违规文件退
   assert.equal(empty.report.byCollection.lessons.files, 20, '报告按集合给出文件数');
   assert.ok(empty.report.files.length > 0, '现状有违规，报告里列出来');
 
-  // 试点课 01-03 改写后已全绿，所以拿还没改写的 00-01 当“名单内有违规”的样本
-  const gated = run(['00-01-setup']);
+  // 改写名单逐票变长，样本从报告里现取：挑第一个还有违规的课（按 id 写进名单，和配置文件的写法一致）。
+  // 哪一票改写了哪一课都不用回来改这里；课全部改完、挑不出样本时，由下面这条断言报出来
+  const sample = empty.report.files.find((r) => r.collection === 'lessons');
+  assert.ok(sample, '还有没改写的课可以当“名单内有违规”的样本');
+  const gated = run([basename(sample.file, '.md')]);
   assert.equal(gated.status, 1, '名单里的文件有违规就拦截');
-  assert.deepEqual(gated.report.gate.failing, ['src/content/lessons/00-01-setup.md']);
+  assert.deepEqual(gated.report.gate.failing, [sample.file]);
 
   const unknown = run(['no-such-lesson']);
   assert.equal(unknown.status, 1, '名单里写了不存在的条目也拦截');
