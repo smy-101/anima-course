@@ -5,7 +5,7 @@ import { url, NSFW_ENABLED } from '../lib/env';
 interface Props {
   title: string;
   description?: string;
-  active?: 'course' | 'nodes' | 'tags' | 'troubleshooting' | 'resources' | 'search';
+  active?: 'course' | 'nodes' | 'tags' | 'troubleshooting' | 'resources' | 'tools' | 'search';
   /** noindex：不进搜索引擎 */
   noindex?: boolean;
   /** noSearch：不进 Pagefind 索引 */
@@ -29,6 +29,7 @@ const NAV: Array<[NonNullable<Props['active']>, string, string]> = [
   ['tags', '标签', url('tags/')],
   ['troubleshooting', '排错', url('troubleshooting/')],
   ['resources', '资源', url('resources/')],
+  ['tools', '工具', url('tools/')],
   ['search', '搜索', url('search/')],
 ];
 

@@ -146,3 +146,5 @@ Turbo 试稿选定 seed 后，换 Aesthetic 出成品时提示词要跟着改。
 3. 不要堆 SDXL 时代那套一两百词的负向——Anima 对负向敏感，过大的负向会抹掉细节或引入意外偏移。
 4. **Turbo / CFG 1 下负向无效**；要用负向就 NegPip（`(worst quality:-1)` 语法，ComfyUI-ppm）或 NAG（核心已有 `NAGuidance`，阶段 5 讲）。
 5. 负向里也可以写自然语言。
+
+正负向都写好后，用[提示词检查器](/tools/prompt-lint/)过一遍：它只查能用字符串规则判断的那部分（拼写、空格、`@`、陷阱词、等级冲突、Aesthetic 上的 `score_*`、Turbo 下的负向），“看不见的东西”和句数还是要你自己看。

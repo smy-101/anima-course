@@ -7,8 +7,9 @@
 1. `npm run build`——frontmatter 不合 schema 会在这里报错，错误信息给出文件与字段。
 2. `npm run check:site`——列出待补图与死链；死链退出码 1。
 3. `npx astro check`——类型检查。
+4. `npm test`——提示词检查器的规则测试（`tests/`，改 `src/lib/prompt-lint.ts` 后必跑）。
 
-三项都过再提交。
+四项都过再提交。
 
 ## 按任务分支
 

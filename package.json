@@ -11,6 +11,7 @@
     "postbuild": "pagefind --site dist",
     "check:site": "node scripts/check-site.mjs dist",
     "check": "astro check",
+    "test": "node --test 'tests/**/*.test.mjs'",
     "preview": "astro preview",
     "astro": "astro"
   },
