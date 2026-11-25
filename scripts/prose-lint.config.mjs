@@ -6,4 +6,4 @@
  * 写了仓库里不存在的条目也会退出码 1，免得拼错后名单形同虚设。
  * 最后一张票（11）把名单换成全量硬失败，这个文件随之退场。
  */
-export const rewritten = [];
+export const rewritten = ['01-03-prompt-basics'];

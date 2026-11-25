@@ -167,9 +167,10 @@ test('棘轮（集成）：名单为空退出码 0；名单里有违规文件退
   assert.equal(empty.report.byCollection.lessons.files, 20, '报告按集合给出文件数');
   assert.ok(empty.report.files.length > 0, '现状有违规，报告里列出来');
 
-  const gated = run(['01-03-prompt-basics']);
+  // 试点课 01-03 改写后已全绿，所以拿还没改写的 00-01 当“名单内有违规”的样本
+  const gated = run(['00-01-setup']);
   assert.equal(gated.status, 1, '名单里的文件有违规就拦截');
-  assert.deepEqual(gated.report.gate.failing, ['src/content/lessons/01-03-prompt-basics.md']);
+  assert.deepEqual(gated.report.gate.failing, ['src/content/lessons/00-01-setup.md']);
 
   const unknown = run(['no-such-lesson']);
   assert.equal(unknown.status, 1, '名单里写了不存在的条目也拦截');
