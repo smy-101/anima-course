@@ -153,43 +153,48 @@ test('集合规则集：troubleshooting / resources 查 H2 H3 H4 H6，字段不�
   assert.throws(() => lint('nsfw', {}, '## 目标'), /nsfw/);
 });
 
-test('棘轮（集成）：名单为空退出码 0；名单里都是干净的文件退出码 0；名单里有违规文件退出码 1；名单里有不存在的条目也退出码 1', () => {
-  // 夹具是一个临时内容目录，不放仓库里的真实内容：拿真实内容当样本，要等仓库里还留着没改写的文件才测得到拦截，
-  // 全部改完（票 10）后就没有样本了。每个集合建一个目录（脚本会逐个集合读目录）；三个文件：一张干净的课、
-  // 一张有违规的课（「## 目标」、标题超长）、一张有违规的节点卡（加粗超标）
+test('全量硬失败（集成）：没有违规退出码 0；五个集合里任何一个有一处违规就退出码 1，报告只列有违规的文件', () => {
+  // 夹具是临时内容目录，不放仓库里的真实内容：真实内容全站 0 违规，拿它测不到拦截（对真实内容的拦截在收尾时手工验证）。
+  // 每次跑都新建一个内容目录，每个集合建一个子目录（脚本会逐个集合读目录）
   const dir = mkdtempSync(join(tmpdir(), 'prose-lint-'));
-  const content = join(dir, 'content');
-  for (const collection of Object.keys(RULE_SETS)) {
-    mkdirSync(join(content, collection), { recursive: true });
-  }
-  writeFileSync(join(content, 'lessons', '00-01-setup.md'), '---\ntitle: 装好 ComfyUI，出第一张图\nsummary: 学完你能出第一张图。\n---\n\n这一课不追求出好图。\n');
-  writeFileSync(join(content, 'lessons', 'draft.md'), '---\ntitle: 准备：认识 Anima、装好 ComfyUI、出第一张图\n---\n\n## 目标\n\n知道 Anima 是什么。\n');
-  writeFileSync(join(content, 'nodes', 'LoadVAE.md'), '---\nname_zh: 加载VAE\n---\n\n读取 `ComfyUI/models/vae/`。**VAE** 必须和模型配套。\n');
-
-  const run = (rewritten) => {
-    const config = join(dir, 'config.mjs');
-    const report = join(dir, 'report.json');
-    writeFileSync(config, `export const rewritten = ${JSON.stringify(rewritten)};\n`);
-    const r = spawnSync(process.execPath, ['scripts/prose-lint.mjs', '--content', content, '--config', config, '--report', report], { encoding: 'utf8' });
-    return { status: r.status, stderr: r.stderr, report: JSON.parse(readFileSync(report, 'utf8')) };
+  let n = 0;
+  /** files：{ 集合: [[文件名, 内容], …] }；返回退出码、终端输出与报告 */
+  const run = (files) => {
+    const content = join(dir, `content-${++n}`);
+    for (const collection of Object.keys(RULE_SETS)) {
+      mkdirSync(join(content, collection), { recursive: true });
+    }
+    for (const [collection, entries] of Object.entries(files)) {
+      for (const [name, src] of entries) writeFileSync(join(content, collection, name), src);
+    }
+    const report = join(dir, `report-${n}.json`);
+    const r = spawnSync(process.execPath, ['scripts/prose-lint.mjs', '--content', content, '--report', report], { encoding: 'utf8' });
+    return { status: r.status, stdout: r.stdout, stderr: r.stderr, report: JSON.parse(readFileSync(report, 'utf8')) };
   };
 
-  const empty = run([]);
-  assert.equal(empty.status, 0, empty.stderr);
-  assert.equal(empty.report.byCollection.lessons.files, 2, '报告按集合给出文件数；没有文件的集合记 0');
-  assert.equal(empty.report.byCollection.tags.files, 0);
-  assert.deepEqual(empty.report.files.map((f) => basename(f.file)), ['draft.md', 'LoadVAE.md'], '有违规的文件列进报告，干净的文件不列');
-
-  // 名单条目写内容 id，和 scripts/prose-lint.config.mjs 的写法一致
-  const gated = run(['draft']);
-  assert.equal(gated.status, 1, '名单里的文件有违规就拦截');
-  assert.deepEqual(gated.report.gate.failing.map((f) => basename(f)), ['draft.md'], '只报名单里有违规的那一个');
-
-  const clean = run(['00-01-setup']);
+  const cleanLesson = ['00-01-setup.md', '---\ntitle: 装好 ComfyUI，出第一张图\nsummary: 学完你能出第一张图。\n---\n\n这一课不追求出好图。\n'];
+  const clean = run({ lessons: [cleanLesson] });
   assert.equal(clean.status, 0, clean.stderr);
-  assert.deepEqual(clean.report.gate.failing, [], '名单里的文件没有违规就不拦截');
+  assert.equal(clean.report.byCollection.lessons.files, 1, '报告按集合给出文件数；没有文件的集合记 0');
+  assert.equal(clean.report.byCollection.tags.files, 0);
+  assert.deepEqual(clean.report.files, [], '没有违规就不列文件');
 
-  const unknown = run(['no-such-lesson']);
-  assert.equal(unknown.status, 1, '名单里写了不存在的条目也拦截');
-  assert.deepEqual(unknown.report.gate.unknownEntries, ['no-such-lesson']);
+  // 每个集合一处违规，各用一条该集合查的规则：课程 H1、排错 H2、资源 H4、节点 H2、标签 H6
+  const violating = {
+    lessons: ['draft.md', '---\ntitle: 装好 ComfyUI，出第一张图\n---\n\n## 目标\n\n知道 Anima 是什么。\n'],
+    troubleshooting: ['blurry.md', '---\nsymptom: 画面发糊\nfirst: steps 加 5\n---\n\n' + '字'.repeat(1000) + '\n\n**甲** **乙** **丙** **丁** **戊**\n'],
+    resources: ['glossary.md', '---\ntitle: 术语表\nsummary: ' + '字'.repeat(71) + '\n---\n\n正文。\n'],
+    nodes: ['LoadVAE.md', '---\nname_zh: 加载VAE\n---\n\n读取 `ComfyUI/models/vae/`。**VAE** 必须和模型配套。\n'],
+    tags: ['wet.md', '---\ntag: wet\n---\n\n潮湿。反义标签是"dry"。\n'],
+  };
+  assert.deepEqual(Object.keys(violating).sort(), Object.keys(RULE_SETS).sort(), '夹具覆盖全部集合');
+  for (const [collection, entry] of Object.entries(violating)) {
+    // 违规文件和一张干净的课放在一起：只有违规的那个被拦、被列进报告
+    const files = { lessons: [cleanLesson] };
+    files[collection] = [...(files[collection] ?? []), entry];
+    const r = run(files);
+    assert.equal(r.status, 1, `${collection} 里有一处违规就退出码 1：${r.stderr}`);
+    assert.deepEqual(r.report.files.map((f) => basename(f.file)), [entry[0]], '报告只列有违规的文件，干净的不列');
+    assert.match(r.stdout, /退出码 1/, '终端汇总说明为什么失败');
+  }
 });

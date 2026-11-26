@@ -4,8 +4,10 @@
 
 ## 改动内容后的收尾步骤
 
+改内容前先读 `docs/文风.md`，硬规则与软规则都在那里；硬规则由第 2 步强制，软规则靠通读。
+
 1. `npm run build`——frontmatter 不合 schema 会在这里报错，错误信息给出文件与字段。
-2. `npm run check:site`——列出待补图、死链与文风违规；死链退出码 1。
+2. `npm run check:site`——列出待补图、死链与文风违规；死链与文风违规退出码 1。
 3. `npx astro check`——类型检查。
 4. `npm test`——提示词检查器与文风检查的规则测试（`tests/`，改 `src/lib/prompt-lint.ts` 或 `src/lib/prose-lint.ts` 后必跑）。
 

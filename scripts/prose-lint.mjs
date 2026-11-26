@@ -3,19 +3,16 @@
  * 文风检查（prose-lint）：对 src/content 跑《站点文风》（docs/文风.md）的硬规则，规则本身在 src/lib/prose-lint.ts。
  *   - lessons / troubleshooting / resources 查 H1–H6（字段不存在的规则自然跳过）；nodes / tags 只查加粗（H2）与引号（H6）
  *   - 报告按文件分组写到 reports/prose-lint.json，每条违规带位置与说明；终端打汇总表和每个有违规的文件一行
- *   - 棘轮：scripts/prose-lint.config.mjs 的 rewritten 名单里的文件必须全部通过，否则退出码 1；
- *     名单外的文件只出报告。名单里写了仓库里不存在的条目也退出码 1。
- * 用法：node scripts/prose-lint.mjs [--content <目录>] [--config <路径>] [--report <路径>]
- *   三个可选参数给测试用：换一份内容目录、换一份名单、把报告写到别处；
- *   默认读 src/content 与 scripts/prose-lint.config.mjs、写 reports/prose-lint.json
+ *   - 任何一处违规都退出码 1
+ * 用法：node scripts/prose-lint.mjs [--content <目录>] [--report <路径>]
+ *   两个可选参数给测试用：换一份内容目录、把报告写到别处；默认读 src/content、写 reports/prose-lint.json
  */
 import { readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
-import { join, basename, dirname } from 'node:path';
-import { pathToFileURL, fileURLToPath } from 'node:url';
+import { join, dirname } from 'node:path';
 import { parse } from 'yaml';
 import { lintProse, LIMITS, RULE_SETS, RULE_TITLE } from '../src/lib/prose-lint.ts';
 
-/** 命令行：--content / --config / --report 后面跟路径；其余参数不认 */
+/** 命令行：--content / --report 后面跟路径；其余参数不认 */
 function arg(name, fallback) {
   const i = process.argv.indexOf(name);
   return i === -1 ? fallback : process.argv[i + 1] ?? fallback;
@@ -24,16 +21,10 @@ function arg(name, fallback) {
 const CONTENT_DIR = arg('--content', 'src/content');
 const RULES = Object.keys(RULE_TITLE);
 
-const configPath = arg('--config', fileURLToPath(new URL('./prose-lint.config.mjs', import.meta.url)));
 const REPORT = arg('--report', 'reports/prose-lint.json');
-const { rewritten } = await import(pathToFileURL(configPath).href);
 
 /** frontmatter：首行 --- 到下一行 ---，与 Astro 的划分一致 */
 const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/;
-
-if (!Array.isArray(rewritten) || rewritten.some((entry) => typeof entry !== 'string')) {
-  throw new Error('scripts/prose-lint.config.mjs 的 rewritten 必须是字符串数组');
-}
 
 async function lintFile(collection, name) {
   const file = `${CONTENT_DIR}/${collection}/${name.replace(/\\/g, '/')}`;
@@ -81,16 +72,8 @@ const byCollection = Object.fromEntries(
   }),
 );
 
-// 棘轮：名单条目可以写路径、文件名或内容 id（文件名去掉 .md）
-const listed = new Set(rewritten);
-const keysOf = (file) => {
-  const base = basename(file);
-  return [file, base, base.replace(/\.md$/, '')];
-};
-const known = new Set(results.flatMap((r) => keysOf(r.file)));
-const unknownEntries = rewritten.filter((entry) => !known.has(entry));
-const gated = results.filter((r) => keysOf(r.file).some((k) => listed.has(k)));
-const failing = gated.filter((r) => r.findings.length);
+/** 有违规的文件：它们让脚本退出码 1 */
+const failing = results.filter((r) => r.findings.length);
 
 /** 一个文件一行：每条有违规的规则 + 处数或数字 */
 function describe(findings) {
@@ -117,23 +100,16 @@ out.push(`|---|---|${RULES.map(() => '---').join('|')}|`);
 for (const [collection, s] of Object.entries(byCollection)) {
   out.push(`| ${collection} | ${s.files} | ${RULES.map((r) => s.filesByRule[r] ?? '—').join(' | ')} |`);
 }
-const flagged = results.filter((r) => r.findings.length);
 out.push('');
-out.push(`- 有违规的文件 ${flagged.length} / ${results.length}：`);
-for (const r of flagged) out.push(`  - ${r.file} — ${describe(r.findings)}`);
-out.push('');
-if (!listed.size) {
-  out.push(`- 已改写名单（scripts/prose-lint.config.mjs）为空：文风违规只报告，不拦截`);
-} else {
-  out.push(
-    `- 已改写名单 ${rewritten.length} 个条目，对应 ${gated.length} 个文件：${failing.length ? `${failing.length} 个有违规，退出码 1` : '全部通过'}`,
-  );
+if (failing.length) {
+  out.push(`- 有违规的文件 ${failing.length} / ${results.length}，退出码 1：`);
   for (const r of failing) {
-    out.push(`  - ${r.file}`);
+    out.push(`  - ${r.file} — ${describe(r.findings)}`);
     for (const f of r.findings) out.push(`      ${f.rule} ${where(f)}  ${f.message}`);
   }
+} else {
+  out.push(`- 全部通过：${results.length} 个文件没有硬规则违规`);
 }
-if (unknownEntries.length) out.push(`- 名单里没有对应文件的条目：${unknownEntries.join('、')}，退出码 1`);
 console.log(out.join('\n'));
 
 await mkdir(dirname(REPORT), { recursive: true });
@@ -145,13 +121,11 @@ await writeFile(
       limits: LIMITS,
       rules: RULE_TITLE,
       byCollection,
-      rewritten,
-      files: flagged,
-      gate: { files: gated.map((r) => r.file), failing: failing.map((r) => r.file), unknownEntries },
+      files: failing,
     },
     null,
     2,
   ),
 );
 
-process.exit(failing.length || unknownEntries.length ? 1 : 0);
+process.exit(failing.length ? 1 : 0);

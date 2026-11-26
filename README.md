@@ -13,7 +13,7 @@
 npm install
 npm run dev          # Windows 浏览器打开 http://localhost:4321/anima-course/（项目在 WSL 也能访问）
 npm run build        # 构建到 dist/，随后 pagefind 自动建索引（postbuild）
-npm run check:site   # 待补图清单 + 死链 + 文风检查（文风违规在 reports/prose-lint.json；死链或名单内违规则退出码 1）
+npm run check:site   # 待补图清单 + 死链 + 文风检查（文风违规在 reports/prose-lint.json；死链或文风违规则退出码 1）
 npm run check        # astro check：TS / .astro 类型检查
 npm test             # 提示词检查器与文风检查的规则测试（node --test）
 npm run preview      # 预览 dist/，地址同上
@@ -45,13 +45,15 @@ src/pages/              路由：/ 阶段地图、/lessons/[id]、/nodes、/tags
 src/components/         FigureGallery、Toc（本页目录）、SourceBadge、Icon（内联 SVG）、Acceptance、AgeGate、PromptLint（提示词检查器）、LabLog（实验记录本）
 src/lib/prompt-lint.ts  提示词检查器的规则与修正器（纯函数，tests/ 有测试）
 src/lib/client-filter.ts 列表页的即时筛选（标签 / 节点 / 排错共用：计数、无结果提示）
-scripts/                check-site.mjs（构建后检查）、prose-lint.mjs + prose-lint.config.mjs（文风检查与棘轮名单）、satteri-base-links.mjs（正文链接加 base）、satteri-table-wrap.mjs（正文表格包滚动容器）
+scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（文风检查）、satteri-base-links.mjs（正文链接加 base）、satteri-table-wrap.mjs（正文表格包滚动容器）
 .github/workflows/      deploy.yml → GitHub Pages
 ```
 
 ## 写内容
 
 每篇内容都是带 frontmatter 的 Markdown；frontmatter 字段由 `src/content.config.ts` 的 schema 校验，构建时缺字段会直接报错。
+
+- 改内容前先读 `docs/文风.md`：它的硬规则由 `npm run check:site` 里的文风检查（prose-lint）强制，违规退出码 1；软规则靠通读。
 
 - **课程**：`stage` / `order` 决定顺序；`acceptance` 是可勾选的验收清单；`figures[]` 省略 `src` 即渲染"待补图"占位并进入 `npm run check:site` 的清单，补图时把文件放进 `src/assets/figures/` 并填 `src: ../../assets/figures/xxx.png`。
 - **正文链接**写站内绝对路径（`/nodes/KSampler/`），构建时自动加 base。

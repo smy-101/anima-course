@@ -27,7 +27,7 @@ export const RULE_TITLE: Record<RuleId, string> = {
   H6: '直引号',
 };
 
-/** 硬规则的暂行数值（docs/文风.md）；试点课校准后在这里改终值 */
+/** 硬规则的数值（docs/文风.md），在试点课 01-03 上校准后定下 */
 export const LIMITS = { boldPerKilo: 4, titleChars: 20, summaryChars: 70 };
 
 /** H5：页面上已有的固定区块，课程正文的小节不得与之重名（docs/文风.md H5 列的四个：验收清单、对照图、本课涉及、翻页器；「验收」是反例里的写法） */
