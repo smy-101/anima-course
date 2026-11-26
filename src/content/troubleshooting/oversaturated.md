@@ -1,7 +1,7 @@
 ---
-symptom: "画面过饱和、线条发硬、\"烧了\""
+symptom: "画面过饱和、线条发硬、“烧了”"
 area: 参数
-first: "cfg ↓（3.5）"
+first: "cfg 降到 3.5"
 then: "换 euler_a / CFG++（CFG 1.5）/ 挂 APG"
 dont: "堆负向"
 sources:

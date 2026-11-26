@@ -9,4 +9,4 @@ sources:
   - { badge: 社区, url: https://civitai.com/articles/33857, note: "Volnovik 指南（非模型作者）" }
 verified: 2026-11-24
 ---
-`artist name` 是"画面上出现了画师署名"的元标签，与正向 `@画师` 不冲突。
+`artist name` 是“画面上出现了画师署名”的元标签，与正向 `@画师` 不冲突。

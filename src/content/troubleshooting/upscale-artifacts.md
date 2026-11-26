@@ -1,7 +1,7 @@
 ---
 symptom: "放大后糊 / 花 / 波点"
 area: 放大
-first: "倍率 ↓ 1.25、denoise ↓ 0.3"
+first: "倍率降到 1.25，denoise 降到 0.3"
 then: "换路线 C（放大模型）；换 euler/simple"
 dont: "一次 ×2"
 sources:

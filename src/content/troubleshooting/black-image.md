@@ -6,8 +6,8 @@ then: "近期加过 --fp16-vae、--fast 或 attention 后端参数的，全部�
 dont: "带着新加的参数继续换节点排查"
 sources:
   - { badge: 源码, note: "《节点详解》§5.2–5.5，依据源码与官方文档" }
-  - { badge: 源码, url: https://github.com/comfyanonymous/ComfyUI/blob/master/comfy/cli_args.py, note: "--fp16-vae \"might cause black images\"；--force-upcast-attention \"please report if it fixes black images\"" }
+  - { badge: 源码, url: https://github.com/comfyanonymous/ComfyUI/blob/master/comfy/cli_args.py, note: "--fp16-vae “might cause black images”；--force-upcast-attention “please report if it fixes black images”" }
 verified: 2026-11-24
 ---
 
-先排除画布：VAE解码 没接 VAE、或 VAE 接错。画布没问题就回想**最近改过什么启动参数**——源码注明 `--fp16-vae` 可能导致黑图，`--fast` 是"未充分测试"的优化。
+先排除画布：VAE解码 没接 VAE，或 VAE 接错。画布没问题，就回想最近改过什么启动参数。源码注明 `--fp16-vae` 可能导致黑图，`--fast` 是“未充分测试”的优化。

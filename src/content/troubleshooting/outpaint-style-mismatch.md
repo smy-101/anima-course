@@ -9,4 +9,4 @@ sources:
   - { badge: 社区, note: "《递进报告》§5 速查表与各级常见问题：综合官方、作者与社区" }
 verified: 2026-11-24
 ---
-模型是对照"整张图应该长什么样"来补边的。见 [扩图、裁剪法与 Detailer](/lessons/04-03-l6-outpaint/)。
+模型是对照“整张图应该长什么样”来补边的。见 [扩图、裁剪法与 Detailer](/lessons/04-03-l6-outpaint/)。

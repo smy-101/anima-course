@@ -9,4 +9,4 @@ sources:
   - { badge: 社区, note: "《递进报告》§5 速查表与各级常见问题：综合官方、作者与社区" }
 verified: 2026-11-24
 ---
-1024² 底图先验收 → 2048² 看接缝 → 加 padding / 开 seam_fix → 再扫 denoise。见 [两段放大、分块放大](/lessons/03-05-l4-large/)。
+先在 1024² 底图上验收，放大到 2048² 看接缝，再加 padding 或开 seam_fix，最后把 denoise 扫一遍。见 [两段放大、分块放大](/lessons/03-05-l4-large/)。

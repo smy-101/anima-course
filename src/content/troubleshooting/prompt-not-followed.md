@@ -2,7 +2,7 @@
 symptom: "提示词不够贴"
 area: 参数
 first: "关键词靠前、权重 1.5 ~ 2.0"
-then: "cfg ↑（≤ 5）"
+then: "cfg 升到 5 以内"
 dont: "堆负向"
 sources:
   - { badge: 社区, note: "《递进报告》§5 速查表：综合官方、作者与社区" }

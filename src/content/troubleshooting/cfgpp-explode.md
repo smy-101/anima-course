@@ -1,5 +1,5 @@
 ---
-symptom: "带 _cfg_pp 后缀的采样器出图\"炸\""
+symptom: "带 _cfg_pp 后缀的采样器出图“炸”"
 area: 参数
 first: "CFG 降到 1.5"
 then: "换普通采样器"

@@ -18,7 +18,7 @@ sources:
 verified: 2026-11-24
 ---
 
-文件放错目录是最常见的错误。目录表见课程 [准备](/lessons/00-01-setup/)。
+文件放错目录是最常见的错误。各个目录放什么，见准备课的[模型文件与目录](/lessons/00-01-setup/)一节。
 
 | 文件 | 放哪 | 大小 | 用在 |
 |---|---|---|---|
@@ -35,19 +35,21 @@ verified: 2026-11-24
 | `depth_anything_3_mono_large.safetensors`（`Comfy-Org/Depth-Anything-3`） | `models/geometry_estimation/` | 1.24 GB | L5 深度预处理 |
 | `face_yolov8m.pt` / `hand_yolov8s.pt`（Ultralytics 检测模型） | `models/ultralytics/bbox/` | — | L6 FaceDetailer / HandDetailer（需 Impact Pack + Subpack） |
 
-**不要放到 `checkpoints/`**——Anima 是拆分模型。
+**不要放到 `checkpoints/`，Anima 是拆分模型。**
 
-LLLite 权重清单与各自吃的控制图（线稿 / 深度 / 涂鸦 / 姿势 / 重绘）见课程 [L5](/lessons/04-01-l5-lllite/)；Depth Anything 3 模型由官方蓝图在节点里提示下载。
+LLLite 的权重清单见课程 [L5](/lessons/04-01-l5-lllite/)。每种权重配哪种控制图（线稿 / 深度 / 涂鸦 / 姿势 / 重绘）也写在那里。Depth Anything 3 模型由官方蓝图在节点里提示下载。
 
-分词器文件不用下载：Qwen3 与 T5 的分词器内置在 ComfyUI 仓库中（`comfy/text_encoders/qwen25_tokenizer`、`t5_tokenizer`），`qwen_3_06b_base.safetensors` 只含 LM 权重。
+分词器文件不用下载。Qwen3 与 T5 的分词器内置在 ComfyUI 仓库中（`comfy/text_encoders/qwen25_tokenizer`、`t5_tokenizer`），`qwen_3_06b_base.safetensors` 只含 LM 权重。
 
-官方仓库当日文件列表只有 2B 的 Base / Aesthetic / Turbo / Preview。网传"Anima 2.9B"**不是官方版本**，相关"六工作流"文章自述"未实际运行验证"，引用需谨慎。
+官方仓库当日文件列表只有 2B 的 Base / Aesthetic / Turbo / Preview。网传“Anima 2.9B”不是官方版本。相关“六工作流”文章自述“未实际运行验证”，引用需谨慎。
 
 ### 官方 LoRA 用法
 
+下表是官方仓库里各个 LoRA 的用法，右列是作者的说明。用法里的数值都是起点值。
+
 | 官方 LoRA | 用法 | 作者说明 |
 |---|---|---|
-| `anima-turbo-lora-v0.1 / v0.2` | CFG 1、8–12 步；`strength` 0.7 ~ 1.0 | v0.2 在 base-v1.0 上训练，"细节更自然"；降到 0.7 仍保持蒸馏；用 `euler`，`er_sde` 可能太吵 |
-| `anima-highres-aesthetic-boost` | 出高分辨率时挂上，`strength` 1.0 | 1536 基本无问题，甚至 2048（4 MP）也不散架；美学提升"较弱、看提示词" |
+| `anima-turbo-lora-v0.1 / v0.2` | CFG 1、8–12 步；`strength` 0.7 ~ 1.0 | v0.2 在 base-v1.0 上训练，“细节更自然”；降到 0.7 仍保持蒸馏；用 `euler`，`er_sde` 可能太吵 |
+| `anima-highres-aesthetic-boost` | 出高分辨率时挂上，`strength` 1.0 | 1536 基本无问题，甚至 2048（4 MP）也不散架；美学提升“较弱、看提示词” |
 | `anima-rl-v0.1` | 默认 1.0；配强的美学微调模型时可能要略高于 1 | 强化美学与细节的 RL 实验版 |
 | `anima-greg-rutkowski-style` | 提示词前缀 `@greg rutkowski. `，自然语言提示词效果最好 | 风格 LoRA 示例，附带训练配置 |

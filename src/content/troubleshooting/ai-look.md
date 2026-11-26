@@ -1,5 +1,5 @@
 ---
-symptom: "画风太\"AI\""
+symptom: "画风太“AI”"
 area: 提示词
 first: "去掉 score_*"
 then: "去掉 masterpiece, best quality；换采样器"
