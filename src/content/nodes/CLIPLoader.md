@@ -17,4 +17,4 @@ outputs:
 
 单独加载文本编码器。读取 `ComfyUI/models/text_encoders/`（旧名 `clip`）。
 
-⚠️ `type` 必须和模型架构匹配，否则报错或出乱图。**Anima 的下拉里没有 `anima` 选项**，官方模板用 `stable_diffusion`，编码器类型由权重自动识别。SDXL / FLUX 的双编码器请用双CLIP加载器。
+⚠️ `type` 必须和模型架构匹配，否则报错或出乱图。Anima 的下拉里没有 `anima` 选项，官方模板用 `stable_diffusion`，编码器类型由权重自动识别。SDXL / FLUX 的双编码器请用双CLIP加载器。

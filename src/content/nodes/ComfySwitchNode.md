@@ -14,6 +14,6 @@ outputs:
   - { name: output, type: "同输入", desc: "被选中的那一路" }
 ---
 
-二选一开关，MODEL / INT / FLOAT / STRING 都能切。**只计算被选中的那一路**（惰性求值），所以关着 Turbo 时 Turbo LoRA 不会被加载进显存。
+二选一开关，MODEL / INT / FLOAT / STRING 都能切。只计算被选中的那一路（惰性求值），所以关着 Turbo 时 Turbo LoRA 不会被加载进显存。
 
 L1 用三个切换节点分别切模型、步数、CFG，三个 `switch` 都接到同一个布尔值。

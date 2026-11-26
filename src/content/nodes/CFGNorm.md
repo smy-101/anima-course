@@ -14,4 +14,4 @@ outputs:
   - { name: MODEL, type: MODEL, desc: "打过补丁的模型" }
 ---
 
-对 CFG 合成后的预测做归一化，缓解高 CFG 过饱和的一类补丁。与 APG、TCFG 等同属"引导增强"，一次只叠一个，逐个 Bypass 对照。
+对 CFG 合成后的预测做归一化，缓解高 CFG 过饱和的一类补丁。与 APG、TCFG 等同属“引导增强”，一次只叠一个，逐个 Bypass 对照。

@@ -9,4 +9,4 @@ sources:
   - { badge: 社区, url: https://civitai.com/articles/33857, note: "Volnovik 推荐负向" }
 verified: 2026-11-24
 ---
-单人提示词里描述了双侧对称特征会"多出一个人"——负向加 `twins`。
+单人提示词里描述了双侧对称特征会“多出一个人”——负向加 `twins`。

@@ -10,4 +10,4 @@ sources:
   - { badge: 社区, note: "《提示词报告》§3.1：追复古感的写法" }
 verified: 2026-11-24
 ---
-模型内置的年代风格标签（相当于"烤进模型里的小 LoRA"），括号要转义成 `\(style\)`。追复古感的组合：正向写 `old` / `retro artstyle` / `1990s \(style\)`，并把 `newest`、`recent` 挡在负向之外。
+模型内置的年代风格标签（相当于“烤进模型里的小 LoRA”），括号要转义成 `\(style\)`。追复古感的组合：正向写 `old` / `retro artstyle` / `1990s \(style\)`，并把 `newest`、`recent` 挡在负向之外。

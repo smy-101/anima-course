@@ -9,4 +9,4 @@ sources:
   - { badge: 社区, url: https://civitai.com/articles/33857, note: "陷阱词" }
 verified: 2026-11-24
 ---
-想表达"淋了雨"写 `rain`。把自己的图丢进 tagger 出现 `wet`，说明提示词里某个普通词被当成标签吃了。
+想表达“淋了雨”写 `rain`。把自己的图丢进 tagger 出现 `wet`，说明提示词里某个普通词被当成标签吃了。

@@ -16,4 +16,4 @@ outputs:
   - { name: SAMPLER, type: SAMPLER, desc: "接 自定义采样器（高级） 的 sampler" }
 ---
 
-Anima 作者推荐的 `er_sde` 的可调版本。想要它的线条风格又要结果确定，把 `eta` 设 0；嫌它太"放飞"就降 `s_noise`。只在做采样器对照时才需要动这些。
+Anima 作者推荐的 `er_sde` 的可调版本。想要它的线条风格又要结果确定，把 `eta` 设 0；嫌它太“放飞”就降 `s_noise`。只在做采样器对照时才需要动这些。

@@ -16,4 +16,4 @@ outputs:
 
 只加载去噪模型。Anima、Qwen-Image 等拆分式模型用它。读取 `ComfyUI/models/diffusion_models/`（旧名 `unet`）。
 
-Anima 以 bf16 为主，源码里 fp16 的显存估算系数是 ×1.4，所以**不要为了省显存切 fp16**；显存不够先降分辨率。
+Anima 以 bf16 为主，源码里 fp16 的显存估算系数是 ×1.4，所以不要为了省显存切 fp16；显存不够先降分辨率。

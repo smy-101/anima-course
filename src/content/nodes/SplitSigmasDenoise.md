@@ -14,4 +14,4 @@ outputs:
   - { name: low_sigmas, type: SIGMAS, desc: "保留的低噪声段，接自定义采样器" }
 ---
 
-按去噪比例取时间表的后一段——图生图版的自定义采样用它。注意它和 K采样器 的 `denoise` 不同：**这里真的会减步数**（按 round(steps×denoise) 截取）。
+按去噪比例取时间表的后一段——图生图版的自定义采样用它。注意它和 K采样器 的 `denoise` 不同：这里真的会减步数（按 round(steps×denoise) 截取）。

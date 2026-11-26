@@ -10,4 +10,4 @@ sources:
   - { badge: Danbooru, url: https://danbooru.donmai.us/wiki_pages, note: "标签释义" }
 verified: 2026-11-24
 ---
-**正向里必须写安全等级，四选一**。SFW 用户：正向开头 `masterpiece, best quality, score_7, safe,`；负向加 `nsfw, explicit`。等级与画面不匹配会发软 / 自动打码。
+正向里必须写安全等级，四选一。SFW 用户：正向开头 `masterpiece, best quality, score_7, safe,`；负向加 `nsfw, explicit`。等级与画面不匹配会发软 / 自动打码。

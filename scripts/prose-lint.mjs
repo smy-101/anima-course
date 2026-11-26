@@ -5,8 +5,9 @@
  *   - 报告按文件分组写到 reports/prose-lint.json，每条违规带位置与说明；终端打汇总表和每个有违规的文件一行
  *   - 棘轮：scripts/prose-lint.config.mjs 的 rewritten 名单里的文件必须全部通过，否则退出码 1；
  *     名单外的文件只出报告。名单里写了仓库里不存在的条目也退出码 1。
- * 用法：node scripts/prose-lint.mjs [--config <路径>] [--report <路径>]
- *   两个可选参数给测试用：换一份名单、把报告写到别处；默认读 scripts/prose-lint.config.mjs、写 reports/prose-lint.json
+ * 用法：node scripts/prose-lint.mjs [--content <目录>] [--config <路径>] [--report <路径>]
+ *   三个可选参数给测试用：换一份内容目录、换一份名单、把报告写到别处；
+ *   默认读 src/content 与 scripts/prose-lint.config.mjs、写 reports/prose-lint.json
  */
 import { readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
 import { join, basename, dirname } from 'node:path';
@@ -14,14 +15,15 @@ import { pathToFileURL, fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
 import { lintProse, LIMITS, RULE_SETS, RULE_TITLE } from '../src/lib/prose-lint.ts';
 
-const CONTENT_DIR = 'src/content';
-const RULES = Object.keys(RULE_TITLE);
-
-/** 命令行：--config / --report 后面跟路径；其余参数不认 */
+/** 命令行：--content / --config / --report 后面跟路径；其余参数不认 */
 function arg(name, fallback) {
   const i = process.argv.indexOf(name);
   return i === -1 ? fallback : process.argv[i + 1] ?? fallback;
 }
+/** 内容目录：默认仓库里的 src/content；--content 指向别处时，src/lib/prose-lint.ts 的 RULE_SETS 里每个集合都要有一个子目录（可以是空的） */
+const CONTENT_DIR = arg('--content', 'src/content');
+const RULES = Object.keys(RULE_TITLE);
+
 const configPath = arg('--config', fileURLToPath(new URL('./prose-lint.config.mjs', import.meta.url)));
 const REPORT = arg('--report', 'reports/prose-lint.json');
 const { rewritten } = await import(pathToFileURL(configPath).href);

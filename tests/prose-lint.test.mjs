@@ -2,10 +2,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { parse } from 'yaml';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, writeFileSync, readFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, join } from 'node:path';
-import { lintProse } from '../src/lib/prose-lint.ts';
+import { lintProse, RULE_SETS } from '../src/lib/prose-lint.ts';
 
 const lint = (collection, frontmatter, body) => lintProse({ collection, frontmatter, body });
 const lesson = (frontmatter, body) => lint('lessons', frontmatter, body);
@@ -153,29 +153,41 @@ test('集合规则集：troubleshooting / resources 查 H2 H3 H4 H6，字段不�
   assert.throws(() => lint('nsfw', {}, '## 目标'), /nsfw/);
 });
 
-test('棘轮（集成）：名单为空退出码 0；名单里有违规文件退出码 1；名单里有不存在的条目也退出码 1', () => {
+test('棘轮（集成）：名单为空退出码 0；名单里都是干净的文件退出码 0；名单里有违规文件退出码 1；名单里有不存在的条目也退出码 1', () => {
+  // 夹具是一个临时内容目录，不放仓库里的真实内容：拿真实内容当样本，要等仓库里还留着没改写的文件才测得到拦截，
+  // 全部改完（票 10）后就没有样本了。每个集合建一个目录（脚本会逐个集合读目录）；三个文件：一张干净的课、
+  // 一张有违规的课（「## 目标」、标题超长）、一张有违规的节点卡（加粗超标）
   const dir = mkdtempSync(join(tmpdir(), 'prose-lint-'));
+  const content = join(dir, 'content');
+  for (const collection of Object.keys(RULE_SETS)) {
+    mkdirSync(join(content, collection), { recursive: true });
+  }
+  writeFileSync(join(content, 'lessons', '00-01-setup.md'), '---\ntitle: 装好 ComfyUI，出第一张图\nsummary: 学完你能出第一张图。\n---\n\n这一课不追求出好图。\n');
+  writeFileSync(join(content, 'lessons', 'draft.md'), '---\ntitle: 准备：认识 Anima、装好 ComfyUI、出第一张图\n---\n\n## 目标\n\n知道 Anima 是什么。\n');
+  writeFileSync(join(content, 'nodes', 'LoadVAE.md'), '---\nname_zh: 加载VAE\n---\n\n读取 `ComfyUI/models/vae/`。**VAE** 必须和模型配套。\n');
+
   const run = (rewritten) => {
     const config = join(dir, 'config.mjs');
     const report = join(dir, 'report.json');
     writeFileSync(config, `export const rewritten = ${JSON.stringify(rewritten)};\n`);
-    const r = spawnSync(process.execPath, ['scripts/prose-lint.mjs', '--config', config, '--report', report], { encoding: 'utf8' });
-    return { status: r.status, report: JSON.parse(readFileSync(report, 'utf8')) };
+    const r = spawnSync(process.execPath, ['scripts/prose-lint.mjs', '--content', content, '--config', config, '--report', report], { encoding: 'utf8' });
+    return { status: r.status, stderr: r.stderr, report: JSON.parse(readFileSync(report, 'utf8')) };
   };
-  const empty = run([]);
-  assert.equal(empty.status, 0, '名单为空只报告');
-  assert.equal(empty.report.byCollection.lessons.files, 20, '报告按集合给出文件数');
-  assert.ok(empty.report.files.length > 0, '现状有违规，报告里列出来');
 
-  // 改写名单逐票变长，样本从报告里现取：挑第一个还有违规的文件（按 id 写进名单，和配置文件的写法一致）。
-  // 哪一票改写了哪一课都不用回来改这里；20 课全部改完后（票 08）样本改从排错 / 资源 / 字典卡里挑，
-  // 全部集合都挑不出时由下面这条断言报出来，那时该切全量硬失败了（票 11）
-  const violating = empty.report.files.filter((r) => r.findings.length);
-  const sample = violating.find((r) => r.collection === 'lessons') ?? violating[0];
-  assert.ok(sample, '还有没改写的文件可以当“名单内有违规”的样本；一个都没有时就该切全量硬失败了');
-  const gated = run([basename(sample.file, '.md')]);
+  const empty = run([]);
+  assert.equal(empty.status, 0, empty.stderr);
+  assert.equal(empty.report.byCollection.lessons.files, 2, '报告按集合给出文件数；没有文件的集合记 0');
+  assert.equal(empty.report.byCollection.tags.files, 0);
+  assert.deepEqual(empty.report.files.map((f) => basename(f.file)), ['draft.md', 'LoadVAE.md'], '有违规的文件列进报告，干净的文件不列');
+
+  // 名单条目写内容 id，和 scripts/prose-lint.config.mjs 的写法一致
+  const gated = run(['draft']);
   assert.equal(gated.status, 1, '名单里的文件有违规就拦截');
-  assert.deepEqual(gated.report.gate.failing, [sample.file]);
+  assert.deepEqual(gated.report.gate.failing.map((f) => basename(f)), ['draft.md'], '只报名单里有违规的那一个');
+
+  const clean = run(['00-01-setup']);
+  assert.equal(clean.status, 0, clean.stderr);
+  assert.deepEqual(clean.report.gate.failing, [], '名单里的文件没有违规就不拦截');
 
   const unknown = run(['no-such-lesson']);
   assert.equal(unknown.status, 1, '名单里写了不存在的条目也拦截');

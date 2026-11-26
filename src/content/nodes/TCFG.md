@@ -12,4 +12,4 @@ outputs:
   - { name: MODEL, type: MODEL, desc: "打过补丁的模型" }
 ---
 
-Tangential Damping CFG： refining 负向预测使其与正向对齐。没有参数，挂上就生效。Anima 上属"通用工具、未专项验证"。
+Tangential Damping CFG： refining 负向预测使其与正向对齐。没有参数，挂上就生效。Anima 上属“通用工具、未专项验证”。

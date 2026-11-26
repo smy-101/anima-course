@@ -15,4 +15,4 @@ outputs:
   - { name: MODEL, type: MODEL, desc: "打过补丁的模型" }
 ---
 
-在采样的某一段把 CFG 强制成固定值。通用技巧：开头几步强制 cfg 1，减轻早期过饱和；两段采样"前段 Turbo（cfg 1）、后段 Base（cfg 4）"也靠它。
+在采样的某一段把 CFG 强制成固定值。通用技巧：开头几步强制 cfg 1，减轻早期过饱和；两段采样“前段 Turbo（cfg 1）、后段 Base（cfg 4）”也靠它。

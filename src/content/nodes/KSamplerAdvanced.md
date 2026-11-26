@@ -23,6 +23,6 @@ outputs:
   - { name: LATENT, type: LATENT, desc: "采样结果" }
 ---
 
-按起止步切分采样，是"两段用不同模型 / 不同 CFG"的最简写法。
+按起止步切分采样，是“两段用不同模型 / 不同 CFG”的最简写法。
 
-⚠️ `start_at_step / end_at_step` 按**全表索引**截取：steps 30、start 15 → 第二段真的只跑 15 步。想每段都 30 步，两段的 steps 都设 60。这与 K采样器 `denoise` 不减步数的行为不同。
+⚠️ `start_at_step / end_at_step` 按全表索引截取：steps 30、start 15 → 第二段真的只跑 15 步。想每段都 30 步，两段的 steps 都设 60。这与 K采样器 `denoise` 不减步数的行为不同。

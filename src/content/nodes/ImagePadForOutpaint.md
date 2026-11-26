@@ -15,4 +15,4 @@ outputs:
   - { name: MASK, type: MASK, desc: "白 = 新补的区域，作重绘的 mask" }
 ---
 
-扩图（Outpaint）的第一步。输出直接接重绘路线 A / B 的 `image` 与 `mask`。提示词要描述**整张画面**，不只是新区域。
+扩图（Outpaint）的第一步。输出直接接重绘路线 A / B 的 `image` 与 `mask`。提示词要描述整张画面，不只是新区域。

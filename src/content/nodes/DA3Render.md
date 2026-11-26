@@ -15,4 +15,4 @@ outputs:
   - { name: IMAGE, type: IMAGE, desc: "深度图：白 = 近，黑 = 远。接 预览图像 看一眼，再进 应用 Anima LLLite" }
 ---
 
-Depth Anything 3 蓝图的最后一步，输出可直接喂给 `anima-lllite-depth-1` 的深度图。先用 预览图像 确认"近白远黑"再往下走。
+Depth Anything 3 蓝图的最后一步，输出可直接喂给 `anima-lllite-depth-1` 的深度图。先用 预览图像 确认“近白远黑”再往下走。

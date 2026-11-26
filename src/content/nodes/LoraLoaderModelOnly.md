@@ -15,6 +15,6 @@ outputs:
   - { name: MODEL, type: MODEL, desc: "已叠加 LoRA 的模型" }
 ---
 
-只有 model、lora_name、strength_model，输出 MODEL。**Anima 是拆分模型，只用这个**——[加载LoRA](/nodes/LoraLoader/) `LoraLoader` 的 clip 输入是必填，没接 CLIP 会报缺少输入。
+只有 model、lora_name、strength_model，输出 MODEL。Anima 是拆分模型，只用这个——[加载LoRA](/nodes/LoraLoader/) `LoraLoader` 的 clip 输入是必填，没接 CLIP 会报缺少输入。
 
 多个 LoRA 串联：第一个的 MODEL 接第二个的 model。A/B 某个 LoRA：选中它按 `Ctrl+B`（忽略 = 数据透传）。

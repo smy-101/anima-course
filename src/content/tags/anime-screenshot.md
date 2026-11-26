@@ -9,4 +9,4 @@ sources:
   - { badge: 社区, url: https://civitai.com/articles/33857, note: "陷阱词" }
 verified: 2026-11-24
 ---
-想要动画感时正向用；想要"电影感"写了 "cinematic" 反而拉偏——用构图标签 `wide shot`、`from below`、`dutch angle`。
+想要动画感时正向用；想要“电影感”写了 “cinematic” 反而拉偏——用构图标签 `wide shot`、`from below`、`dutch angle`。

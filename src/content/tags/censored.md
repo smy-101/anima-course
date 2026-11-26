@@ -10,4 +10,4 @@ sources:
   - { badge: 社区, note: "Volnovik：永远不要放正向" }
 verified: 2026-11-24
 ---
-**永远不要放进正向**；不想要打码就放负向（可加 `bar censor`、`mosaic censoring`）。详见成人附录。
+永远不要放进正向；不想要打码就放负向（可加 `bar censor`、`mosaic censoring`）。详见成人附录。

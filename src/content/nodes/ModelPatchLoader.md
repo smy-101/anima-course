@@ -14,6 +14,6 @@ outputs:
   - { name: MODEL_PATCH, type: MODEL_PATCH, desc: "接 应用 Anima LLLite 的 model_patch" }
 ---
 
-读取 **模型补丁**（Anima 的 LLLite 结构控制权重）。文件必须放 `ComfyUI/models/model_patches/`——放错目录节点会变红，放好后按 `R`。
+读取 模型补丁（Anima 的 LLLite 结构控制权重）。文件必须放 `ComfyUI/models/model_patches/`——放错目录节点会变红，放好后按 `R`。
 
 权重清单与各自吃的控制图见课程 [L5](/lessons/04-01-l5-lllite/)。

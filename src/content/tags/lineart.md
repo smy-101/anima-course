@@ -9,4 +9,4 @@ sources:
   - { badge: 社区, url: https://civitai.com/articles/33857, note: "陷阱词" }
 verified: 2026-11-24
 ---
-想表达"线条干净"写了 "line art" → 出线稿。想要线稿才用 `lineart`（一个词）。
+想表达“线条干净”写了 “line art” → 出线稿。想要线稿才用 `lineart`（一个词）。

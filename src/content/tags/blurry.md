@@ -9,4 +9,4 @@ sources:
   - { badge: 社区, url: https://civitai.com/articles/33857, note: "陷阱词" }
 verified: 2026-11-24
 ---
-想表达"哪里虚化"用句子说明，别把 blurry 写进正向。
+想表达“哪里虚化”用句子说明，别把 blurry 写进正向。

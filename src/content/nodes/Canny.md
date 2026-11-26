@@ -15,6 +15,6 @@ outputs:
   - { name: IMAGE, type: IMAGE, desc: "边缘图：黑底白线" }
 ---
 
-核心自带的边缘预处理器。Anima 官方 "Any Control" 模板的用法：`Canny(0.17, 0.45) → 反转图像`，得到**白底黑线**，再配 `anima-lllite-any-test-like-v2`。
+核心自带的边缘预处理器。Anima 官方 “Any Control” 模板的用法：`Canny(0.17, 0.45) → 反转图像`，得到白底黑线，再配 `anima-lllite-any-test-like-v2`。
 
 其它预处理器（深度、姿势、线稿、涂鸦）在节点库 → Comfy Blueprints → Preprocessors，或社区包 `comfyui_controlnet_aux`。

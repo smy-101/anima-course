@@ -10,4 +10,4 @@ sources:
   - { badge: Danbooru, url: https://danbooru.donmai.us/wiki_pages, note: "标签释义" }
 verified: 2026-11-24
 ---
-**和正向使用 `@画师` 不冲突**，照官方推荐保留在负向，不要删。
+和正向使用 `@画师` 不冲突，照官方推荐保留在负向，不要删。

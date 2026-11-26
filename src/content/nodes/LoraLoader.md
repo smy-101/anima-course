@@ -19,4 +19,4 @@ outputs:
 
 整包 checkpoint 模型（SD1.5 / SDXL）的 LoRA 加载器：同时影响模型和文本编码器，输出 MODEL、CLIP 两条线。多个串联时，第一个的 MODEL / CLIP 接第二个的 model / clip。
 
-**Anima 不用它。** Anima 是拆分模型，官方模板与 L1 / L3 用的都是 [LoRA加载器（仅模型）](/nodes/LoraLoaderModelOnly/)。从左侧模型库把 LoRA 文件拖到画布时，自动生成的就是这个节点——记得换成仅模型版，或直接从节点库添加。见课程 [LoRA 串联与 A/B](/lessons/03-02-l3-lora/)。
+Anima 不用它。Anima 是拆分模型，官方模板与 L1 / L3 用的都是 [LoRA加载器（仅模型）](/nodes/LoraLoaderModelOnly/)。从左侧模型库把 LoRA 文件拖到画布时，自动生成的就是这个节点——记得换成仅模型版，或直接从节点库添加。见课程 [LoRA 串联与 A/B](/lessons/03-02-l3-lora/)。

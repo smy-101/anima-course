@@ -24,4 +24,4 @@ outputs:
   - { name: cropped_refined, type: IMAGE, desc: "单独的重绘小图，接 预览图像 看效果" }
 ---
 
-让节点替你找区域、涂遮罩、重绘、贴回（路线 E）。检测模型（如 `face_yolov8m.pt`）放 `ComfyUI/models/ultralytics/bbox/`，由 [UltralyticsDetectorProvider](/nodes/UltralyticsDetectorProvider/) 加载，可由 Manager 下载。**在放大之前做**；修完再走 L4。手用同包的 HandDetailer（`hand_yolov8s.pt`），参数相同。
+让节点替你找区域、涂遮罩、重绘、贴回（路线 E）。检测模型（如 `face_yolov8m.pt`）放 `ComfyUI/models/ultralytics/bbox/`，由 [UltralyticsDetectorProvider](/nodes/UltralyticsDetectorProvider/) 加载，可由 Manager 下载。在放大之前做；修完再走 L4。手用同包的 HandDetailer（`hand_yolov8s.pt`），参数相同。

@@ -10,4 +10,4 @@ sources:
   - { badge: Danbooru, url: https://danbooru.donmai.us/wiki_pages, note: "标签释义" }
 verified: 2026-11-24
 ---
-多人场景必须给每个角色"报名字 + 说长相"，并遵守连带规则。
+多人场景必须给每个角色“报名字 + 说长相”，并遵守连带规则。

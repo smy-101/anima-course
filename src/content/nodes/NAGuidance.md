@@ -16,4 +16,4 @@ outputs:
   - { name: MODEL, type: MODEL, desc: "打过补丁的模型" }
 ---
 
-Normalized Attention Guidance：让负向"真正生效"又不烧图。**要求 CFG > 1**（它需要批里同时有正负两路，会关闭 CFG 1 优化），所以 Turbo 下无意义，速度也会掉一半。核心已内置，不必再装社区节点 Anima-NAG。
+Normalized Attention Guidance：让负向“真正生效”又不烧图。要求 CFG > 1（它需要批里同时有正负两路，会关闭 CFG 1 优化），所以 Turbo 下无意义，速度也会掉一半。核心已内置，不必再装社区节点 Anima-NAG。

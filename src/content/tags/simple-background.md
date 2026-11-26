@@ -1,6 +1,6 @@
 ---
 tag: "simple background"
-meaning: "简单背景（纯色 / 渐变）。语料里占比很高，是最常见的\"背景一片白\"原因。"
+meaning: '简单背景（纯色 / 渐变）。语料里占比很高，是最常见的“背景一片白”原因。'
 category: 背景
 polarity: 负
 trap: false

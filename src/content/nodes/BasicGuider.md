@@ -13,4 +13,4 @@ outputs:
   - { name: GUIDER, type: GUIDER, desc: "接 自定义采样器（高级） 的 guider" }
 ---
 
-只跑一路条件，**CFG 等效于 1，少算一半**。Turbo 本来就是 CFG 1，用它白白快一倍；Base / Aesthetic 要负向时用 CFG引导器。
+只跑一路条件，CFG 等效于 1，少算一半。Turbo 本来就是 CFG 1，用它白白快一倍；Base / Aesthetic 要负向时用 CFG引导器。

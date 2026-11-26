@@ -13,4 +13,4 @@ outputs:
   - { name: value, type: "同类型", desc: "接到下拉控件（如 sampler_name）" }
 ---
 
-值类型可选 **COMBO**，用来驱动 `sampler_name`、`scheduler` 这类下拉控件——官方 `anima_comparison.json` 就这么做。配合创建列表可以一次扫多个采样器。
+值类型可选 COMBO，用来驱动 `sampler_name`、`scheduler` 这类下拉控件——官方 `anima_comparison.json` 就这么做。配合创建列表可以一次扫多个采样器。

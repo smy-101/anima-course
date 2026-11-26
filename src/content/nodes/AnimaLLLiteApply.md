@@ -21,12 +21,12 @@ outputs:
   - { name: MODEL, type: MODEL, desc: "已注入控制的模型，接 K采样器（或继续串第二个 LLLite）" }
 ---
 
-Anima 的 ControlNet。与 SD 系"[加载ControlNet模型](/nodes/ControlNetLoader/) → 应用ControlNet"那条路不同：它**改 MODEL 而不是改条件**，所以串在 UNet加载器 与 K采样器 之间（L1 里就是放在 UNETLoader 与 Turbo LoRA 开关之间）。
+Anima 的 ControlNet。与 SD 系“[加载ControlNet模型](/nodes/ControlNetLoader/) → 应用ControlNet”那条路不同：它改 MODEL 而不是改条件，所以串在 UNet加载器 与 K采样器 之间（L1 里就是放在 UNETLoader 与 Turbo LoRA 开关之间）。
 
 源码里的三条规矩：
 
-- **画布比例要 = 控制图比例**：节点把控制图按输出潜空间的宽高比做中心裁剪，再 bicubic 缩放到 latent×8。用 获取图像尺寸 把 空Latent图像 的宽高对齐控制图，边就不会被裁。
-- **mask 会被二值化**（在 0.5 处）：软边、羽化对它无效，重绘时要涂大一圈。
-- **只支持单帧**，只对 `start_percent ~ end_percent` 对应的 sigma 区间生效。
+- 画布比例要 = 控制图比例：节点把控制图按输出潜空间的宽高比做中心裁剪，再 bicubic 缩放到 latent×8。用 获取图像尺寸 把 空Latent图像 的宽高对齐控制图，边就不会被裁。
+- mask 会被二值化（在 0.5 处）：软边、羽化对它无效，重绘时要涂大一圈。
+- 只支持单帧，只对 `start_percent ~ end_percent` 对应的 sigma 区间生效。
 
 多个 LLLite 可以串联（姿势 + 深度），各自有独立的强度与区间；强度是相加的，别都拉满。

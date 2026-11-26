@@ -16,6 +16,6 @@ outputs:
   - { name: IMAGE, type: IMAGE, desc: "拼好的网格图" }
 ---
 
-界面名 "Make Image Grid"。把一批图排成网格，是所有参数对照的最后一站。在节点库 `image/batch` 下，搜 "grid" 或类名；旧版本可能没有。
+界面名 “Make Image Grid”。把一批图排成网格，是所有参数对照的最后一站。在节点库 `image/batch` 下，搜 “grid” 或类名；旧版本可能没有。
 
-二维网格（列表 × batch）时铺开顺序为"列表优先"：**行 = 列表值，列 = batch**。
+二维网格（列表 × batch）时铺开顺序为“列表优先”：行 = 列表值，列 = batch。

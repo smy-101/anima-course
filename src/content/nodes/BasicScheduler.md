@@ -15,4 +15,4 @@ outputs:
   - { name: SIGMAS, type: SIGMAS, desc: "sigma 时间表，接 自定义采样器（高级） 的 sigmas" }
 ---
 
-生成 sigma 时间表。与 分离Sigma / 分离Sigma降噪 / [Karras调度器](/nodes/KarrasScheduler/) / [自定义Sigmas](/nodes/ManualSigmas/) 同属"时间表工具"：想自己切两段，就把它接 分离Sigma 再分别喂两个自定义采样器。
+生成 sigma 时间表。与 分离Sigma / 分离Sigma降噪 / [Karras调度器](/nodes/KarrasScheduler/) / [自定义Sigmas](/nodes/ManualSigmas/) 同属“时间表工具”：想自己切两段，就把它接 分离Sigma 再分别喂两个自定义采样器。

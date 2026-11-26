@@ -10,4 +10,4 @@ sources:
   - { badge: 社区, url: https://civitai.com/articles/33857, note: "陷阱词" }
 verified: 2026-11-24
 ---
-想要这个风格就**有意**用标签，否则别在句子里写 "clean cel shading"。作者建议开 Turbo 后"AI 味"重时正向加它。
+想要这个风格就有意用标签，否则别在句子里写 “clean cel shading”。作者建议开 Turbo 后“AI 味”重时正向加它。

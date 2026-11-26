@@ -13,4 +13,4 @@ outputs:
   - { name: MASK, type: MASK, desc: "带渐变边缘的遮罩" }
 ---
 
-给遮罩四边做渐变。**只对噪波遮罩有意义**（VAE编码（局部重绘）/ 设置Latent噪波遮罩 的路线）；应用 Anima LLLite 的 mask 会被二值化，羽化无效。
+给遮罩四边做渐变。只对噪波遮罩有意义（VAE编码（局部重绘）/ 设置Latent噪波遮罩 的路线）；应用 Anima LLLite 的 mask 会被二值化，羽化无效。

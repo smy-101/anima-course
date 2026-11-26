@@ -1,6 +1,6 @@
 ---
 tag: "closed eyes"
-meaning: "闭眼。没有对应的\"open eyes\"反义标签，无法用负向抵消。"
+meaning: '闭眼。没有对应的“open eyes”反义标签，无法用负向抵消。'
 category: 外观
 polarity: 正
 trap: false
