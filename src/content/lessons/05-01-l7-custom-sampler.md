@@ -1,8 +1,8 @@
 ---
-title: "L7 · 拆开采样器：引导器、调度器与两段采样"
+title: L7 · 拆开采样器
 stage: 5
 order: 1
-summary: K采样器内部其实是五个零件。拆开用：Turbo 换基本引导器少算一半；两段采样前段定构图、后段补细节，两段可以挂不同模型。这一级大多没有 Anima 专项验证，用 L2 的对照方法逐个验证。
+summary: "学完你能把 K采样器 拆成零件重组：让 Turbo 少算一半，并给采样的前后两段挂不同模型。"
 levels: [L7]
 days: [12]
 promptTrack: false
@@ -24,13 +24,13 @@ nodes:
   - TextOverlay
   - ImageGrid
 tags: []
-deliverable: 一张"基本引导器 Turbo vs K采样器 Turbo"的对照（含耗时）；一张两段采样的图，能解释两段各自的参数。
+deliverable: 一张“基本引导器 Turbo vs K采样器 Turbo”的对照（含耗时）；一张两段采样的图，能解释两段各自的参数。
 acceptance:
   - 用基本引导器 + 自定义采样器（高级）出了一张 Turbo 图，与 K采样器 版本并排，记录了两者耗时
   - 知道 BasicGuider 等效 CFG 1、只跑一路条件；知道什么时候必须用 CFG引导器
-  - 用两个 K采样器（高级）做了两段采样，第一段 return_with_leftover_noise = enable、第二段 add_noise = disable
-  - 能说出 start_at_step / end_at_step 按"全表索引"截取与 denoise 不减步数的区别
-  - 两段挂了不同模型补丁（如前段 Turbo LoRA + CFG 覆盖 cfg 1，后段 Base + cfg 4）并对照过"前段快、后段精"的效果
+  - 用两个 K采样器（高级）做了两段采样，第一段 return_with_leftover_noise = enable、第二段 add_noise = disable；能解释两段各自的参数与开关
+  - 能说出 start_at_step / end_at_step 按“全表索引”截取与 denoise 不减步数的区别
+  - 两段挂了不同模型补丁（如前段 Turbo LoRA + CFG 覆盖 cfg 1，后段 Base + cfg 4）并对照过“前段快、后段精”的效果
 figures:
   - id: l7-basic-guider
     caption: "同 seed：K采样器 Turbo（左）与 基本引导器 + 自定义采样器（右），标注耗时"
@@ -58,11 +58,9 @@ sources:
 verified: 2026-11-24
 ---
 
-## 目标
+## 采样器的零件
 
-K采样器 把"选采样方法、定时间表、造噪声、定引导方式、执行采样"打包好了。拆开用可以自由组合：Turbo 少算一半、两段用不同模型 / 不同 CFG、换引导方式。这一课只做两件最实用的：**Turbo 用基本引导器**、**两段采样**。shift 与引导补丁放下一课。这一级的东西**大多没有 Anima 专项验证**，是通用工具——每一步都用 L2 的对照方法验证，一次只改一个。
-
-## 五个零件
+K采样器 把选采样方法、定时间表、造噪声、定引导方式、执行采样打包好了。拆开用可以自由组合：Turbo 少算一半，两段用不同模型或不同 CFG，换一种引导方式。这一课只做两件最实用的，Turbo 用基本引导器和两段采样；shift 与引导补丁放下一课。**这一级的东西大多没有 Anima 专项验证**，是通用工具。每一步都用 L2 的对照方法验证，一次只改一个。
 
 | 零件 | 节点 `类名` | 关键参数 | 输出 |
 |---|---|---|---|
@@ -72,13 +70,13 @@ K采样器 把"选采样方法、定时间表、造噪声、定引导方式、�
 | 造噪声 | 随机噪波 `RandomNoise` / 禁用噪波 `DisableNoise` | `noise_seed` | NOISE |
 | 定引导方式 | 基本引导器 `BasicGuider` | `model`、`conditioning`（只有一路，等效 CFG 1） | GUIDER |
 | | CFG引导器 `CFGGuider` | `model`、`positive`、`negative`、`cfg` | GUIDER |
-| 执行采样 | 自定义采样器（高级）`SamplerCustomAdvanced` | `noise`、`guider`、`sampler`、`sigmas`、`latent_image` → `output` | LATENT |
+| 执行采样 | 自定义采样器（高级）`SamplerCustomAdvanced` | `noise`、`guider`、`sampler`、`sigmas`、`latent_image` | `output`（LATENT） |
 | 不拆开也能切两段 | K采样器（高级）`KSamplerAdvanced` | `add_noise`、`start_at_step`、`end_at_step`、`return_with_leftover_noise` | LATENT |
 | 时间表工具 | 分离Sigma `SplitSigmas` / 分离Sigma降噪 `SplitSigmasDenoise` | `step` / `denoise` | 两段 SIGMAS |
 
 端口细节：[KSamplerSelect](/nodes/KSamplerSelect/) · [SamplerER_SDE](/nodes/SamplerER_SDE/) · [BasicScheduler](/nodes/BasicScheduler/) · [RandomNoise](/nodes/RandomNoise/) · [DisableNoise](/nodes/DisableNoise/) · [BasicGuider](/nodes/BasicGuider/) · [CFGGuider](/nodes/CFGGuider/) · [SamplerCustomAdvanced](/nodes/SamplerCustomAdvanced/) · [KSamplerAdvanced](/nodes/KSamplerAdvanced/) · [SplitSigmas](/nodes/SplitSigmas/) · [SplitSigmasDenoise](/nodes/SplitSigmasDenoise/)
 
-## 连线 ①：Turbo 用基本引导器（省一半算力）
+## 基本引导器
 
 ```
 UNETLoader(turbo).MODEL ───────────────────────▶ BasicGuider.model
@@ -91,22 +89,24 @@ EmptyLatentImage.LATENT ──▶ SamplerCustomAdvanced.latent_image
 SamplerCustomAdvanced.output ──LATENT──▶ VAEDecode
 ```
 
-Turbo 本来就是 CFG 1，基本引导器只跑一路条件，**少算一半**。Base / Aesthetic 要负向时用 CFG引导器；模型线上挂了 NAGuidance 时也必须用 CFG引导器（它需要正负两路）。
+**Turbo 本来就是 CFG 1，用基本引导器只跑一路条件，少算一半**。Base / Aesthetic 要用负向时，换成 CFG引导器。模型线上挂了 NAGuidance 时也必须用 CFG引导器，它需要正负两路。
 
-## 连线 ②：两段采样（前段定构图、后段补细节）
+## 两段采样
 
 ```
 KSamplerAdvanced①(add_noise=enable, steps 30, start 0, end 15, return_with_leftover_noise=enable).LATENT
    ──LATENT──▶ KSamplerAdvanced②(add_noise=disable, start 15, end 30, return_with_leftover_noise=disable).latent_image
 ```
 
-两段可以挂不同的模型补丁：例如①挂 Turbo LoRA + CFG覆盖(cfg 1)，②用 Base + cfg 4——"前段快、后段精"（实验性：Turbo 的默认风格会带进后半段）。
+两段可以挂不同的模型补丁。例如第一段挂 Turbo LoRA 加 CFG覆盖（cfg 1），第二段用 Base 加 cfg 4，前段出图快，后段补细节。这是实验性做法，Turbo 的默认风格会带进后半段。
 
-> ⚠️ `start_at_step / end_at_step` 是按**全表索引**截取：steps 30、start 15 → 第二段真的只跑 15 步；想每段 30 步，两段的 steps 都设 60。这与 K采样器 `denoise` 的行为不同（后者不减步数）。
+**起止步是按全表索引截取的，会减步数。**`start_at_step` 和 `end_at_step` 都是这样：steps 30、start 15 时，第二段真的只跑 15 步；想每段 30 步，两段的 steps 都设 60。K采样器 的 `denoise` 不同，它不减步数。
 
-不想记两段的开关，也可以用拆开的方式：`BasicScheduler → SplitSigmas(step 15)` 得到 high / low 两段，各接一个 SamplerCustomAdvanced（第一段接 RandomNoise，第二段接 DisableNoise，第二段的 latent_image 接第一段的 output）。
+不想记两段的开关，也可以用拆开的方式。`BasicScheduler` 接 `SplitSigmas`（step 15），得到 high / low 两段，各接一个 SamplerCustomAdvanced。第一段接 RandomNoise，第二段接 DisableNoise，第二段的 latent_image 接第一段的 output。
 
 ## 参数与取值
+
+表里都是起点值。
 
 | 参数 | 取值 | 说明 |
 |---|---|---|
@@ -114,30 +114,25 @@ KSamplerAdvanced①(add_noise=enable, steps 30, start 0, end 15, return_with_lef
 | 两段切点 | 50%（15 / 30） | 可试 30% ~ 70% |
 | 第一段 | Turbo LoRA + CFG覆盖(cfg 1, 0 ~ 0.5) | 快；定构图 |
 | 第二段 | Base（或挂风格 LoRA）+ cfg 4 | 慢；补细节 |
-| 每段步数 | 想各 30 步 → steps 都设 60 | 全表索引截取 |
+| 每段步数 | 想各 30 步，steps 都设 60 | 全表索引截取 |
 
 ## 动手步骤
 
-1. 在 `Anima T2T` 子图外另起一支：按连线 ① 接七个节点（BasicGuider 路线），seed 固定，出一张 Turbo 图；与子图 `turbo_mode` 开、同 seed 的 K采样器 版本并排。看底部日志或节点上的耗时。
-2. 两段采样：复制 K采样器 为两个 K采样器（高级），按连线 ② 设开关与起止步；两段的 model 分别接 Turbo LoRA 那一路与 Base，第一段模型线再串一个 CFG覆盖(cfg 1, end_percent 0.5)。出一张，与单段 Base 30 步同 seed 并排。
-3. 调切点：15 → 9（30%）、21（70%），各出一张。
-4. `SamplerCustomAdvanced` 报"缺少输入"时，检查五个输入是否都接了。
+1. 在 `Anima T2T` 子图外另起一支，按基本引导器一节的连线接七个节点，seed 固定，出一张 Turbo 图。与子图 `turbo_mode` 开、同 seed 的 K采样器 版本并排，耗时看底部日志或节点上的显示。
+2. 两段采样。把 K采样器 复制成两个 K采样器（高级），按两段采样一节的连法设开关与起止步。两段的 model 分别接 Turbo LoRA 那一路与 Base，第一段模型线再串一个 CFG覆盖（cfg 1、end_percent 0.5）。出一张，与单段 Base 30 步同 seed 并排。
+3. 调切点：从 15 改到 9（30%）、21（70%），各出一张。
+4. `SamplerCustomAdvanced` 报“缺少输入”时，检查五个输入是否都接了。
 
 ## 调参顺序
 
-先用连线 ① 把 Turbo 的速度拉满（日常收益最大）→ 下一课连线 ③ 一次只叠一个补丁、逐个 `Ctrl+B` 对照 → **最后才玩连线 ② 的分段换模型**。T4 时间表参数只在 T1–T3 调好后碰：cfg / steps / denoise 没定，两段怎么切都无法归因。
+先用基本引导器把 Turbo 的速度拉满，日常收益最大。然后做下一课的引导补丁，一次只叠一个，逐个 `Ctrl+B` 对照。最后才试两段采样换模型。T4 时间表参数只在 T1–T3 调好后碰：cfg / steps / denoise 没定，两段怎么切都无法归因。
 
 ## 常见问题
 
 | 现象 | 原因 / 处理 |
 |---|---|
 | `SamplerCustomAdvanced` 报缺输入 | 五个输入全必填：noise / guider / sampler / sigmas / latent_image |
-| 第二段出图是纯噪声 | ②的 `add_noise` 忘了 disable，或①的 `return_with_leftover_noise` 没 enable |
+| 第二段出图是纯噪声 | 第二段的 `add_noise` 忘了 disable，或第一段的 `return_with_leftover_noise` 没 enable |
 | 基本引导器路线的图和 K采样器 版本不一样 | 确认 steps / scheduler / sampler / seed 四项完全一致；Aesthetic / Base 上基本引导器等效 CFG 1，本来就不一样 |
 | 两段总量比单段还差 | 第二段步数不够（全表索引截取）；或切点太靠前，构图没定 |
 | 找不到 `SamplerER_SDE` / `NAGuidance` 等节点 | 核心节点较新，桌面稳定版可能还没有；更新到最新版 |
-
-## 验收
-
-- 一张"基本引导器 vs K采样器"对照（含耗时）；一张两段图，能解释两段各自的参数与开关。
-- 下一课调 shift、叠引导补丁：[shift 与引导补丁](/lessons/05-02-l7-shift-guidance/)。

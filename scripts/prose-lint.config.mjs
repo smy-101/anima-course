@@ -19,4 +19,8 @@ export const rewritten = [
   '03-04-l4-upscale',
   '03-05-l4-large',
   '04-01-l5-lllite',
+  '04-02-l6-inpaint',
+  '04-03-l6-outpaint',
+  '05-01-l7-custom-sampler',
+  '05-02-l7-shift-guidance',
 ];
