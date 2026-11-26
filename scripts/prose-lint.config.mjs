@@ -15,4 +15,8 @@ export const rewritten = [
   '02-02-prompt-multi',
   '03-01-l3-img2img',
   '03-02-l3-lora',
+  '03-03-review-blueprint',
+  '03-04-l4-upscale',
+  '03-05-l4-large',
+  '04-01-l5-lllite',
 ];
