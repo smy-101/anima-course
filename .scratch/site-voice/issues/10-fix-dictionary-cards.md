@@ -8,9 +8,30 @@
 
 **Blocked by:** 02
 
-**Status:** ready-for-agent
+**Status:** done（提交 f42afe3；作者通读待定）
 
-- [ ] `check:site` 的报告里 nodes / tags 集合加粗超标为 0、直引号为 0
-- [ ] 改过的 frontmatter 仍能被 Astro 解析（`npm run build` 通过），字符串值逐一未变
-- [ ] 没有 `desc` 字段被改写；frontmatter 结构字段未动
-- [ ] 四项收尾检查全过
+- [x] `check:site` 的报告里 nodes / tags 集合加粗超标为 0、直引号为 0
+- [x] 改过的 frontmatter 仍能被 Astro 解析（`npm run build` 通过），字符串值逐一未变
+- [x] 没有 `desc` 字段被改写；frontmatter 结构字段未动
+- [x] 四项收尾检查全过
+
+## Comments
+
+**2026-11-26 · 实现记录（提交 f42afe3）**
+
+改写结果（只动 lint 报出的项）：改了 128 张卡，节点 50 张、标签 78 张。正文去掉加粗 89 对（节点 33 张共 49 对，标签 40 张各 1 对）；正文直引号 214 个换成 “ ”（节点 78 个、标签 136 个）；frontmatter 8 个字符串值（标签卡的 6 个 `meaning`、节点卡 2 个 `sources` 的 note）改成单引号包裹，值里的 18 个直引号换成弯引号。`desc` 一字未动，frontmatter 结构字段未动，代码块与行内代码未动。lint 表上 nodes / tags 两行的 H2、H6 归零，全站 503 个文件有违规的为 0。
+
+需要作者看一眼的取舍：
+
+1. 「每节一句关键话」的加粗也去掉了。票面让删的是控件 / 节点名与关键话之外的加粗，验收却要求加粗超标为 0。被报出的 73 张卡里 72 张正文不足 250 字，按 4 处 / 千字一处都留不下；最长的 KSampler（282 字）能留 1 处，但它三条并列的关键句挑哪条都没有依据。于是 73 张卡的正文加粗全部去掉，其中三十多对读起来是整句的关键话（如 KSampler「CFG = 1 时负向完全不起作用」、LoadImage「输入图的尺寸就是输出尺寸」、safe「正向里必须写安全等级，四选一」）。算得上控件名的只有 KSampler 列表项开头的 CFG / denoise / seed 与 PrimitiveNode 的 COMBO。要在短卡上保留一句，得给 H2 加豁免（如每节免计一处）或改数值，并同步 `docs/文风.md`；最好赶在票 11 切全量硬失败之前定。
+2. 标签卡 `meaning` 字段里的加粗没动（6 张：1other、2others、artist-name、cosplay、lineart、monochrome）。lint 的 H2 只数正文，spec 写的是只修 lint 报出的加粗；`meaning` 经 `emphasis()` 渲染成加粗，页面上照常显示。
+3. 棘轮集成测试改写，并给脚本加了一个参数。`npm test` 里那条测试原来从真实内容里现取「还有违规的文件」当样本，本票把最后 128 个修掉后它必然失败，而验收要求四项全过。现在测试用临时目录里的三个文件当夹具，`scripts/prose-lint.mjs` 加了 `--content <目录>`（与 `--config` / `--report` 同类，只给测试用）。三种原有行为都保留，多了一条「名单里的文件没有违规就不拦截」。这是票面之外的代码改动，票 11 去名单时可以直接在这套夹具上改。
+4. 本票改过的 128 张字典卡进了「已改写」名单。票面没写，第一轮没加；Spec 评审认为在 spec「改过的必须过」与票 03 / 04 / 09 的先例下是缺口，就按它给的修法补上：全路径写（标签 slug 与排错条目重名的有 bad-hands，只写 id 会连带锁上别的集合）。名单现在 208 个条目对应 208 个文件；没改的 295 张字典卡仍只出报告。
+5. 两处句号后的空格随加粗删掉了：ControlNetLoader「Anima 不走这条路。Anima 的结构控制…」、LoraLoader「Anima 不用它。Anima 是拆分模型…」。那个空格是加粗句与后文的分隔，Standards 评审把它算作去加粗的收尾。
+6. frontmatter 按票面改成单引号包裹，是 `src/content` 里第一次出现这种写法；同一行里别的双引号标量没动。
+
+观察（不在本票范围，没动）：节点卡 `desc` 里有 6 处 `**`（BasicScheduler 1、Canny 2、KSamplerAdvanced 2、ResizeImageMaskNode 1），节点页表格按纯文本渲染，页面上原样显示星号。页面模板的界面文字里还有 ASCII 直引号（`tags/[id].astro` 的「会被"吸"」、`SourceBadge.astro` 的「标为"起点值"」、`troubleshooting/index.astro` 的「"先调 → 再调 → 不要"」等），lint 只查内容集合。没有做浏览器截图检查，页面模板没动，构建产物按文字核对过（128 张卡的正文区 `<strong>` 为 0，文字里没有残留的星号、直引号、反斜杠）。
+
+评审：两轴各一轮（两个 `reviewer` 并行，证据在 `reports/t10-review/`，已被 gitignore）。Standards 报 P1 1 条（取舍 5 的两处空格，已删）、P2 1 条（证据里引号口径不一，已改准）、判断题 4 条：单引号写法可接受；夹具硬编码五个集合名与 `RULE_SETS` 重复，已改成 `Object.keys(RULE_SETS)`；CFG / denoise / seed 是控件名、全去合规但丢了 H2 认可的用法，归到取舍 1；1other 的 `meaning` 里「**非人类**」是术语高亮，归到取舍 2。Spec 报 P2 3 条：取舍 1 不算越界、请作者定豁免；取舍 3 成立、票 11 须接手；取舍 4 是票面缺口、已补。验收 2 的读法成立：「值不变」约束的是换成单引号包裹这一步，H6 的「换成 “ ”」是另一处明文，改后的值只变引号字形。
+
+证据：`npm run build` 退出码 0（页面 469），`npm run check:site` 退出码 0（死链 0，文风违规 0 / 503，已改写名单 208 个全部通过），`npx astro check` 0 errors 0 warnings 0 hints，`npm test` 43 个全过；评审修订后四项重跑仍全过。「只做了两类改动」另用一次性脚本 `reports/t10/verify.mjs` 对改写前逐文件核对过：逐字符 diff 里删掉的只有 `*`、`"` 和那 2 个分隔空格，加进来的只有弯引号；frontmatter 解析后的值除引号字形外逐字相同，`desc` 逐字节相同；代码块与行内代码逐字节相同。故意改坏 11 种（换弯引号先后、删字、改 `desc`、改回双引号包裹、加回加粗、动没违规的卡、值多字、少换行、多删空格、改回空格等）它都会报。名单也试过：名单内的 KSampler 加 2 处加粗退出码 1，名单外的 VAELoader 加 1 处只报告。
