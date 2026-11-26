@@ -23,4 +23,8 @@ export const rewritten = [
   '04-03-l6-outpaint',
   '05-01-l7-custom-sampler',
   '05-02-l7-shift-guidance',
+  '05-03-l8-compare-loop',
+  '05-04-l8-pipeline',
+  '05-05-elective-api',
+  '05-06-elective-custom-node',
 ];

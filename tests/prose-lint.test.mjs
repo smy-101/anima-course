@@ -167,10 +167,12 @@ test('棘轮（集成）：名单为空退出码 0；名单里有违规文件退
   assert.equal(empty.report.byCollection.lessons.files, 20, '报告按集合给出文件数');
   assert.ok(empty.report.files.length > 0, '现状有违规，报告里列出来');
 
-  // 改写名单逐票变长，样本从报告里现取：挑第一个还有违规的课（按 id 写进名单，和配置文件的写法一致）。
-  // 哪一票改写了哪一课都不用回来改这里；课全部改完、挑不出样本时，由下面这条断言报出来
-  const sample = empty.report.files.find((r) => r.collection === 'lessons');
-  assert.ok(sample, '还有没改写的课可以当“名单内有违规”的样本');
+  // 改写名单逐票变长，样本从报告里现取：挑第一个还有违规的文件（按 id 写进名单，和配置文件的写法一致）。
+  // 哪一票改写了哪一课都不用回来改这里；20 课全部改完后（票 08）样本改从排错 / 资源 / 字典卡里挑，
+  // 全部集合都挑不出时由下面这条断言报出来，那时该切全量硬失败了（票 11）
+  const violating = empty.report.files.filter((r) => r.findings.length);
+  const sample = violating.find((r) => r.collection === 'lessons') ?? violating[0];
+  assert.ok(sample, '还有没改写的文件可以当“名单内有违规”的样本；一个都没有时就该切全量硬失败了');
   const gated = run([basename(sample.file, '.md')]);
   assert.equal(gated.status, 1, '名单里的文件有违规就拦截');
   assert.deepEqual(gated.report.gate.failing, [sample.file]);
