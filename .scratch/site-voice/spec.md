@@ -1,6 +1,6 @@
 # 站点文风与版面打磨
 
-Status: ready-for-agent
+Status: ready-for-human（票 01–11 全部 done；剩作者通读票 03–10 的改写成果，之后是 Out of Scope 里的版面重构 prototype）
 
 > 来源：2026-11-24 的 grill 会话（Q1–Q16 全部按推荐定）。词汇按 `GLOSSARY.md`；遵守 `docs/adr/0001-派生时重写文风.md`。研究依据见 `docs/文风依据.md`（后台研究中，到位后规范引用它）。
 
@@ -84,7 +84,7 @@ Status: ready-for-agent
 
 - 好的测试只测外部行为：给一段 markdown，断言 lint 报出 / 不报出某条规则；不测内部函数。
 - 模块：prose-lint 规则模块——`node --test` 用例，fixture 字符串覆盖每条规则的命中与豁免（代码块内加粗不计、路径前缀不计入标题长度、非课程集合不查固定区块重名、代码跨度内的直引号不计、frontmatter 外层 YAML 引号不计）。先例：prompt-lint 的测试。
-- 集成：`npm run check:site` 跑一次，断言报告模式退出码 0、名单内违规退出码 1。先例：死链退出码。
+- 集成：`npm run check:site` 跑一次，断言报告模式退出码 0、名单内违规退出码 1（票 11 起名单退场：任一集合一处违规即退出码 1）。先例：死链退出码。
 - 软规则不写测试。改写后的课以 lint 全绿 + 作者通读为验收。
 
 ## Out of Scope
