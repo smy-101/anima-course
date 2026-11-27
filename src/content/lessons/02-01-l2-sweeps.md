@@ -27,18 +27,23 @@ acceptance:
   - 能指着自己出的网格图，说出这张图上最好的 cfg 与采样器
 figures:
   - id: l2-cfg-seeds
+    src: ../../assets/figures/l2-cfg-seeds.webp
     caption: "CFG 3 / 3.5 / 4 / 4.5 / 5（行）× 4 个种子（列）的网格图"
     group: 网格
   - id: l2-cfg-sweep
+    src: ../../assets/figures/l2-cfg-sweep.webp
     caption: "CFG 3 / 3.5 / 4 / 4.5 / 5 / 6 单行扫描，seed 固定"
     group: 一维扫描
   - id: l2-steps-sweep
+    src: ../../assets/figures/l2-steps-sweep.webp
     caption: "steps 10 / 20 / 30 / 40 / 50"
     group: 一维扫描
   - id: l2-samplers
-    caption: "euler / er_sde / euler_a / dpmpp_2m_sde_gpu / res_multistep / uni_pc 对照"
+    src: ../../assets/figures/l2-samplers.webp
+    caption: "euler / er_sde / euler_ancestral / dpmpp_2m_sde_gpu / res_multistep / uni_pc 对照"
     group: 采样器
   - id: l2-labeled
+    src: ../../assets/figures/l2-labeled.webp
     caption: "带 TextOverlay 标签的三分支对照"
     group: 带标签对照
 transfers: true
@@ -118,7 +123,7 @@ KSampler(cfg=4.0) ──▶ VAEDecode ──▶ TextOverlay("cfg 4.0") ─┘
 |---|---|---|
 | cfg | 3 / 3.5 / 4 / 4.5 / 5 / 6 | 过饱和、线条发硬就是烧了，往下降；特征缺失就小幅往上升 |
 | steps | 10 / 20 / 30 / 40 / 50 | 30 步之后还有没有边际收益；Turbo 看 6 / 8 / 10 / 12 |
-| sampler | `euler` / `er_sde` / `euler_a` / `dpmpp_2m_sde_gpu` / `res_multistep` / `uni_pc` | 线条、平涂程度、细节，风格差异明显 |
+| sampler | `euler` / `er_sde` / `euler_ancestral` / `dpmpp_2m_sde_gpu` / `res_multistep` / `uni_pc` | 线条、平涂程度、细节，风格差异明显 |
 | scheduler | `simple` / `sgm_uniform` / `beta` / `karras` / `ddim_uniform` | 影响小于采样器；`res_multistep + beta` 有人报告出现波点伪影 |
 | batch_size | 2 ~ 4 | 越大越吃显存 |
 
@@ -132,7 +137,7 @@ KSampler(cfg=4.0) ──▶ VAEDecode ──▶ TextOverlay("cfg 4.0") ─┘
 |---|---|---|---|
 | 1 | seed | 随机 4 ~ 8 个 | 构图是否可用。构图不行就换 seed，别调参数 |
 | 2 | 分辨率 / 比例 | 0.5 / 1.0 / 1.5 MP；1:1、3:4、2:3 | 是否出现重复人像、崩坏。约 1 MP 最佳，尺寸取 16 的倍数 |
-| 3 | cfg | 3 / 3.5 / 4 / 4.5 / 5 / 6 | 甜点在 3 ~ 5；`euler_a` 可略高；Turbo 固定 1 |
+| 3 | cfg | 3 / 3.5 / 4 / 4.5 / 5 / 6 | 甜点在 3 ~ 5；`euler_ancestral` 可略高；Turbo 固定 1 |
 | 4 | steps | 20 / 30 / 40 / 50 | 再加步数画面基本不变，就够 |
 | 5 | sampler | 见上表 | 采样器改变画风 |
 | 6 | scheduler | 见上表 | 影响细微 |

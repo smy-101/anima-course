@@ -65,15 +65,18 @@ acceptance:
   - 三种写法、画师对照和 Tagger 改写都记进了实验记录本
 figures:
   - id: pb-styles
+    src: ../../assets/figures/pb-styles.webp
     caption: "同一画面：纯标签 / 纯自然语言 / 混合（模板 A / B / C）"
     group: 三种写法
   - id: pb-artists
-    caption: "同一提示词挂 3 个不同 @画师 的风格差异"
+    src: ../../assets/figures/pb-artists.webp
+    caption: "同一提示词挂 3 个不同 @画师（@nnn yryr / @huke / @wlop）的风格差异，最左一格不挂画师"
     group: 画师
   - id: pb-tagger
     caption: "Tagger 节点输出、筛选改写、成图的三步对照"
     group: 反推标签
   - id: pb-trap
+    src: ../../assets/figures/pb-trap.webp
     caption: "陷阱标签对照：句子里写 line art / monochrome / wet 出的图"
     group: 陷阱标签
 transfers: false

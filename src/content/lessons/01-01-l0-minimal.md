@@ -41,18 +41,23 @@ figures:
     caption: "L0 基线管线：9 节点连线截图，标注端口颜色与数据类型"
     group: 管线
   - id: l0-seed-a
+    src: ../../assets/figures/l0-seed-a.webp
     caption: "同一提示词，seed 固定为 A 的构图"
     group: 种子
   - id: l0-seed-b
+    src: ../../assets/figures/l0-seed-b.webp
     caption: "同一提示词，seed B"
     group: 种子
   - id: l0-seed-c
+    src: ../../assets/figures/l0-seed-c.webp
     caption: "同一提示词，seed C，体会“种子决定构图”"
     group: 种子
   - id: l0-prompt-tags
+    src: ../../assets/figures/l0-prompt-tags.webp
     caption: "同一 seed，模板 A（纯标签）"
     group: 提示词
   - id: l0-prompt-prose
+    src: ../../assets/figures/l0-prompt-prose.webp
     caption: "同一 seed，模板 B（自然语言）"
     group: 提示词
 transfers: true

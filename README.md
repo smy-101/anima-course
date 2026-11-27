@@ -55,7 +55,7 @@ scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（�
 
 - 改内容前先读 `docs/文风.md`：它的硬规则由 `npm run check:site` 里的文风检查（prose-lint）强制，违规退出码 1；软规则靠通读。
 
-- **课程**：`stage` / `order` 决定顺序；`acceptance` 是可勾选的验收清单；`figures[]` 省略 `src` 即渲染"待补图"占位并进入 `npm run check:site` 的清单，补图时把文件放进 `src/assets/figures/` 并填 `src: ../../assets/figures/xxx.png`。
+- **课程**：`stage` / `order` 决定顺序；`acceptance` 是可勾选的验收清单；`figures[]` 省略 `src` 即渲染"待补图"占位并进入 `npm run check:site` 的清单。补图用 `scripts/figures/`：先在开着 ComfyUI 的机器上 `python figures.py <组>` 出 PNG 到 `figures-out/`（不入库），再 `node scripts/figures/prepare-site.mjs` 转成 `src/assets/figures/<id>.webp` 并自动写入 `src: ../../assets/figures/<id>.webp`。
 - **正文链接**写站内绝对路径（`/nodes/KSampler/`），构建时自动加 base。
 - **节点**卡片文件名保留类名大小写；**标签**卡片文件名用小写连字符 slug。
 - `verified` 写 `YYYY-MM-DD`；`sources` 的 `badge` 只能是 官方 / 源码 / 作者 / 平台 / 社区 / Danbooru。
@@ -73,7 +73,7 @@ scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（�
 
 推到 `main` 自动走 `.github/workflows/deploy.yml`（`withastro/action` → `actions/deploy-pages`）。仓库 Settings → Pages → Source 选 **GitHub Actions**。`BASE_PATH` / `SITE_URL` 由 workflow 从仓库名自动推出；要下线成人附录，把 workflow 里的 `NSFW` 改为 `'false'`。
 
-示例图原图（内嵌工作流的 PNG）放 GitHub Releases，站内只提交优化副本。
+示例图原图（内嵌工作流的 PNG）放 GitHub Releases，站内只提交优化副本。原图留在 `figures-out/`（git-ignored），`python scripts/figures/embed_all.py` 会给每张嵌上工作流并打成 `figures-out/anima-course-figures-originals.zip`（文件名即图 id），把这个 zip 传到 Releases 即可。重新生成的办法见 `scripts/figures/figures.py` 顶部注释与 `docs/学习网站方案.md` §7。
 
 ## 迁移状态
 
@@ -87,8 +87,8 @@ scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（�
 | 概念可迁移：换模型时什么不变、什么要换（《节点详解》§4.1–4.9） | 已迁移（`resources/transfer.md`） |
 | 成人附录 | 规则、合规、词表（到 `nsfw` 级：表情 / 身体 / 衣物 / 展示与暗示）、负向、sensitive～nsfw 级模板（纯文字）；性行为 / 体液 / 群交 / 癖好 / 极端标签不进站 |
 | 开发者选修（《补充B》：HTTP API / 无界面 / 自定义节点） | 已迁移为阶段 5 末尾的两篇选修课（`elective: true`，不计入 14 天进度） |
-| 示例图（76 处占位，清单见 `npm run check:site`） | 待换机器补图 |
-| L0–L8 工作流 JSON、四个工具（实验记录本 / 提示词检查器 / 排错向导 / 误区自测） | 提示词检查器已做（`/tools/prompt-lint/`，18 条规则）；其余三个工具与工作流 JSON 待做 |
+| 示例图（76 处占位，清单见 `npm run check:site`） | 54 张已补（`scripts/figures/`，全部用官方 `anima-base-v1.0` 等权重）；剩 22 张：10 张界面截图要手动截，8 张等插件或角色 LoRA（WD14、Impact Pack、UltimateSDUpscale、Depth Anything 3 节点、Civitai 角色 LoRA），4 张在 v1.0 与 preview3 上都没复现课程说法（标签传染、eye contact 标签优势、NAG、路线 A 背景加物件） |
+| L0–L8 工作流 JSON、四个工具（实验记录本 / 提示词检查器 / 排错向导 / 误区自测） | 提示词检查器已做（`/tools/prompt-lint/`，18 条规则）；L0 / L1 / L2 / L3 / L4 / L5 / L6 / L7 / L8 的工作流 JSON 由 `scripts/figures/to_workflow.py --all` 生成到 `public/workflows/`（自动布局，拖进画布即可加载）；其余三个工具待做 |
 
 ## 技术栈
 

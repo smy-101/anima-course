@@ -38,15 +38,18 @@ figures:
     caption: "传染对照：逗号写法 vs and 法（红眼串到另一人 / 不串）"
     group: 多人
   - id: pm-order
+    src: ../../assets/figures/pm-order.webp
     caption: "同一提示词，两人描述顺序对调前后"
     group: 多人
   - id: pm-eye-contact
     caption: "eye contact 标签 vs 自然语言“面对面”"
     group: 多人
   - id: pm-background
+    src: ../../assets/figures/pm-background.webp
     caption: "背景一片白 vs 具体描述背景 / 加 scenery"
     group: 场景
   - id: pm-sheet
+    src: ../../assets/figures/pm-sheet.webp
     caption: "角色设定图：character design sheet 的输出"
     group: 场景
 transfers: false

@@ -33,12 +33,15 @@ acceptance:
   - 两段挂了不同模型补丁（如前段 Turbo LoRA + CFG 覆盖 cfg 1，后段 Base + cfg 4）并对照过“前段快、后段精”的效果
 figures:
   - id: l7-basic-guider
-    caption: "同 seed：K采样器 Turbo（左）与 基本引导器 + 自定义采样器（右），标注耗时"
+    src: ../../assets/figures/l7-basic-guider.webp
+    caption: "同 seed、cfg 1、30 步：K采样器（左）和基本引导器 + 自定义采样器（右），画面一致，标注耗时"
     group: 基本引导器
   - id: l7-two-stage
+    src: ../../assets/figures/l7-two-stage.webp
     caption: "两段采样：0–15 步 Turbo LoRA + cfg 1，15–30 步 Base + cfg 4"
     group: 两段采样
   - id: l7-vs-oneshot
+    src: ../../assets/figures/l7-vs-oneshot.webp
     caption: "两段采样 vs 单段 Base 30 步（同 seed）"
     group: 两段采样
 transfers: true

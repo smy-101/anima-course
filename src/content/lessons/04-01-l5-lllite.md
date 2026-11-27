@@ -34,9 +34,11 @@ acceptance:
   - Canny 与深度两张对比图都拼好了，能说出哪种控制更贴、哪种更自由，连同 strength 对照记进实验记录本
 figures:
   - id: l5-canny-control
+    src: ../../assets/figures/l5-canny-control.webp
     caption: "Canny（0.17、0.45）再反转后的控制图（白底黑线）"
     group: Canny
   - id: l5-canny-result
+    src: ../../assets/figures/l5-canny-result.webp
     caption: "同一提示词、any-test-like-v2 的成图，与控制图并排（ImageCompare）"
     group: Canny
   - id: l5-depth-control
@@ -46,6 +48,7 @@ figures:
     caption: "depth-1 的成图，与深度图并排"
     group: 深度
   - id: l5-strength
+    src: ../../assets/figures/l5-strength.webp
     caption: "strength 0.8 / 1.0 / 1.2 对照（同一 Canny 控制图）"
     group: strength
 transfers: true

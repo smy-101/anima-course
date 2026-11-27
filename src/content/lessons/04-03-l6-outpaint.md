@@ -28,12 +28,15 @@ acceptance:
   - 做过 denoise 0.35 / 0.45 的对照，没有“修过头”
 figures:
   - id: l6-outpaint-before
+    src: ../../assets/figures/l6-outpaint-before.webp
     caption: "扩图前：横图与外补画板补出的边（MASK 白 = 新区域）"
     group: 扩图
   - id: l6-outpaint-after
-    caption: "扩图后：方图，新区域与原图风格一致"
+    src: ../../assets/figures/l6-outpaint-after.webp
+    caption: "扩图后：方图，新区域与原图风格一致（路线 C 通用重绘）"
     group: 扩图
   - id: l6-crop-hand
+    src: ../../assets/figures/l6-crop-hand.webp
     caption: "裁剪法修手：裁剪框放大到 1 MP 重绘，再缩回贴回"
     group: 裁剪法
   - id: l6-detailer

@@ -32,9 +32,11 @@ acceptance:
   - 重绘的提示词只写了遮罩里的内容，没有写整张图
 figures:
   - id: l6-b-before
-    caption: "路线 B 换表情：原图与涂好的遮罩（MaskPreview）"
+    src: ../../assets/figures/l6-b-before.webp
+    caption: "路线 B 换表情：原图与涂好的遮罩（GrowMask 8，白 = 重绘区）"
     group: 换表情
   - id: l6-b-after
+    src: ../../assets/figures/l6-b-after.webp
     caption: "路线 B 换表情：重绘后，未遮罩区域保持不变"
     group: 换表情
   - id: l6-a-before

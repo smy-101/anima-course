@@ -33,6 +33,7 @@ figures:
     caption: "右侧面板“问题”页里的缺失模型列表与一键下载按钮"
     group: 界面
   - id: setup-first
+    src: ../../assets/figures/setup-first.webp
     caption: "用模板示例提示词出的第一张图"
     group: 第一张图
 transfers: false

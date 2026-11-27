@@ -34,10 +34,12 @@ acceptance:
   - 用过 Run 栏的批量次数或 Run (On Change) 队列模式
 figures:
   - id: l8-grid
+    src: ../../assets/figures/l8-grid.webp
     caption: "3 模型（列）× 4 种子（行）网格，Base / Aesthetic / Turbo，同 seed、同提示词"
     group: 网格
   - id: l8-loop
-    caption: "渐进放大循环，从 1024² 逐轮放大到 1280²、1600²、2048²，每轮 denoise 0.35"
+    src: ../../assets/figures/l8-loop.webp
+    caption: "渐进放大循环，从 1024² 逐轮放大到 1280²、1600²、2048²，每轮 denoise 0.35；2048² 这轮未挂 highres LoRA，脸上出现波点伪影"
     group: 循环
   - id: l8-filenames
     caption: "输出目录 Anima/L4_hires_d0.4_s1.5/，按参数自动分目录"

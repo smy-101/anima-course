@@ -35,27 +35,35 @@ acceptance:
   - 实验记录本记下今天的“今日基线”：Turbo 试稿参数与 Aesthetic 成品参数各一行
 figures:
   - id: l3-denoise-020
+    src: ../../assets/figures/l3-denoise-020.webp
     caption: "同一输入图，denoise 0.2：只补细节，五官不变"
     group: denoise
   - id: l3-denoise-035
+    src: ../../assets/figures/l3-denoise-035.webp
     caption: "denoise 0.35：Anima“只补细节不改五官”的上限"
     group: denoise
   - id: l3-denoise-050
+    src: ../../assets/figures/l3-denoise-050.webp
     caption: "denoise 0.5：结构不变、细节重画"
     group: denoise
   - id: l3-denoise-070
+    src: ../../assets/figures/l3-denoise-070.webp
     caption: "denoise 0.7：开始改表情与局部"
     group: denoise
   - id: l3-denoise-100
+    src: ../../assets/figures/l3-denoise-100.webp
     caption: "denoise 1.0：等于文生图，只借了尺寸"
     group: denoise
   - id: l3-turbo-draft
+    src: ../../assets/figures/l3-turbo-draft.webp
     caption: "Turbo 8 步 / CFG 1 的试稿（seed 固定）"
     group: 两段
   - id: l3-aesthetic-final
+    src: ../../assets/figures/l3-aesthetic-final.webp
     caption: "同一 seed 换 Aesthetic 30 步 / CFG 4 的成品（方式 1）"
     group: 两段
   - id: l3-latent-refine
+    src: ../../assets/figures/l3-latent-refine.webp
     caption: "Turbo 潜空间经 Aesthetic 以 denoise 0.4 精修（方式 2）：构图与试稿一致"
     group: 两段
 transfers: true

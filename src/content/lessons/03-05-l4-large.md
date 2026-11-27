@@ -28,15 +28,18 @@ acceptance:
   - 知道脸 / 手问题要在放大之前解决，并能说出原因
 figures:
   - id: l4-two-stage
-    caption: "两段放大：1024² 先到 1536²（1.5×，denoise 0.4），再到 2048²（指定尺寸，denoise 0.3）"
+    src: ../../assets/figures/l4-two-stage.webp
+    caption: "两段放大：1024² 先到 1536²（1.5×，denoise 0.4），再到 2048²（指定尺寸，denoise 0.3，挂 anima-highres-aesthetic-boost）"
     group: 2048²
   - id: l4-tiled
     caption: "分块放大：UltimateSDUpscale 2×、tile 1024、denoise 0.35 的 2048²"
     group: 2048²
   - id: l4-highres-lora
+    src: ../../assets/figures/l4-highres-lora.webp
     caption: "同 seed 1536²：不挂 / 挂 anima-highres-aesthetic-boost"
     group: highres LoRA
   - id: l4-sharpen
+    src: ../../assets/figures/l4-sharpen.webp
     caption: "放大后：未锐化 / ImageSharpen alpha 0.4 并排（局部放大）"
     group: 放大后处理
 transfers: true

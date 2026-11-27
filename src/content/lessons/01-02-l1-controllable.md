@@ -28,9 +28,11 @@ figures:
     caption: "L1 连线全图：三处改动（尺寸 / 模型开关 / 步数与 CFG 开关）"
     group: 管线
   - id: l1-turbo-vs-full
+    src: ../../assets/figures/l1-turbo-vs-full.webp
     caption: "同 seed、同提示词：Turbo（8 步 / CFG 1）与 Full（30 步 / CFG 4）并排"
     group: 开关
   - id: l1-lora-strength
+    src: ../../assets/figures/l1-lora-strength.webp
     caption: "Turbo LoRA 强度 1.0 / 0.8 / 0.7 对照"
     group: LoRA 强度
   - id: l1-subgraph-compare

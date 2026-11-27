@@ -28,21 +28,27 @@ acceptance:
   - 实验记录本记下了“放大基线”：路线、倍率、denoise、放大模型
 figures:
   - id: l4-route-a
+    src: ../../assets/figures/l4-route-a.webp
     caption: "路线 A：只放大不重画，1536²，线条变实但没有新细节"
     group: 三路线
   - id: l4-route-b
+    src: ../../assets/figures/l4-route-b.webp
     caption: "路线 B：Latent 放大 1.5× 后二次采样 denoise 0.4，1536²"
     group: 三路线
   - id: l4-route-c
+    src: ../../assets/figures/l4-route-c.webp
     caption: "路线 C：放大模型放大、缩到目标像素、图生图 denoise 0.4，1536²"
     group: 三路线
   - id: l4-denoise-030
+    src: ../../assets/figures/l4-denoise-030.webp
     caption: "二次采样 denoise 0.3：几乎不改，只锐化线条"
     group: 二次采样 denoise
   - id: l4-denoise-040
+    src: ../../assets/figures/l4-denoise-040.webp
     caption: "denoise 0.4：补细节、不改构图（Anima 起点值）"
     group: 二次采样 denoise
   - id: l4-denoise-050
+    src: ../../assets/figures/l4-denoise-050.webp
     caption: "denoise 0.5：明显重绘，五官可能变"
     group: 二次采样 denoise
 transfers: true
