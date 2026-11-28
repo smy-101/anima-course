@@ -21,9 +21,11 @@ acceptance:
   - 子图里带一张 Markdown 便签，写着当前的参数基线与四条纪律
 figures:
   - id: review-subgraph
+    src: ../../assets/figures/review-subgraph.webp
     caption: "收成子图后的画布：子图节点、分辨率选择器、保存节点和便签"
     group: 子图
   - id: review-library
+    src: ../../assets/figures/review-library.webp
     caption: "节点库里自己的蓝图：My Blueprints / Comfy Blueprints 中的 Anima T2T"
     group: 子图
 transfers: false
@@ -89,7 +91,7 @@ verified: 2026-11-24
 | 现象 | 原因 / 处理 |
 |---|---|
 | 子图节点上看不到某个控件 | 参数面板里把它隐藏了，或它属于没被收进子图的节点；双击进去确认 |
-| 拖出来的子图缺模型 / 变红 | 模型名控件的默认值指向你机器上不存在的文件；在子图节点上重新选 |
+| 拖出来的子图缺模型 | 模型名控件的默认值指向你机器上不存在的文件；在子图节点上重新选 |
 | 子图里的 `turbo_mode` 开关在外面没反应 | 三个切换节点的 `switch` 没接到同一个布尔值；进子图检查 |
 | 改了一份蓝图副本，别的工作流没跟着变 | 正常，蓝图拖出来的副本相互独立。要统一更新就改节点库里的蓝图再重新拖 |
 | 找不到“添加子图到库” | 前端版本低于 1.27.7，更新 ComfyUI |

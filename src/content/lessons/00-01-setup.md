@@ -24,13 +24,16 @@ acceptance:
   - 把生成的 PNG 拖回画布，看到了内嵌的工作流
 figures:
   - id: setup-ui
+    src: ../../assets/figures/setup-ui.webp
     caption: "ComfyUI 界面地图：左侧栏、顶栏、画布 Run 栏、右侧面板"
     group: 界面
   - id: setup-template
+    src: ../../assets/figures/setup-template.webp
     caption: "官方 “Anima Base v1” 模板加载后的画布：子图 + 分辨率选择器 + 保存节点 + 便签"
     group: 界面
   - id: setup-missing
-    caption: "右侧面板“问题”页里的缺失模型列表与一键下载按钮"
+    src: ../../assets/figures/setup-missing.webp
+    caption: "加载模板后，右侧面板“问题”页列出缺失的模型和它该放的目录。这一页没有下载按钮，模型名旁的两个图标是打开模型页面和定位节点"
     group: 界面
   - id: setup-first
     src: ../../assets/figures/setup-first.webp
@@ -189,7 +192,7 @@ Latent（潜空间）可以理解为图片的高度压缩版。1024×1024 的图
 
 1. 把 ComfyUI 更新到最新。
 2. 点侧栏的 **模板**，搜 **Anima Base v1**，选“Anima Base v1: Text to Image”。
-3. 加载后，相关加载节点会变红，右侧面板“问题”页会列出缺失的模型。点每行的 **Download / Download all**。也可以手动从 Hugging Face 下载，按上面的目录表放好，再按 `R` 刷新。
+3. 加载后，缺模型的加载节点会变成橙色并带上“问题”角标，顶部提示“xx 缺失”。右侧面板“问题”页列出缺失的模型和它该放的目录，这一页没有下载按钮：点模型名旁的链接图标打开模型页面。也可以直接从 Hugging Face 下载，按上面的目录表放好，再按 `R` 刷新。
 4. 在子图节点里填提示词，先用模板自带的示例。确认分辨率是 1:1。
 5. 把 K采样器的 seed 设为 **fixed**，以后所有对比都靠它。
 6. 点 **运行**，或按 `Ctrl+Enter`。
@@ -237,7 +240,7 @@ PNG 里嵌的工作流能还原当时怎么连的，但还原不了你在对比�
 
 | 现象 | 原因 | 解决 |
 |---|---|---|
-| 加载节点变红，提示 missing | 文件没下，或放错目录 | 对照目录表；放好后按 `R` |
+| 加载节点变成橙色、带“问题”角标，顶部提示“xx 缺失” | 文件没下，或放错目录 | 对照目录表；放好后按 `R` |
 | 找不到“Anima”模板 | ComfyUI 或模板依赖太旧 | 更新 ComfyUI 及依赖；桌面版切到 GitHub 最新版 |
 | 加载工作流时提示节点缺失 | 用了含第三方节点的工作流 | 看右侧面板缺哪个节点，用 Manager 装 |
 | 启动日志有 `import failed` | 自定义节点依赖缺失，或与新版本不兼容 | 用 `--disable-all-custom-nodes` 排查，逐个定位。见[启动参数](/resources/startup-args/) |

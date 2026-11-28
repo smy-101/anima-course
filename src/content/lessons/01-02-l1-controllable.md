@@ -25,6 +25,7 @@ acceptance:
   - 拖入官方“Anima Base v1”模板，双击子图，逐节点、逐数值、逐连线对照过自己的工作流
 figures:
   - id: l1-wiring
+    src: ../../assets/figures/l1-wiring.webp
     caption: "L1 连线全图：三处改动（尺寸 / 模型开关 / 步数与 CFG 开关）"
     group: 管线
   - id: l1-turbo-vs-full
@@ -36,6 +37,7 @@ figures:
     caption: "Turbo LoRA 强度 1.0 / 0.8 / 0.7 对照"
     group: LoRA 强度
   - id: l1-subgraph-compare
+    src: ../../assets/figures/l1-subgraph-compare.webp
     caption: "官方模板子图内部 17 节点 vs 自搭工作流的对照截图"
     group: 对照
 transfers: true

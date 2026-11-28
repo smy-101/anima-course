@@ -59,6 +59,10 @@ def main(argv=None):
     fmap = figure_map()
     done, skipped = [], []
     for fid, png in sorted(fmap.items()):
+        if png.parent.name == "screens":
+            # 界面截图：不是 ComfyUI 直出的图，没有工作流可嵌，也不进原图包
+            skipped.append(fid)
+            continue
         if check_only:
             t = read_texts(png)
             n = len(json.loads(t["workflow"])["nodes"]) if "workflow" in t else 0

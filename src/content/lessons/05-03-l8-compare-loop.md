@@ -42,6 +42,7 @@ figures:
     caption: "渐进放大循环，从 1024² 逐轮放大到 1280²、1600²、2048²，每轮 denoise 0.35；2048² 这轮未挂 highres LoRA，脸上出现波点伪影"
     group: 循环
   - id: l8-filenames
+    src: ../../assets/figures/l8-filenames.webp
     caption: "输出目录 Anima/L4_hires_d0.4_s1.5/，按参数自动分目录"
     group: 文件名
 transfers: true
@@ -57,7 +58,7 @@ sources:
     note: "ImageStitch 支持批次，按索引逐张拼"
   - badge: 源码
     url: https://github.com/comfyanonymous/ComfyUI/blob/master/nodes.py
-    note: "SaveImage.filename_prefix 支持 %date:yyyy-MM-dd%、%节点名.参数%"
+    note: "SaveImage.filename_prefix 支持 %date:yyyy-MM-dd%、%节点名.参数%；前缀最后一段是文件名开头，要分目录得在它前面再写一段（2026-11-28 在 ComfyUI 0.46.4 上实测）"
   - badge: 官方
     url: https://docs.comfy.org/zh/interface/overview
     note: Run 栏：批量次数、队列模式
@@ -120,7 +121,7 @@ EndLoop.outputs ──LATENT──▶ VAEDecode ──▶ SaveImage
 
 ## 文件名变量
 
-`保存图像` 的前缀支持 `%date:yyyy-MM-dd%` 与 `%节点名.参数%`。调参阶段写成 `Anima/L4_hires_d%KSampler.denoise%_s%LatentUpscaleBy.scale_by%`，每个参数组合一个目录，图不会混。**变量名写的是节点标题，不是类名**。要更复杂的拼法用 字符串格式化，例如 `Anima/L4_hires_d{a}_s{b}`，a 和 b 接两个参数。
+`保存图像` 的前缀支持 `%date:yyyy-MM-dd%` 与 `%节点名.参数%`。调参阶段写成 `Anima/L4_hires_d%KSampler.denoise%_s%LatentUpscaleBy.scale_by%/img`，每个参数组合一个目录，图不会混。前缀的最后一段是文件名的开头，前面的每一段是一个目录；只在末尾加斜杠不算，最后一段不能省。**变量名写的是节点标题，不是类名**。要更复杂的拼法用 字符串格式化，例如 `Anima/L4_hires_d{a}_s{b}/img`，a 和 b 接两个参数。
 
 ## 动手步骤
 

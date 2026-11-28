@@ -31,7 +31,8 @@ const spanOf = (n: number) => (n <= 2 ? 1 : n <= 4 ? 2 : 4);
     <section class="figures" aria-labelledby="figures-h">
       <h2 id="figures-h">对照图</h2>
       <p class="verified">
-        所有对照图固定种子、固定提示词。ComfyUI 直出的 PNG 内嵌工作流，拖回画布即可还原该级工作流。
+        所有对照图固定种子、固定提示词。ComfyUI 直出的 PNG 内嵌工作流，拖回画布即可还原该级工作流；界面截图是本站在同一套环境里截的。
+        点任一张图可以在新标签页看原尺寸，界面截图尤其要看大图。
         {todo > 0 && <> 目前还有 {todo} 张待补，占位块上写着要补什么。</>}
       </p>
       <div class="figure-groups">
@@ -42,7 +43,9 @@ const spanOf = (n: number) => (n <= 2 ? 1 : n <= 4 ? 2 : 4);
               {figs.map((f) => (
                 <figure class="figure" data-figure-id={f.id} data-figure-group={group}>
                   {f.src ? (
-                    <Image src={f.src} alt={f.caption} widths={[320, 480, 640]} sizes="(max-width: 640px) 100vw, 18rem" />
+                    <a class="figure-open" href={f.src.src} target="_blank" rel="noopener" title="在新标签页查看原尺寸" aria-label={`查看大图：${f.caption}`}>
+                      <Image src={f.src} alt={f.caption} widths={[320, 480, 640]} sizes="(max-width: 640px) 100vw, 18rem" />
+                    </a>
                   ) : (
                     <div class="figure-placeholder" data-figure-todo={f.caption}>
                       <span class="tag">待补图</span>

@@ -26,7 +26,7 @@ tags:
   - lineart
 deliverable: "两张控制图与成图的并排对比：Canny（any-test-like-v2）一张、深度（depth-1）一张。"
 acceptance:
-  - LLLite 权重放在 models/model_patches/，ModelPatchLoader 没有变红
+  - LLLite 权重放在 models/model_patches/，ModelPatchLoader 没有出现“问题”角标
   - 能说出 Anima 的结构控制为什么接在 MODEL 线上而不是条件线上
   - 用 PreviewImage 确认过控制图本身是对的（线稿白底黑线、深度图近白远黑）
   - 画布尺寸用 GetImageSize 对齐了控制图，成图的边没有被裁
@@ -167,7 +167,7 @@ VAEDecode.IMAGE ──▶ ImageCompare.image_b；控制图（缩放后）──�
 
 | 现象 | 原因 / 处理 |
 |---|---|
-| `ModelPatchLoader` 变红 | 文件放错目录（必须 `models/model_patches/`），放好按 `R` |
+| `ModelPatchLoader` 变成橙色、带“问题”角标 | 文件放错目录（必须 `models/model_patches/`），放好按 `R` |
 | 控制图边缘被裁 | 没把 `GetImageSize` 接到 `EmptyLatentImage`，画布比例与控制图不一致 |
 | 控制太弱 | 换 v2 代权重（any / inpainting）；Preview3 代的四种在 v1.0 上本来就弱；或提高 strength |
 | 控制图的花纹出现在成图里 | strength 过高，或控制图分辨率远高于输出（先缩到 1 MP） |

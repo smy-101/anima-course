@@ -20,9 +20,20 @@ const OUT = join(ROOT, 'figures-out');
 const DEST = join(ROOT, 'src', 'assets', 'figures');
 const LESSONS = join(ROOT, 'src', 'content', 'lessons');
 
-/** 图 id → { dir, pattern, lesson } 。pattern 匹配 figures-out/<dir>/ 下的文件名（取第一个）。 */
+/** 图 id → { dir, pattern, lesson, edge? } 。pattern 匹配 figures-out/<dir>/ 下的文件名（取第一个）；edge 是站内副本的长边上限，默认 MAX_EDGE。 */
 const MAP = {
   'setup-first': { lesson: '00-01-setup', dir: 'setup-first', pattern: /^setup-first_.*\.png$/ },
+
+  // ---- 界面截图（scripts/figures/screenshots.mjs）。文字密集、压缩率极高，按原始 2 倍分辨率存，点开大图才读得出节点上的字
+  'setup-ui': { lesson: '00-01-setup', dir: 'screens', pattern: /^setup-ui\.png$/, edge: 3200 },
+  'setup-template': { lesson: '00-01-setup', dir: 'screens', pattern: /^setup-template\.png$/, edge: 3200 },
+  'setup-missing': { lesson: '00-01-setup', dir: 'screens', pattern: /^setup-missing\.png$/, edge: 3200 },
+  'l0-pipeline': { lesson: '01-01-l0-minimal', dir: 'screens', pattern: /^l0-pipeline\.png$/, edge: 3200 },
+  'l1-wiring': { lesson: '01-02-l1-controllable', dir: 'screens', pattern: /^l1-wiring\.png$/, edge: 3200 },
+  'l1-subgraph-compare': { lesson: '01-02-l1-controllable', dir: 'screens', pattern: /^l1-subgraph-compare\.png$/, edge: 3200 },
+  'review-subgraph': { lesson: '03-03-review-blueprint', dir: 'screens', pattern: /^review-subgraph\.png$/, edge: 3200 },
+  'review-library': { lesson: '03-03-review-blueprint', dir: 'screens', pattern: /^review-library\.png$/, edge: 3200 },
+  'l8-filenames': { lesson: '05-03-l8-compare-loop', dir: 'screens', pattern: /^l8-filenames\.png$/, edge: 3200 },
 
   'l0-seed-a': { lesson: '01-01-l0-minimal', dir: 'l0-seed-a', pattern: /^l0-seed-a_.*\.png$/ },
   'l0-seed-b': { lesson: '01-01-l0-minimal', dir: 'l0-seed-b', pattern: /^l0-seed-b_.*\.png$/ },
@@ -88,7 +99,7 @@ const MAP = {
   'l8-grid': { lesson: '05-03-l8-compare-loop', dir: 'l8b-grid', pattern: /^l8b-grid_.*\.png$/ },
 };
 
-/** 站内副本的最大长边与质量；原图另存 Releases */
+/** 站内副本的最大长边与质量；原图另存 Releases。个别图（界面截图）在 MAP 里单独给 edge */
 const MAX_EDGE = 1600;
 const QUALITY = 82;
 
@@ -103,7 +114,8 @@ function findSource(id) {
 async function convert(id, src) {
   mkdirSync(DEST, { recursive: true });
   const dst = join(DEST, `${id}.webp`);
-  await sharp(src).rotate().resize({ width: MAX_EDGE, height: MAX_EDGE, fit: 'inside', withoutEnlargement: true })
+  const edge = MAP[id].edge || MAX_EDGE;
+  await sharp(src).rotate().resize({ width: edge, height: edge, fit: 'inside', withoutEnlargement: true })
     .webp({ quality: QUALITY, effort: 6 }).toFile(dst);
   const meta = await sharp(dst).metadata();
   return { dst, width: meta.width, height: meta.height };

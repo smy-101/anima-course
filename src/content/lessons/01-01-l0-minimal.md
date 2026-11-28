@@ -38,6 +38,7 @@ acceptance:
   - 把官方模板“Anima Base v1”拖进画布，双击子图，和自己搭的对比过节点、数值与连线
 figures:
   - id: l0-pipeline
+    src: ../../assets/figures/l0-pipeline.webp
     caption: "L0 基线管线：9 节点连线截图，标注端口颜色与数据类型"
     group: 管线
   - id: l0-seed-a
@@ -166,7 +167,7 @@ verified: 2026-11-24
 
 | 现象 | 原因 / 处理 |
 |---|---|
-| 三个加载器变红 | 文件没下或放错目录，对照[准备课](/lessons/00-01-setup/)的目录表。放好后按 `R` |
+| 三个加载器变成橙色、带“问题”角标 | 文件没下或放错目录，对照[准备课](/lessons/00-01-setup/)的目录表。放好后按 `R` |
 | 下拉里没有刚放进去的文件 | 按 `R` 刷新。子文件夹里的文件可能检测不到，手动在节点里选 |
 | 出图全黑 | `VAEDecode.vae` 没接 |
 | 显存不足 | 降到 768×1024 一类约 0.8 MP 的尺寸。`weight_dtype` 保持 default，Anima 以 bf16 为主，fp16 的显存估算系数反而更高 |
