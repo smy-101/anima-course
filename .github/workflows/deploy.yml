@@ -32,9 +32,8 @@ jobs:
       - name: 待补图、死链与文风检查
         # 走 npm script 而不是直接跑 check-site.mjs：文风检查（prose-lint）挂在后面，直接跑会绕过它
         run: npm run check:site >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
+      # 这里不要再传一次 pages artifact：withastro/action 构建完已经把 dist/ 传成名为 github-pages 的 artifact，
+      # 同名传第二次会冲突失败（2026-11-27 的首次部署就挂在这里）。检查失败时本 job 失败，deploy 不会跑。
 
   deploy:
     needs: build
