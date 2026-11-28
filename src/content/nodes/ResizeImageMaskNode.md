@@ -9,7 +9,7 @@ verified: 2026-11-24
 inputs:
   - { name: input, type: "IMAGE / MASK", desc: "图像或遮罩都行" }
 params:
-  - { name: resize_type, default: "—", range: "按尺寸 / 按倍率 / 按长边 / 按短边 / 按宽 / 按高 / 按总像素 / 匹配另一张图 / 缩放到某数的倍数", desc: "Anima 常用 **按总像素**（`megapixels 1.0`）；把过大的输入先缩到约 1 MP" }
+  - { name: resize_type, default: "—", range: "按尺寸 / 按倍率 / 按长边 / 按短边 / 按宽 / 按高 / 按总像素 / 匹配另一张图 / 缩放到某数的倍数", desc: "Anima 常用按总像素（megapixels 1.0）；把过大的输入先缩到约 1 MP" }
   - { name: megapixels, default: "1.0", range: "0.01 ~ 16", desc: "按总像素模式的目标；1.0 ≈ 1024×1024，保持比例" }
   - { name: multiplier, default: "1.0", range: "0.01 ~ 8", desc: "按倍率模式的倍率" }
   - { name: crop, default: "center", range: "disabled / center", desc: "比例不一致时：disabled 拉伸，center 裁剪" }

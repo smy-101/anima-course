@@ -9,8 +9,8 @@ verified: 2026-11-24
 inputs:
   - { name: image, type: IMAGE, desc: "原图" }
 params:
-  - { name: low_threshold, default: "0.4", range: "0.01 ~ 0.99", desc: "官方 Anima 模板用 **0.17**（多留细节）" }
-  - { name: high_threshold, default: "0.8", range: "0.01 ~ 0.99", desc: "官方 Anima 模板用 **0.45**" }
+  - { name: low_threshold, default: "0.4", range: "0.01 ~ 0.99", desc: "官方 Anima 模板用 0.17（多留细节）" }
+  - { name: high_threshold, default: "0.8", range: "0.01 ~ 0.99", desc: "官方 Anima 模板用 0.45" }
 outputs:
   - { name: IMAGE, type: IMAGE, desc: "边缘图：黑底白线" }
 ---

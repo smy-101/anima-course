@@ -40,6 +40,8 @@ const orderedSections = NSFW_SECTIONS.filter((s) => bySection.has(s)).map((s) =>
 const excerpt = (e: CollectionEntry<'nsfw'>) => {
   const text = (e.body ?? '')
     .replace(/```[\s\S]*$/g, '')
+    // 表格分隔行（| --- | --- |）去掉竖线后只剩一串横线，会把卡片摘要弄脏
+    .replace(/^[ \t]*\|?[ \t|:\-]*-{3,}[ \t|:\-]*\|?[ \t]*$/gm, '')
     .replace(/!?\[([^\]]*)\]\([^)]*\)/g, '$1')
     .replace(/[*`#>|]/g, '')
     .replace(/\s+/g, ' ')

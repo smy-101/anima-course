@@ -10,7 +10,7 @@ inputs:
 params:
   - { name: scheduler, default: "simple", range: "9 种，同 K采样器", desc: "Anima 用 simple" }
   - { name: steps, default: "20", range: "1 ~ 10000", desc: "Anima 30 / Turbo 8" }
-  - { name: denoise, default: "1.0", range: "0 ~ 1", desc: "只取时间表的后一段；**不减步数**（先按 int(steps/denoise) 生成更细的时间表再取最后 steps+1 段）" }
+  - { name: denoise, default: "1.0", range: "0 ~ 1", desc: "只取时间表的后一段；不减步数（先按 int(steps/denoise) 生成更细的时间表再取最后 steps+1 段）" }
 outputs:
   - { name: SIGMAS, type: SIGMAS, desc: "sigma 时间表，接 自定义采样器（高级） 的 sigmas" }
 ---

@@ -60,7 +60,7 @@ const polarityLabel = (p: string) => (p === '皆可' ? '正 / 负皆可' : `${p}
       <h2 id="traps-h">
         陷阱标签<span class="pill pill-todo">写提示词前先对照</span>
       </h2>
-      <p class="verified">这些"普通英文词"其实是标签，写进句子会定义整张图。写提示词前和排错时都对照一遍。</p>
+      <p class="verified">这些“普通英文词”其实是标签，写进句子会定义整张图。写提示词前和排错时都对照一遍。</p>
       <div class="dict">
         {traps.map((e) => (
           <a class="dict-row is-trap" href={url(`tags/${e.id}/`)} data-tag-search={searchKey(e)}>

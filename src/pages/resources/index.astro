@@ -25,8 +25,12 @@ const KIND_ICON: Record<string, IconName> = {
   基线: 'sliders',
   概念: 'lightbulb',
 };
-/** 摘要：去掉代码块、链接语法与强调符等 Markdown 记号后再截断 */
-const plain = (s: string) => s.replace(/`{3,}[\s\S]*$/g, '').replace(/!?:?\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/[*`#>|]/g, '').replace(/\s+/g, ' ').trim();
+/** 摘要：去掉代码块、表格分隔行、链接语法与强调符等 Markdown 记号后再截断 */
+const plain = (s: string) =>
+  s
+    .replace(/`{3,}[\s\S]*$/g, '')
+    .replace(/^[ \t]*\|?[ \t|:\-]*-{3,}[ \t|:\-]*\|?[ \t]*$/gm, '')
+    .replace(/!?:?\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/[*`#>|]/g, '').replace(/\s+/g, ' ').trim();
 const excerpt = (body: string | undefined) => {
   const text = plain(body ?? '');
   return text.length > 110 ? `${text.slice(0, 110)}…` : text;

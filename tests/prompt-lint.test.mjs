@@ -6,7 +6,7 @@ const OPTS = {
   version: 'base',
   traps: [
     { tag: 'wet', meaning: '皮肤 / 衣物湿透反光、满是水珠。', slug: 'wet' },
-    { tag: 'monochrome', meaning: '黑白图。', slug: 'monochrome' },
+    { tag: 'monochrome', meaning: '**黑白图**。', slug: 'monochrome' },
   ],
   tags: ['long hair', 'monochrome', '1girl', 'solo', 'blue eyes', 'black hair', 'safe'],
 };
@@ -49,6 +49,13 @@ test('陷阱标签只在正向报；放负向不报', () => {
   assert.equal(f.snippets[0], 'wet');
   const neg = lintPrompt('1girl, solo, safe', 'monochrome, blurry', OPTS);
   assert.equal(finding(neg, 'trap-tag'), undefined);
+});
+
+test('陷阱标签的说明是纯文本：标签卡 meaning 里的加粗标记不带进提示', () => {
+  const f = finding(lintPrompt('1girl, solo, safe, monochrome dress', '', OPTS), 'trap-tag');
+  assert.ok(f);
+  assert.ok(f.detail.includes('——黑白图。 想要'));
+  assert.ok(!f.detail.includes('**'));
 });
 
 test('安全等级：缺失是提示；写两个是错误；safe 与露骨标签同现是错误', () => {

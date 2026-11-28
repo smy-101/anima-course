@@ -68,7 +68,7 @@ export const COLUMNS: Column[] = [
   { key: 'expId', label: '实验 ID', variable: false, hint: 'E001；一个 ID = 一次扫描 = 一个变量' },
   { key: 'purpose', label: '目的', variable: false, hint: '你在对比什么（必须手写）' },
   { key: 'model', label: '模型 / LoRA（强度）', variable: true },
-  { key: 'prompt', label: '提示词（摘要）', variable: true, hint: '可写"见 PNG"' },
+  { key: 'prompt', label: '提示词（摘要）', variable: true, hint: '可写“见 PNG”' },
   { key: 'seed', label: 'seed', variable: true, hint: '参数对比时固定' },
   { key: 'resolution', label: '分辨率', variable: true, hint: '参数对比时固定' },
   { key: 'steps', label: 'steps', variable: true },
@@ -199,7 +199,7 @@ export function validateLog(log: LabLog): LabFinding[] {
   const push = (f: Omit<LabFinding, 'rowIds'> & { rowIds?: string[] }) => out.push({ rowIds: [], ...f });
 
   const noId = rows.filter((r) => !r.expId.trim());
-  if (noId.length) push({ rule: 'missing-id', severity: 'warn', title: '有行没填实验 ID', detail: '实验 ID 把"一次扫描"的几行绑在一起，也是文件名的目录名。', rowIds: noId.map((r) => r.id) });
+  if (noId.length) push({ rule: 'missing-id', severity: 'warn', title: '有行没填实验 ID', detail: '实验 ID 把“一次扫描”的几行绑在一起，也是文件名的目录名。', rowIds: noId.map((r) => r.id) });
   const noDate = rows.filter((r) => !r.date.trim());
   if (noDate.length) push({ rule: 'missing-date', severity: 'warn', title: '有行没填日期', detail: '今日基线按日期对；复盘也按日期回看。', rowIds: noDate.map((r) => r.id) });
 
@@ -212,7 +212,7 @@ export function validateLog(log: LabLog): LabFinding[] {
     datesById.get(k)!.add(r.date.trim());
   }
   for (const [k, dates] of datesById) {
-    if (dates.size > 1) push({ rule: 'id-reused', severity: 'warn', title: `${k.toUpperCase()} 在 ${[...dates].join('、')} 两天都用了`, detail: '一个实验 ID 只代表一次扫描；第二天换 ID，让"今日基线"能说清是从哪次实验来的。', rowIds: rows.filter((r) => r.expId.trim().toLowerCase() === k).map((r) => r.id) });
+    if (dates.size > 1) push({ rule: 'id-reused', severity: 'warn', title: `${k.toUpperCase()} 在 ${[...dates].join('、')} 两天都用了`, detail: '一个实验 ID 只代表一次扫描；第二天换 ID，让“今日基线”能说清是从哪次实验来的。', rowIds: rows.filter((r) => r.expId.trim().toLowerCase() === k).map((r) => r.id) });
   }
 
   // 一个实验 ID 只改一个变量
@@ -236,9 +236,9 @@ export function validateLog(log: LabLog): LabFinding[] {
   }
 
   const noResult = rows.filter((r) => !r.result.trim());
-  if (noResult.length) push({ rule: 'result-missing', severity: 'warn', title: `${noResult.length} 行没写结论`, detail: '失败也记——"3.5 发色丢失"是信息，否则会重复踩。', rowIds: noResult.map((r) => r.id) });
+  if (noResult.length) push({ rule: 'result-missing', severity: 'warn', title: `${noResult.length} 行没写结论`, detail: '失败也记——“3.5 发色丢失”是信息，否则会重复踩。', rowIds: noResult.map((r) => r.id) });
   const bare = rows.filter((r) => RESULT_BARE.test(r.result.trim()));
-  if (bare.length) push({ rule: 'result-why', severity: 'warn', title: '结论只写了"好 / 坏"', detail: '结论列必须写"为什么"：线条、颜色、构图哪里变了，不然明天回看等于没记。', rowIds: bare.map((r) => r.id) });
+  if (bare.length) push({ rule: 'result-why', severity: 'warn', title: '结论只写了“好 / 坏”', detail: '结论列必须写“为什么”：线条、颜色、构图哪里变了，不然明天回看等于没记。', rowIds: bare.map((r) => r.id) });
 
   const dates = new Set(rows.map((r) => r.date.trim()).filter(Boolean));
   const baselineDates = new Set(log.baselines.map((b) => b.date.trim()));

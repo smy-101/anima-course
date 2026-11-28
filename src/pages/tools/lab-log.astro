@@ -16,8 +16,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     <header class="page-head">
       <h1>实验记录本</h1>
       <p class="lead">
-        PNG 里嵌的工作流能还原"当时怎么连的"，还原不了"你在对比什么、你觉得哪张更好、为什么"。这张表照<a href={url('resources/experiment-log/')}>实验记录模板</a>来：
-        <strong>一个实验 ID = 一次扫描 = 一个变量</strong>，结论必须写"为什么"，每天最后一行写今日基线。
+        PNG 里嵌的工作流能还原“当时怎么连的”，还原不了“你在对比什么、你觉得哪张更好、为什么”。这张表照<a href={url('resources/experiment-log/')}>实验记录模板</a>来：
+        <strong>一个实验 ID = 一次扫描 = 一个变量</strong>，结论必须写“为什么”，每天最后一行写今日基线。
         「生成扫描」替你把 N 行复制好、只留变量列要填；「检查结果」按<a href={url('lessons/02-01-l2-sweeps/')}>一次只改一个变量</a>的纪律挑出记错的地方。
         <strong>纯前端，不上传</strong>，记录只存在你的浏览器里，随时导出 CSV / Markdown / JSON 带走。
       </p>
@@ -37,7 +37,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       <ol>
         <li>开工先看昨天的<strong>今日基线</strong>（模型 / 采样器 / cfg / steps / denoise），新实验从它出发。</li>
         <li>选变量、填取值（如 cfg 的 <code>3.5</code> / <code>4</code> / <code>4.5</code>），点<strong>生成扫描</strong>：日期取今天、ID 取下一个、文件名按 <code>Anima/E003/00001</code> 编好。把 <code>filename_prefix</code> 设成同一个前缀，表和图就对上了。</li>
-        <li>手写<strong>目的</strong>与<strong>结论</strong>。同一 ID 内留空的参数格表示"同上"，占位里会写出继承到的值；参数本身允许写"见 PNG"。</li>
+        <li>手写<strong>目的</strong>与<strong>结论</strong>。同一 ID 内留空的参数格表示“同上”，占位里会写出继承到的值；参数本身允许写“见 PNG”。</li>
         <li>看<strong>检查结果</strong>：红色是归因不了的（同时改了两个变量），黄色是明天回看会白记的（没写为什么、ID 跨天复用），蓝色是提醒（今天还没写基线）。</li>
         <li>收工写<strong>今日基线</strong>（会从最后一行预填），导出 CSV 存档或 Markdown 贴进笔记。</li>
       </ol>
@@ -50,9 +50,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           <thead><tr><th>级别</th><th>查什么</th><th>为什么</th><th>详见</th></tr></thead>
           <tbody>
             <tr><td>错误</td><td>同一实验 ID 下改了两个及以上变量</td><td>改了两个就没法归因：拆成两次扫描，或把另一个固定回基线</td><td><a href={url('lessons/02-01-l2-sweeps/')}>L2 一维扫描与网格</a></td></tr>
-            <tr><td>提醒</td><td>结论只写了"好 / 坏 / 不错"</td><td>结论列必须写"为什么"：线条、颜色、构图哪里变了，不然明天回看等于没记</td><td><a href={url('resources/experiment-log/#记录规则')}>记录规则</a></td></tr>
-            <tr><td>提醒</td><td>有行没写结论</td><td>失败也记——"3.5 发色丢失"是信息，否则会重复踩</td><td><a href={url('resources/experiment-log/#记录规则')}>记录规则</a></td></tr>
-            <tr><td>提醒</td><td>有行没填实验 ID 或日期</td><td>ID 把"一次扫描"的几行绑在一起，也是文件名的目录名；今日基线按日期对</td><td><a href={url('resources/experiment-log/#记录规则')}>记录规则</a></td></tr>
+            <tr><td>提醒</td><td>结论只写了“好 / 坏 / 不错”</td><td>结论列必须写“为什么”：线条、颜色、构图哪里变了，不然明天回看等于没记</td><td><a href={url('resources/experiment-log/#记录规则')}>记录规则</a></td></tr>
+            <tr><td>提醒</td><td>有行没写结论</td><td>失败也记——“3.5 发色丢失”是信息，否则会重复踩</td><td><a href={url('resources/experiment-log/#记录规则')}>记录规则</a></td></tr>
+            <tr><td>提醒</td><td>有行没填实验 ID 或日期</td><td>ID 把“一次扫描”的几行绑在一起，也是文件名的目录名；今日基线按日期对</td><td><a href={url('resources/experiment-log/#记录规则')}>记录规则</a></td></tr>
             <tr><td>提醒</td><td>同一实验 ID 在两天都用了</td><td>一个 ID 只代表一次扫描；第二天换 ID，基线才说得清是从哪次实验来的</td><td><a href={url('resources/experiment-log/#记录规则')}>记录规则</a></td></tr>
             <tr><td>提示</td><td>同一 ID 下几行参数完全一样</td><td>同一 ID 下的几行应该只差一个变量；参数全同只是重复出图</td><td><a href={url('resources/experiment-log/#记录规则')}>记录规则</a></td></tr>
             <tr><td>提示</td><td>某天有实验却没有今日基线</td><td>每天最后一行写当前认定的最佳组合，第二天的实验从它出发</td><td><a href={url('resources/experiment-log/#记录规则')}>记录规则</a></td></tr>
@@ -64,7 +64,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     <section aria-labelledby="lab-not-h">
       <h2 id="lab-not-h">不查什么</h2>
       <p class="lead">
-        工具不替你判断哪张更好——那是看图的事。参数列写了"见 PNG"的，表里就只剩文件名，继承时也只看表里填的字。它也不连 ComfyUI：
+        工具不替你判断哪张更好——那是看图的事。参数列写了“见 PNG”的，表里就只剩文件名，继承时也只看表里填的字。它也不连 ComfyUI：
         要脚本自动跑扫描并把参数写进 CSV，走<a href={url('lessons/05-05-elective-api/')}>选修 A · HTTP API</a>；CSV 的表头照模板的列名写，就能导入这里继续手写结论。
       </p>
     </section>

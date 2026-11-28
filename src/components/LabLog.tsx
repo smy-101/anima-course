@@ -395,7 +395,7 @@ export default function LabLog({ basePath }: Props) {
           </table>
         </div>
       ) : (
-        <p className="lab-empty">表还是空的。「生成扫描」会按今日基线 / 上一行复制出 N 行，只改变量列；同一 ID 内留空的参数格表示"同上"（占位里会写出继承到的值）。</p>
+        <p className="lab-empty">表还是空的。「生成扫描」会按今日基线 / 上一行复制出 N 行，只改变量列；同一 ID 内留空的参数格表示“同上”（占位里会写出继承到的值）。</p>
       )}
 
       <section aria-labelledby="lab-baseline-h">
@@ -467,7 +467,7 @@ export default function LabLog({ basePath }: Props) {
         <button type="button" onClick={() => exportAs('json')}>导出 JSON</button>
         <button type="button" onClick={() => fileRef.current?.click()}>导入 CSV / JSON</button>
         <input ref={fileRef} type="file" accept=".csv,.json,text/csv,application/json" style={{ display: 'none' }} onChange={(e) => importFile(e.target.files?.[0])} />
-        <span className="muted">CSV 带 BOM，Excel 直接开；空白格按"同上"填好；今日基线附在表尾。</span>
+        <span className="muted">CSV 带 BOM，Excel 直接开；空白格按“同上”填好；今日基线附在表尾。</span>
       </div>
     </div>
   );

@@ -84,7 +84,7 @@ KSampler①.LATENT ──▶ LatentUpscaleBy(1.5, bislerp) ──▶ KSampler②
 
 ## 分块放大
 
-标准做法是先放大，再分块低 denoise 重绘，最后拼回。**每块都在模型的舒适分辨率内重绘，整图就不会“烧”。**代价是块与块之间有接缝。社区标准节点 `UltimateSDUpscale`（Manager 搜 `comfyui_ultimatesdupscale`）把放大、切块、每块 img2img、拼回、接缝修复打包成一个节点：
+标准做法是先放大，再分块低 denoise 重绘，最后拼回。**每块都在模型的舒适分辨率内重绘，整图就不会“烧”**。代价是块与块之间有接缝。社区标准节点 `UltimateSDUpscale`（Manager 搜 `comfyui_ultimatesdupscale`）把放大、切块、每块 img2img、拼回、接缝修复打包成一个节点：
 
 ```
 KSampler①.LATENT ──▶ VAEDecode① ──▶ UltimateSDUpscale.image
@@ -113,7 +113,7 @@ UltimateSDUpscale.IMAGE ──▶ SaveImage
 1. 轻度锐化：锐化图像 `ImageSharpen`，`sharpen_radius` 1 ~ 2、`alpha` 0.3 ~ 0.5 起步。平涂画风极易过头，与未锐化并排看局部再定。
 2. 最终构图裁切：图像裁剪 `ImageCropV2`，放大后的图按需要裁成成品比例。
 3. 交付格式：保存图像只输出 PNG（无损但大）；交付 / 分享用的 JPEG / WebP 在 ComfyUI 外批量转换最省事。
-4. **脸和手的问题要在放大之前解决（阶段 4 的路线 E）。**放大后再修，会把接缝和风格差一并放大。
+4. **脸和手的问题要在放大之前解决（阶段 4 的路线 E）**。放大后再修，会把接缝和风格差一并放大。
 
 阶段 3 到这里结束。你手里有了完整的出图流程：Turbo 试稿、Aesthetic 成品、LoRA、放大到 2048²。
 
@@ -136,7 +136,7 @@ UltimateSDUpscale.IMAGE ──▶ SaveImage
 | 分块放大 | 单块看是否烧；整图看接缝 | 接缝是否被锐化“强调” |
 | 重绘后放大（阶段 4） | 重绘区域无接缝 | 放大后接缝是否被放大模型强调 |
 
-原则不变：**每段单独验收，再串起来。**串联后出问题，逐级 `Ctrl+B` 定位是哪一段。
+原则不变：**每段单独验收，再串起来**。串联后出问题，逐级 `Ctrl+B` 定位是哪一段。
 
 ## 常见问题
 

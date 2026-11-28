@@ -283,7 +283,7 @@ export function lintPrompt(positive: string, negative: string, opts: LintOptions
     if (comma.length) {
       findings.push({
         rule: 'comma-space', severity: 'error', field, title: '逗号后没有空格', fixable: true,
-        detail: '`masterpiece,best quality` 会被切成 `,b`、`est` 这种怪 token；"逗号 + 空格"本身就在告诉模型"这是一个独立标签"。',
+        detail: '`masterpiece,best quality` 会被切成 `,b`、`est` 这种怪 token；“逗号 + 空格”本身就在告诉模型“这是一个独立标签”。',
         snippets: [...new Set(comma.map((f) => text.slice(f.start, f.start + 2)))], href: `${L}#逗号后必须有空格这是分词问题`,
       });
       for (const f of comma) marks[field].push({ start: f.start, end: f.start + 2, severity: 'error', rule: 'comma-space' });
@@ -321,7 +321,7 @@ export function lintPrompt(positive: string, negative: string, opts: LintOptions
     if (weights.length) {
       findings.push({
         rule: 'weight-low', severity: 'info', field, title: '权重低于 1.5 基本无效',
-        detail: '双分词器，Qwen 路的权重被强制归 1，只有 T5 路认 `(tag:N)`。SDXL 时代 1.2～1.3 的"轻微加强"在 Anima 上约等于没加；1.5 起、2.0 甜点。',
+        detail: '双分词器，Qwen 路的权重被强制归 1，只有 T5 路认 `(tag:N)`。SDXL 时代 1.2～1.3 的“轻微加强”在 Anima 上约等于没加；1.5 起、2.0 甜点。',
         snippets: weights.map((f) => f.match), href: `${L}#双分词器--权重只有一半生效`,
       });
       for (const f of weights) marks[field].push({ start: f.start, end: f.end, severity: 'info', rule: 'weight-low' });
@@ -332,7 +332,7 @@ export function lintPrompt(positive: string, negative: string, opts: LintOptions
     if (artists.length) {
       findings.push({
         rule: 'artist-at', severity: 'warn', field, title: '画师名没加 @', fixable: true,
-        detail: '画师名必须写成 `@画师名`——不加 `@` 效果"非常弱"。"in the style of X" 这类 SD 时代的写法在这里几乎不起作用。',
+        detail: '画师名必须写成 `@画师名`——不加 `@` 效果“非常弱”。“in the style of X” 这类 SD 时代的写法在这里几乎不起作用。',
         snippets: artists.map((f) => f.match), href: `${L}#七条硬规则`,
       });
       for (const f of artists) marks[field].push({ start: f.start, end: f.end, severity: 'warn', rule: 'artist-at' });
@@ -352,7 +352,7 @@ export function lintPrompt(positive: string, negative: string, opts: LintOptions
     if (empty.length) {
       findings.push({
         rule: 'empty-tag', severity: 'warn', field, title: '空条目', fixable: true,
-        detail: '连续的逗号、开头的逗号会切出空标签。行尾的逗号不算——模板里常用它表示"下面还有"。',
+        detail: '连续的逗号、开头的逗号会切出空标签。行尾的逗号不算——模板里常用它表示“下面还有”。',
         snippets: [...new Set(empty.map((f) => JSON.stringify(text.slice(f.start, Math.min(text.length, f.end + 1)))))], href: `${L}#七条硬规则`,
       });
       for (const f of empty) marks[field].push({ start: f.start, end: f.end, severity: 'warn', rule: 'empty-tag' });
@@ -367,7 +367,7 @@ export function lintPrompt(positive: string, negative: string, opts: LintOptions
       if (!hits.length) continue;
       findings.push({
         rule: 'score-aesthetic', severity: 'error', field, title: 'Aesthetic 版不要用 score_*',
-        detail: 'Aesthetic 在高质量图上精调过，训练时去掉了所有质量标签；score 会把画面推成"AI 味"。正负向都不要用——模板默认负向里的 score_1 / 2 / 3 也要去掉。',
+        detail: 'Aesthetic 在高质量图上精调过，训练时去掉了所有质量标签；score 会把画面推成“AI 味”。正负向都不要用——模板默认负向里的 score_1 / 2 / 3 也要去掉。',
         snippets: hits, href: '/resources/param-baseline/',
       });
       for (const h of findAll(text, /score_\d+/gi)) marks[field].push({ start: h.start, end: h.end, severity: 'error', rule: 'score-aesthetic' });
@@ -381,7 +381,8 @@ export function lintPrompt(positive: string, negative: string, opts: LintOptions
       if (!hits.length) continue;
       findings.push({
         rule: 'trap-tag', severity: 'warn', field: 'positive', title: `陷阱标签：${trap.tag}`,
-        detail: `这个普通英文词在 booru 里有精确含义——${trap.meaning} 想要这个效果就有意用，否则别当形容词写。`,
+        // 标签卡的 meaning 带加粗标记（标签页会渲染它）；这里拼的是纯文本，去掉
+        detail: `这个普通英文词在 booru 里有精确含义——${trap.meaning.replace(/\*\*/g, '')} 想要这个效果就有意用，否则别当形容词写。`,
         snippets: hits.map((h) => h.match), href: `/tags/${trap.slug}/`,
       });
       for (const h of hits) marks.positive.push({ start: h.start, end: h.end, severity: 'warn', rule: 'trap-tag' });
@@ -398,7 +399,7 @@ export function lintPrompt(positive: string, negative: string, opts: LintOptions
     } else if (ratingTags.length > 1) {
       findings.push({
         rule: 'rating-conflict', severity: 'error', field: 'positive', title: '写了多个安全等级',
-        detail: '四个等级是"类别"不是"阶梯"，只写一个：按画面里最露骨的那个元素选。混用会自相矛盾——出图发软 / 自动打码。',
+        detail: '四个等级是“类别”不是“阶梯”，只写一个：按画面里最露骨的那个元素选。混用会自相矛盾——出图发软 / 自动打码。',
         snippets: ratingTags, href: `${L}#四段式结构`,
       });
     }
@@ -429,7 +430,7 @@ export function lintPrompt(positive: string, negative: string, opts: LintOptions
     if (people >= 2 && (hairs > 0 || eyes > 0) && (hairs < people || eyes < people)) {
       findings.push({
         rule: 'multi-char-features', severity: 'warn', field: 'positive', title: `多人场景：特征不够 ${people} 份`,
-        detail: '连带规则：给一个角色写了发色 / 瞳色，就要给场上所有角色都写，否则特征会"串"。更稳的做法是每个角色一句、特征写全（and 法）。',
+        detail: '连带规则：给一个角色写了发色 / 瞳色，就要给场上所有角色都写，否则特征会“串”。更稳的做法是每个角色一句、特征写全（and 法）。',
         snippets: [`发色 ${hairs} 份、瞳色 ${eyes} 份；人数 ${people}`], href: '/lessons/02-02-prompt-multi/',
       });
     }
@@ -438,7 +439,7 @@ export function lintPrompt(positive: string, negative: string, opts: LintOptions
     if (posItems.length > 30) {
       findings.push({
         rule: 'prompt-long', severity: 'info', field: 'positive', title: `标签偏多（${posItems.length} 个）`,
-        detail: '提示词不会被截断，但 token 越多每个分到的注意力越稀、标签之间"传染"的面也越大。标签版 15～30 个，要加东西先删东西。',
+        detail: '提示词不会被截断，但 token 越多每个分到的注意力越稀、标签之间“传染”的面也越大。标签版 15～30 个，要加东西先删东西。',
         snippets: [], href: `${L}#没有硬上限只有注意力预算`,
       });
     }

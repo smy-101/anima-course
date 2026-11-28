@@ -48,12 +48,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
             <tr><td>错误 / 提醒</td><td>Markdown / JSON 字符（<code>#</code>、<code>*</code>、方括号、花括号；整段 JSON）</td><td>模型不认识 Markdown，<code>#</code> 偶尔会直接画进图里；分段用空行</td><td><a href={url('lessons/01-03-prompt-basics/#提示词规则')}>提示词规则</a></td></tr>
             <tr><td>错误</td><td>打码标签（<code>censored</code> 一族）放进了正向</td><td>正向写了就会出打码；去码是放负向</td><td><a href={url('tags/censored/')}>censored</a></td></tr>
             <tr><td>错误</td><td>写了多个安全等级；<code>safe</code> 与露骨标签同现</td><td>四个等级是类别不是阶梯，只写一个；混用会自相矛盾——发软 / 自动打码</td><td><a href={url('lessons/01-03-prompt-basics/#提示词结构')}>提示词结构</a></td></tr>
-            <tr><td>错误</td><td>Aesthetic 版正负向出现 <code>score_*</code></td><td>Aesthetic 训练时去掉了所有质量标签，score 会把画面推成"AI 味"</td><td><a href={url('resources/param-baseline/')}>三版本参数基线</a></td></tr>
+            <tr><td>错误</td><td>Aesthetic 版正负向出现 <code>score_*</code></td><td>Aesthetic 训练时去掉了所有质量标签，score 会把画面推成“AI 味”</td><td><a href={url('resources/param-baseline/')}>三版本参数基线</a></td></tr>
             <tr><td>提醒</td><td>未转义的括号</td><td>括号会被当成权重语法并被吃掉：<code>toon (style)</code> 要写成 <code>toon \(style\)</code></td><td><a href={url('lessons/01-03-prompt-basics/#提示词规则')}>提示词规则</a></td></tr>
-            <tr><td>提醒</td><td>画师名没加 <code>@</code>（"in the style of X" 之类）</td><td>不加 <code>@</code> 效果"非常弱"</td><td><a href={url('lessons/01-03-prompt-basics/#提示词规则')}>提示词规则</a></td></tr>
+            <tr><td>提醒</td><td>画师名没加 <code>@</code>（“in the style of X” 之类）</td><td>不加 <code>@</code> 效果“非常弱”</td><td><a href={url('lessons/01-03-prompt-basics/#提示词规则')}>提示词规则</a></td></tr>
             <tr><td>提醒</td><td>正向里的陷阱标签（<code>wet</code>、<code>monochrome</code>、<code>high contrast</code>…）</td><td>这些普通英文词在 booru 里有精确含义，会定义整张图</td><td><a href={url('tags/')}>标签字典 · 陷阱标签</a></td></tr>
             <tr><td>提醒</td><td>负向里有正向想要的东西</td><td>标准负向会破坏你的场景：追黑白风却负向里有 <code>monochrome</code></td><td><a href={url('resources/prompt-templates/')}>负向使用原则</a></td></tr>
-            <tr><td>提醒</td><td>多人场景：发色 / 瞳色不够份数</td><td>连带规则——给一个角色写了就要给所有角色写，否则特征会"串"</td><td><a href={url('lessons/02-02-prompt-multi/')}>多人与传染</a></td></tr>
+            <tr><td>提醒</td><td>多人场景：发色 / 瞳色不够份数</td><td>连带规则——给一个角色写了就要给所有角色写，否则特征会“串”</td><td><a href={url('lessons/02-02-prompt-multi/')}>多人与传染</a></td></tr>
             <tr><td>提醒</td><td>空条目（连续逗号、开头逗号）</td><td>会切出空标签</td><td><a href={url('lessons/01-03-prompt-basics/#提示词规则')}>提示词规则</a></td></tr>
             <tr><td>提示</td><td>没写安全等级</td><td>正向写一个等级，不想要的放负向；纯风景可以不写</td><td><a href={url('lessons/01-03-prompt-basics/#提示词结构')}>提示词结构</a></td></tr>
             <tr><td>提示</td><td>权重 1 ≤ N &lt; 1.5</td><td>双分词器，Qwen 路权重被归 1；1.5 起、2.0 甜点</td><td><a href={url('lessons/01-03-prompt-basics/#权重只有一半生效')}>权重只有一半生效</a></td></tr>
@@ -67,7 +67,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     <section aria-labelledby="lint-not-h">
       <h2 id="lint-not-h">不查什么</h2>
       <p class="lead">
-        这些要人来判断，工具帮不上：Danbooru 与 Gelbooru 的拼写差异（以 Gelbooru 为准）；"看不见的东西"（面罩后面的眼睛、衣服下面的结构——写了就会画出来）；
+        这些要人来判断，工具帮不上：Danbooru 与 Gelbooru 的拼写差异（以 Gelbooru 为准）；“看不见的东西”（面罩后面的眼睛、衣服下面的结构——写了就会画出来）；
         自然语言的句数与指代（代词经常指错对象，每个细节和角色名写在同一句里）；画师名是否真的存在；以及标签传染本身——工具只能数特征份数。
       </p>
     </section>

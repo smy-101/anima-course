@@ -11,14 +11,14 @@ inputs:
   - { name: negative, type: CONDITIONING, desc: "同 K采样器" }
   - { name: latent_image, type: LATENT, desc: "第一段接空画布；第二段接第一段的输出" }
 params:
-  - { name: add_noise, default: "enable", range: "enable / disable", desc: "是否加初始噪声。**第二段必须 disable**" }
+  - { name: add_noise, default: "enable", range: "enable / disable", desc: "是否加初始噪声。第二段必须 disable" }
   - { name: noise_seed, default: "0", range: "整数", desc: "加噪用的种子" }
   - { name: steps, default: "20", range: "1 ~ 10000", desc: "整张时间表的步数" }
   - { name: cfg, default: "8.0", range: "0 ~ 100", desc: "同 K采样器" }
   - { name: sampler_name / scheduler, default: "—", range: "同 K采样器", desc: "同 K采样器" }
   - { name: start_at_step, default: "0", range: "0 ~ 10000", desc: "从第几步开始（按全表索引截取，真的会减步数）" }
   - { name: end_at_step, default: "10000", range: "0 ~ 10000", desc: "到第几步结束" }
-  - { name: return_with_leftover_noise, default: "disable", range: "disable / enable", desc: "带着残留噪声输出。**第一段必须 enable**，第二段 disable" }
+  - { name: return_with_leftover_noise, default: "disable", range: "disable / enable", desc: "带着残留噪声输出。第一段必须 enable，第二段 disable" }
 outputs:
   - { name: LATENT, type: LATENT, desc: "采样结果" }
 ---
