@@ -170,4 +170,5 @@ LoadImage.IMAGE ──▶ VAEEncodeForInpaint(pixels, vae, mask, grow_mask_by 6)
 | 没涂的地方颜色也变了 | 用的是路线 A / C；换路线 B |
 | 重绘区和周围风格不一致 | 提示词写了与整图冲突的内容；或 Turbo 默认风格太强，换 Aesthetic |
 | `Painter` 涂的 mask 全黑 | 涂抹后要保存；`MaskPreview` 接在 `Painter.MASK` 上确认 |
+| 路线 A 涂了区域、写了物件，成图却和原图一样 | 本站按步骤 4 试过一次（seed 42，遮罩在背景左上），也没出伞；换几个 seed 和遮罩位置再试 |
 | 输入图 2000×3000 直接重绘全崩 | 先 `ResizeImageMaskNode` 缩到约 1 MP，修完再放大回去（L4） |

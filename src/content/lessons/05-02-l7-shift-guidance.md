@@ -106,7 +106,7 @@ UNETLoader.MODEL ──▶ ModelSamplingAuraFlow(shift 3.0) ──▶ APG ──
 | `ModelSamplingAuraFlow.shift` | 3.0（源码写死） | 调高后更多步数留在高噪声段，构图更稳、细节更足，常用于高分辨率；调低后更快、更“平”。先拿 3、5、7 各出一张对照 | 通用 flow 模型经验；Anima 无专项数据 |
 | `CFGOverride` 窗口 | 不用 | 前几步强制 cfg 1（`end_percent 0.05 ~ 0.15`）可减轻早期过饱和 | 通用技巧 |
 | `APG` | `eta 1 / norm 5 / momentum 0` | 高 CFG 想不烧图时试 | 通用 |
-| `NAGuidance` | `scale 5 / alpha 0.5 / tau 1.5` | 要求 CFG > 1，因为它需要批里同时有正负两路，会关闭 CFG 1 优化；Turbo 下无意义 | 通用；《提示词报告》里提到的自定义节点 Anima-NAG 的思路，核心已有同名实现 |
+| `NAGuidance` | `scale 5 / alpha 0.5 / tau 1.5` | 要求 CFG > 1，因为它需要批里同时有正负两路，会关闭 CFG 1 优化；Turbo 下无意义 | 通用；社区自定义节点 Anima-NAG 是同一思路（正负 KV 相减），核心已有同名实现 |
 | CFG++ 采样器（`*_cfg_pp`） | — | 必须配 CFG < 2（推荐 1.5），4.5 一定会烧图 | HF 讨论区回复 |
 | LLLite + shift | 3.0 | v2 权重训练时 shift = 3.0；Preview3 代的 depth / lineart / scribble 训练时是 1.0、any v1 是 4.0。这几种控制“发怪”时，可以对照试一下对应的 shift（实验性） | kohya 模型卡 |
 

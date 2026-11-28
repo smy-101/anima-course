@@ -11,7 +11,7 @@
 
 ```bash
 npm install
-npm run dev          # Windows 浏览器打开 http://localhost:4321/anima-course/（项目在 WSL 也能访问）
+npm run dev          # Windows 浏览器打开 http://127.0.0.1:4321/anima-course/（项目在 WSL 也能访问；别用 localhost，见下）
 npm run build        # 构建到 dist/，随后 pagefind 自动建索引（postbuild）
 npm run check:site   # 待补图清单 + 死链 + 站点地图 + 未渲染的加粗 + 文风检查（文风违规在 reports/prose-lint.json；除待补图外任一项有问题都退出码 1）
 npm run check        # astro check：TS / .astro 类型检查
@@ -28,7 +28,7 @@ npm run preview      # 预览 dist/，地址同上
 | `NSFW` | `true` | `false` 时 `/nsfw/*` 整个不生成，导航与页脚也不出现 |
 | `DEV_HOST` | `127.0.0.1` | dev / preview 的监听地址。设为 `0.0.0.0` 可让局域网访问 |
 
-本地链接带 base：`http://localhost:4321/anima-course/`。
+本地链接带 base：`http://127.0.0.1:4321/anima-course/`。别用 `localhost`：本机 Node 把它解析成 `::1`，而 dev / preview 只监听 IPv4 回环，WSL 镜像网络不转发 `::1`，Windows 浏览器会打不开。
 
 ## 目录
 
@@ -43,9 +43,9 @@ src/content/            内容（六个 Content Collections，schema 见 src/con
   nsfw/                 成人附录（构建开关 NSFW）：规则、词表、负向、模板、合规
 src/pages/              路由：/ 阶段地图、/lessons/[id]、/nodes、/tags、/troubleshooting、/resources、/tools、/nsfw、/search
 src/components/         FigureGallery、Toc（本页目录）、SourceBadge、Icon（内联 SVG）、Acceptance、AgeGate、PromptLint（提示词检查器）、LabLog（实验记录本）
-src/lib/prompt-lint.ts  提示词检查器的规则与修正器（纯函数，tests/ 有测试）
+src/lib/               prompt-lint.ts（提示词检查器规则）、lab-log.ts（实验记录本规则）、prose-lint.ts（文风硬规则）：纯函数，tests/ 有测试；client-filter.ts（列表页即时筛选）、env.ts（模板里用的 url()）
 src/lib/client-filter.ts 列表页的即时筛选（标签 / 节点 / 排错共用：计数、无结果提示）
-scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（文风检查）、satteri-base-links.mjs（正文链接加 base）、satteri-table-wrap.mjs（正文表格包滚动容器）
+scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（文风检查）、satteri-base-links.mjs（正文链接加 base）、satteri-table-wrap.mjs（正文表格包滚动容器）、figures/（补图：出图、转 WebP、转工作流 JSON、把工作流嵌进 PNG）
 .github/workflows/      deploy.yml → GitHub Pages
 ```
 
@@ -88,8 +88,9 @@ scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（�
 | 概念可迁移：换模型时什么不变、什么要换（《节点详解》§4.1–4.9） | 已迁移（`resources/transfer.md`） |
 | 成人附录 | 规则、合规、词表（到 `nsfw` 级：表情 / 身体 / 衣物 / 展示与暗示）、负向、sensitive～nsfw 级模板（纯文字）；性行为 / 体液 / 群交 / 癖好 / 极端标签不进站 |
 | 开发者选修（《补充B》：HTTP API / 无界面 / 自定义节点） | 已迁移为阶段 5 末尾的两篇选修课（`elective: true`，不计入 14 天进度） |
-| 示例图（76 处占位，清单见 `npm run check:site`） | 54 张已补（`scripts/figures/`，全部用官方 `anima-base-v1.0` 等权重）；剩 22 张：10 张界面截图要手动截，8 张等插件或角色 LoRA（WD14、Impact Pack、UltimateSDUpscale、Depth Anything 3 节点、Civitai 角色 LoRA），4 张在 v1.0 与 preview3 上都没复现课程说法（标签传染、eye contact 标签优势、NAG、路线 A 背景加物件） |
+| 示例图（76 处占位，清单见 `npm run check:site`） | 54 张已补（`scripts/figures/`，全部用官方 `anima-base-v1.0` 等权重）；剩 22 张：10 张界面截图要手动截，8 张等插件或角色 LoRA（WD14、Impact Pack、UltimateSDUpscale、Depth Anything 3 节点、Civitai 角色 LoRA），4 张在 v1.0 与 preview3 上都没复现课程说法（标签传染、eye contact 标签优势、NAG、路线 A 背景加物件）；其中标签传染、eye contact、路线 A 三处已在课里注明本站没复现 |
 | L0–L8 工作流 JSON、四个工具（实验记录本 / 提示词检查器 / 排错向导 / 误区自测） | 提示词检查器已做（`/tools/prompt-lint/`，18 条规则）；L0 / L1 / L2 / L3 / L4 / L5 / L6 / L7 / L8 的工作流 JSON 由 `scripts/figures/to_workflow.py --all` 生成到 `public/workflows/`（自动布局，拖进画布即可加载），下载入口在 `/resources/workflows/`；实验记录本已做（`/tools/lab-log/`，7 条规则）；排错向导、误区自测待做 |
+| 示例图原图（内嵌工作流的 PNG）→ GitHub Releases | 未上传。`figures-out/anima-course-figures-originals.zip` 已打好，传到 Releases 即可；站内目前只有 9 个工作流 JSON 可下（`/resources/workflows/`），没有指向原图的链接 |
 
 ## 技术栈
 
