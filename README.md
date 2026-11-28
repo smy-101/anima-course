@@ -13,7 +13,7 @@
 npm install
 npm run dev          # Windows 浏览器打开 http://localhost:4321/anima-course/（项目在 WSL 也能访问）
 npm run build        # 构建到 dist/，随后 pagefind 自动建索引（postbuild）
-npm run check:site   # 待补图清单 + 死链 + 文风检查（文风违规在 reports/prose-lint.json；死链或文风违规则退出码 1）
+npm run check:site   # 待补图清单 + 死链 + 站点地图 + 未渲染的加粗 + 文风检查（文风违规在 reports/prose-lint.json；除待补图外任一项有问题都退出码 1）
 npm run check        # astro check：TS / .astro 类型检查
 npm test             # 提示词检查器与文风检查的规则测试（node --test）
 npm run preview      # 预览 dist/，地址同上
@@ -36,10 +36,10 @@ npm run preview      # 预览 dist/，地址同上
 source/                 原始 7 份笔记（一手资料）
 src/content/            内容（六个 Content Collections，schema 见 src/content.config.ts）
   lessons/              课程：18 篇，阶段 0–5 已全部迁移（14 天路径）+ 2 篇开发者选修
-  nodes/                节点卡（83 张，L0–L8 + 社区节点 + "Anima 为什么不用它"的 SD 系节点），文件名 = 英文类名
+  nodes/                节点卡（84 张，L0–L8 + 社区节点 + "Anima 为什么不用它"的 SD 系节点），文件名 = 英文类名
   tags/                 标签卡（340 张：四段式全部 SFW 标签 + 常用负向项），文件名 = slug
   troubleshooting/      排错条目：现象 → 先调 → 再调 → 不要
-  resources/            参数基线、启动参数、模型清单、模板、误区、链接、换模型时什么不变
+  resources/            参数基线、启动参数、模型清单、模板、工作流文件、误区、链接、换模型时什么不变
   nsfw/                 成人附录（构建开关 NSFW）：规则、词表、负向、模板、合规
 src/pages/              路由：/ 阶段地图、/lessons/[id]、/nodes、/tags、/troubleshooting、/resources、/tools、/nsfw、/search
 src/components/         FigureGallery、Toc（本页目录）、SourceBadge、Icon（内联 SVG）、Acceptance、AgeGate、PromptLint（提示词检查器）、LabLog（实验记录本）
@@ -68,6 +68,7 @@ scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（�
 - 对比度：正文 ≥ 4.5:1，大字与控件描边、焦点环 ≥ 3:1。状态色因此分成"文字用深色、填充用亮色"两套（`--ok` / `--ok-fill` 等）。最小字号 12px，移动端正文保持 16px。
 - 中文正文用系统自带的 CJK 字体，不加载 Web 字体；图标用 `Icon.astro` 的内联 SVG，不用 emoji。
 - 类名是模板和 React 组件共用的契约，改名要一起改。新页面先用 `global.css` 里已有的组件（`.page-head`、`.cards`、`.pill`、`.note`、`.table-wrap`、`.filter-bar` 等），别另起一套。
+- 搜索索引只收 `<main>` 里的内容（`Base.astro` 的 `data-pagefind-body`），页头导航和页脚不进索引。放在 `<main>` 里的导航文字（面包屑、目录、翻页器、无结果时的提示）要带 `data-pagefind-ignore`，否则每个页都会因为这些词被搜到。没有可查内容的页面（搜索页、404）给 `Base` 传 `noSearch`。
 
 ## 部署
 
@@ -81,15 +82,15 @@ scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（�
 |---|---|
 | 课程阶段 0–5（18 篇） | 已迁移 |
 | 节点卡 L0–L8 + 社区节点（UltimateSDUpscale、FaceDetailer 等） | 已迁移 |
-| 标签字典 | 四段式的 SFW 标签已全部建卡（340 张）；成人词表待补 |
+| 标签字典 | 四段式的 SFW 标签已全部建卡（340 张）；成人词表不进标签字典，放在成人附录（范围见下一行） |
 | 排错速查 | 51 条 |
 | 启动参数与 Attention 后端（《节点详解》§5.5） | 已迁移（`resources/startup-args.md`） |
 | 概念可迁移：换模型时什么不变、什么要换（《节点详解》§4.1–4.9） | 已迁移（`resources/transfer.md`） |
 | 成人附录 | 规则、合规、词表（到 `nsfw` 级：表情 / 身体 / 衣物 / 展示与暗示）、负向、sensitive～nsfw 级模板（纯文字）；性行为 / 体液 / 群交 / 癖好 / 极端标签不进站 |
 | 开发者选修（《补充B》：HTTP API / 无界面 / 自定义节点） | 已迁移为阶段 5 末尾的两篇选修课（`elective: true`，不计入 14 天进度） |
 | 示例图（76 处占位，清单见 `npm run check:site`） | 54 张已补（`scripts/figures/`，全部用官方 `anima-base-v1.0` 等权重）；剩 22 张：10 张界面截图要手动截，8 张等插件或角色 LoRA（WD14、Impact Pack、UltimateSDUpscale、Depth Anything 3 节点、Civitai 角色 LoRA），4 张在 v1.0 与 preview3 上都没复现课程说法（标签传染、eye contact 标签优势、NAG、路线 A 背景加物件） |
-| L0–L8 工作流 JSON、四个工具（实验记录本 / 提示词检查器 / 排错向导 / 误区自测） | 提示词检查器已做（`/tools/prompt-lint/`，18 条规则）；L0 / L1 / L2 / L3 / L4 / L5 / L6 / L7 / L8 的工作流 JSON 由 `scripts/figures/to_workflow.py --all` 生成到 `public/workflows/`（自动布局，拖进画布即可加载）；其余三个工具待做 |
+| L0–L8 工作流 JSON、四个工具（实验记录本 / 提示词检查器 / 排错向导 / 误区自测） | 提示词检查器已做（`/tools/prompt-lint/`，18 条规则）；L0 / L1 / L2 / L3 / L4 / L5 / L6 / L7 / L8 的工作流 JSON 由 `scripts/figures/to_workflow.py --all` 生成到 `public/workflows/`（自动布局，拖进画布即可加载），下载入口在 `/resources/workflows/`；实验记录本已做（`/tools/lab-log/`，7 条规则）；排错向导、误区自测待做 |
 
 ## 技术栈
 
-Astro 7 + MDX + React（islands）+ Pagefind（静态搜索，自动中文分词）。纯静态，无后端；进度与实验记录存浏览器 localStorage，可导出 / 导入 JSON。
+Astro 7 + MDX + React（islands）+ Pagefind（静态搜索，自动中文分词）+ `@astrojs/sitemap`（成人附录、搜索页、404 不进站点地图，由 `check:site` 把关）。纯静态，无后端；进度与实验记录存浏览器 localStorage，可导出 / 导入 JSON。
