@@ -5,7 +5,7 @@ first: "--disable-all-custom-nodes 逐个定位；配合 --whitelist-custom-node
 then: "Manager 更新 / 重装该节点"
 dont: ""
 sources:
-  - { badge: 源码, note: "《节点详解》§5.2–5.3，依据源码与官方文档" }
+  - { badge: 源码, note: "原始笔记《ComfyUI 节点与参数详解》§5.2–5.3，依据源码与官方文档" }
 verified: 2026-11-24
 ---
 自定义节点依赖缺失或与新版本不兼容。

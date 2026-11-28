@@ -6,7 +6,7 @@ then: "修完再放大回去（L4）"
 dont: "在原尺寸上硬涂"
 sources:
   - { badge: 官方, url: "https://github.com/Comfy-Org/workflow_templates/blob/main/templates/image_anima_lllite_image_inpainting.json", note: "模板便签：输入超过 1024×1024 先缩" }
-  - { badge: 社区, note: "《递进报告》§5 速查表与各级常见问题：综合官方、作者与社区" }
+  - { badge: 社区, note: "原始笔记《ComfyUI 工作流递进实现报告》§5 速查表与各级常见问题：综合官方、作者与社区" }
 verified: 2026-11-24
 ---
 重绘在模型舒适区分辨率内做，细节交给后续放大。

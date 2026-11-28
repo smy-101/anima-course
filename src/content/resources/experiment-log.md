@@ -4,7 +4,7 @@ kind: 模板
 order: 2
 sources:
   - badge: 社区
-    note: "PNG 元数据不含“为什么”；模板来自《补充A》"
+    note: "PNG 元数据不含“为什么”；模板来自原始笔记《补充A · 反推标签与实验记录》"
   - badge: 源码
     url: https://github.com/comfyanonymous/ComfyUI/blob/master/nodes.py
     note: SaveImage.filename_prefix 支持变量

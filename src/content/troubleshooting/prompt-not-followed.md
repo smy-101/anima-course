@@ -5,7 +5,7 @@ first: "关键词靠前、权重 1.5 ~ 2.0"
 then: "cfg 升到 5 以内"
 dont: "堆负向"
 sources:
-  - { badge: 社区, note: "《递进报告》§5 速查表：综合官方、作者与社区" }
+  - { badge: 社区, note: "原始笔记《ComfyUI 工作流递进实现报告》§5 速查表：综合官方、作者与社区" }
   - { badge: 官方, url: https://huggingface.co/circlestone-labs/Anima, note: "模型卡" }
 verified: 2026-11-24
 ---

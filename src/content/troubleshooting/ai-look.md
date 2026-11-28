@@ -5,7 +5,7 @@ first: "去掉 score_*"
 then: "去掉 masterpiece, best quality；换采样器"
 dont: "加更多质量词"
 sources:
-  - { badge: 社区, note: "《递进报告》§5 速查表：综合官方、作者与社区" }
+  - { badge: 社区, note: "原始笔记《ComfyUI 工作流递进实现报告》§5 速查表：综合官方、作者与社区" }
   - { badge: 社区 }
 verified: 2026-11-24
 ---

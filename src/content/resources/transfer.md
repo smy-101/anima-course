@@ -13,7 +13,7 @@ sources:
     url: https://github.com/comfyanonymous/ComfyUI/blob/master/nodes.py
     note: "CheckpointLoaderSimple 交出 MODEL / CLIP / VAE；LoraLoader 的 clip 必填"
   - badge: 社区
-    note: "SD1.5 / SDXL 的参数起点为社区概括（《节点详解》§4.1），以各模型卡为准"
+    note: "SD1.5 / SDXL 的参数起点为社区概括（原始笔记《ComfyUI 节点与参数详解》§4.1），以各模型卡为准"
 verified: 2026-11-24
 ---
 

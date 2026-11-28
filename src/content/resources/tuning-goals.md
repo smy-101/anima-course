@@ -4,7 +4,7 @@ kind: 基线
 order: 2
 sources:
   - badge: 源码
-    note: "《节点详解》§5.1，依据源码与官方教程"
+    note: "原始笔记《ComfyUI 节点与参数详解》§5.1，依据源码与官方教程"
 verified: 2026-11-24
 ---
 

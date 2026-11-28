@@ -35,7 +35,7 @@ sources:
     url: https://github.com/Comfy-Org/workflow_templates/blob/main/templates/image_anima_base_v1.json
     note: "官方 “Text to Image (Anima Base v1.0)” 子图对外暴露的输入"
   - badge: 社区
-    note: 复盘清单来自本课程《补充A》实验记录模板
+    note: 复盘清单来自本课程原始笔记《补充A · 反推标签与实验记录》的实验记录模板
 verified: 2026-11-24
 ---
 

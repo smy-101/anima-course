@@ -5,7 +5,7 @@ first: "对照目录表，放好后按 R"
 then: "子文件夹里的文件检测不到时在节点里手动选"
 dont: "放到 checkpoints/"
 sources:
-  - { badge: 源码, note: "《节点详解》§5.2–5.3，依据源码与官方文档" }
+  - { badge: 源码, note: "原始笔记《ComfyUI 节点与参数详解》§5.2–5.3，依据源码与官方文档" }
   - { badge: 官方, url: https://docs.comfy.org/zh/tutorials/image/anima/anima }
 verified: 2026-11-24
 ---

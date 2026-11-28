@@ -46,7 +46,7 @@ sources:
     note: ComfyUI 官方 Anima 教程
   - badge: 官方
     url: https://docs.comfy.org/zh/interface/overview
-    note: "界面地图、快捷键、队列与工作流保存（《节点详解》§2）"
+    note: "界面地图、快捷键、队列与工作流保存（原始笔记《ComfyUI 节点与参数详解》§2）"
   - badge: 官方
     url: https://docs.comfy.org/en/installation/desktop
     note: 桌面版安装与模型共享目录
