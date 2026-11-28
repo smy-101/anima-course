@@ -74,7 +74,7 @@ scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（�
 
 ## 部署
 
-推到 `main` 自动走 `.github/workflows/deploy.yml`（`withastro/action` → `actions/deploy-pages`）。仓库 Settings → Pages → Source 选 **GitHub Actions**。`BASE_PATH` / `SITE_URL` 由 workflow 从仓库名自动推出；要下线成人附录，把 workflow 里的 `NSFW` 改为 `'false'`。
+推到 `main` 自动走 `.github/workflows/deploy.yml`（`withastro/action` → `actions/deploy-pages`）。构建之后依次跑 `npm run check:site`、`npm run check`、`npm test`，也就是收尾的四项；任一项失败就不部署。仓库 Settings → Pages → Source 选 **GitHub Actions**。`BASE_PATH` / `SITE_URL` 由 workflow 从仓库名自动推出；要下线成人附录，把 workflow 里的 `NSFW` 改为 `'false'`。
 
 示例图原图（内嵌工作流的 PNG）放 GitHub Releases，站内只提交优化副本。原图留在 `figures-out/`（git-ignored），`python scripts/figures/embed_all.py` 会给每张嵌上工作流并打成 `figures-out/anima-course-figures-originals.zip`（文件名即图 id），把这个 zip 传到 Releases 即可。重新生成的办法见 `scripts/figures/figures.py` 顶部注释与 `docs/学习网站方案.md` §7。
 

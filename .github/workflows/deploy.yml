@@ -34,6 +34,12 @@ jobs:
         run: npm run check:site >> "$GITHUB_STEP_SUMMARY"
       # 这里不要再传一次 pages artifact：withastro/action 构建完已经把 dist/ 传成名为 github-pages 的 artifact，
       # 同名传第二次会冲突失败（2026-11-27 的首次部署就挂在这里）。检查失败时本 job 失败，deploy 不会跑。
+      - name: 类型检查与规则测试
+        # AGENTS.md 的四项收尾：build 与 check:site 上面跑过了，这里是另外两项。withastro/action 装依赖时连
+        # devDependencies 一起装，所以 astro check 与 node --test 可以直接跑。
+        run: |
+          npm run check
+          npm test
 
   deploy:
     needs: build
