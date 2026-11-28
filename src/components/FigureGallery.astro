@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import { url } from '../lib/env';
 
 interface Fig {
   id: string;
@@ -33,6 +34,7 @@ const spanOf = (n: number) => (n <= 2 ? 1 : n <= 4 ? 2 : 4);
       <p class="verified">
         所有对照图固定种子、固定提示词。ComfyUI 直出的 PNG 内嵌工作流，拖回画布即可还原该级工作流；界面截图是本站在同一套环境里截的。
         点任一张图可以在新标签页看原尺寸，界面截图尤其要看大图。
+        站内给出的是压缩过的副本。带工作流的 PNG 原图打包在 GitHub Releases，下载入口见<a href={url('resources/workflows/#示例图原图')}>工作流文件</a>。
         {todo > 0 && <> 目前还有 {todo} 张待补，占位块上写着要补什么。</>}
       </p>
       <div class="figure-groups">

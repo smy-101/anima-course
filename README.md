@@ -77,7 +77,7 @@ scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（�
 
 推到 `main` 自动走 `.github/workflows/deploy.yml`（`withastro/action` → `actions/deploy-pages`）。构建之后依次跑 `npm run check:site`、`npm run check`、`npm test`，也就是收尾的四项；任一项失败就不部署。仓库 Settings → Pages → Source 选 **GitHub Actions**。`BASE_PATH` / `SITE_URL` 由 workflow 从仓库名自动推出；要下线成人附录，把 workflow 里的 `NSFW` 改为 `'false'`。
 
-示例图原图（内嵌工作流的 PNG）放 GitHub Releases，站内只提交优化副本。原图留在 `figures-out/`（git-ignored），`python scripts/figures/embed_all.py` 会给每张嵌上工作流并打成 `figures-out/anima-course-figures-originals.zip`（文件名即图 id），把这个 zip 传到 Releases 即可。重新生成的办法见 `scripts/figures/figures.py` 顶部注释与 `docs/学习网站方案.md` §7。
+示例图原图（内嵌工作流的 PNG）放 GitHub Releases，站内只提交优化副本。原图留在 `figures-out/`（git-ignored），`python scripts/figures/embed_all.py` 会给每张嵌上工作流并打成 `figures-out/anima-course-figures-originals.zip`（文件名即图 id），把这个 zip 传到 Releases 即可。每次补图后重打 zip，传成一个新的正式 Release（标签顺着 `figures-v2`、`figures-v3` 往下，不要设成 pre-release）。站内入口写的是 `releases/latest/download/anima-course-figures-originals.zip`，始终指向最新一个正式 Release 里的同名文件，换 Release 不用改站内。重新生成的办法见 `scripts/figures/figures.py` 顶部注释与 `docs/学习网站方案.md` §7。
 
 ## 迁移状态
 
@@ -93,7 +93,7 @@ scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（�
 | 开发者选修（《补充B》：HTTP API / 无界面 / 自定义节点） | 已迁移为阶段 5 末尾的两篇选修课（`elective: true`，不计入 14 天进度） |
 | 示例图（76 处占位，清单见 `npm run check:site`） | 63 张已补：54 张对照图（`scripts/figures/figures.py`，全部用官方 `anima-base-v1.0` 等权重）+ 9 张界面截图（`scripts/figures/screenshots.mjs`：界面地图、官方模板画布、问题页、L0 / L1 连线、子图内部对照、收成子图的画布、节点库里的蓝图、输出目录结构）。剩 13 张：8 张等插件或角色 LoRA（WD14、Impact Pack、UltimateSDUpscale、Depth Anything 3 节点、Civitai 角色 LoRA），4 张在 v1.0 与 preview3 上都没复现课程说法（标签传染、eye contact 标签优势、NAG、路线 A 背景加物件）；其中标签传染、eye contact、路线 A 三处已在课里注明本站没复现 |
 | L0–L8 工作流 JSON、四个工具（实验记录本 / 提示词检查器 / 排错向导 / 误区自测） | 提示词检查器已做（`/tools/prompt-lint/`，18 条规则）；L0 / L1 / L2 / L3 / L4 / L5 / L6 / L7 / L8 的工作流 JSON 由 `scripts/figures/to_workflow.py --all` 生成到 `public/workflows/`（自动布局，拖进画布即可加载），下载入口在 `/resources/workflows/`；实验记录本已做（`/tools/lab-log/`，7 条规则）；排错向导、误区自测待做 |
-| 示例图原图（内嵌工作流的 PNG）→ GitHub Releases | 未上传。`figures-out/anima-course-figures-originals.zip` 已打好，传到 Releases 即可；站内目前只有 9 个工作流 JSON 可下（`/resources/workflows/`），没有指向原图的链接 |
+| 示例图原图（内嵌工作流的 PNG）→ GitHub Releases | 已上传：Release `figures-v1`，54 张。站内入口在 `/resources/workflows/` 和每课的对照图说明里，链接走 `releases/latest/download/…`，以后补图传成新的正式 Release 即可 |
 
 ## 技术栈
 

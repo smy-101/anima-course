@@ -37,4 +37,8 @@ L3、L5、L6 三条带加载图像节点，要先在节点里选一张图。课�
 | [L7-custom-sampler.json](/workflows/L7-custom-sampler.json) | [L7 · 拆开采样器](/lessons/05-01-l7-custom-sampler/) | 基本引导器那一侧（cfg 1、30 步） | 无 | 13 |
 | [L8-compare-grid.json](/workflows/L8-compare-grid.json) | [L8 · 让工作流替你做对比和重复](/lessons/05-03-l8-compare-loop/) | Base、Aesthetic、Turbo LoRA 三种模型各四个种子 | `anima-aesthetic-v1.1`、`anima-turbo-lora-v0.2` | 25 |
 
-课程里的每张示例图，PNG 原图里也嵌着出它的那条工作流。把图拖回画布同样能还原，做法见[L0 · 从空白画布搭出 9 个节点](/lessons/01-01-l0-minimal/)。
+## 示例图原图
+
+对照图的 PNG 原图都放在 GitHub Releases，打成一个 zip，约 100 MB：[下载示例图原图](https://github.com/smy-101/anima-course/releases/latest/download/anima-course-figures-originals.zip)。文件名就是图 id，如 `l0-seed-a.png`。界面截图不在包里，站内点开就是原尺寸。
+
+每张 PNG 里都嵌着出它的那条工作流，把图拖回画布同样能还原，做法见[L0 · 从空白画布搭出 9 个节点](/lessons/01-01-l0-minimal/)。
