@@ -13,7 +13,7 @@
 npm install
 npm run dev          # Windows 浏览器打开 http://127.0.0.1:4321/anima-course/（项目在 WSL 也能访问；别用 localhost，见下）
 npm run build        # 构建到 dist/，随后 pagefind 自动建索引（postbuild）
-npm run check:site   # 待补图清单 + 死链 + 站点地图 + 未渲染的加粗 + 文风检查（文风违规在 reports/prose-lint.json；除待补图外任一项有问题都退出码 1）
+npm run check:site   # 待补图清单 + 死链 + 站点地图 + 未渲染的加粗 + 分享标签 + 文风检查（文风违规在 reports/prose-lint.json；除待补图外任一项有问题都退出码 1）
 npm run check        # astro check：TS / .astro 类型检查
 npm test             # 提示词检查器与文风检查的规则测试（node --test）
 npm run preview      # 预览 dist/，地址同上
@@ -45,7 +45,7 @@ src/pages/              路由：/ 阶段地图、/lessons/[id]、/nodes、/tags
 src/components/         FigureGallery、Toc（本页目录）、SourceBadge、Icon（内联 SVG）、Acceptance、AgeGate、PromptLint（提示词检查器）、LabLog（实验记录本）
 src/lib/               prompt-lint.ts（提示词检查器规则）、lab-log.ts（实验记录本规则）、prose-lint.ts（文风硬规则）：纯函数，tests/ 有测试；client-filter.ts（列表页即时筛选）、env.ts（模板里用的 url()）
 src/lib/client-filter.ts 列表页的即时筛选（标签 / 节点 / 排错共用：计数、无结果提示）
-scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（文风检查）、satteri-base-links.mjs（正文链接加 base）、satteri-table-wrap.mjs（正文表格包滚动容器）、figures/（补图：出图、界面截图、转 WebP、转工作流 JSON、把工作流嵌进 PNG）
+scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（文风检查）、satteri-base-links.mjs（正文链接加 base）、satteri-table-wrap.mjs（正文表格包滚动容器）、og-cover.mjs（分享卡片图）、figures/（补图：出图、界面截图、转 WebP、转工作流 JSON、把工作流嵌进 PNG）
 .github/workflows/      deploy.yml → GitHub Pages
 ```
 
@@ -71,6 +71,7 @@ scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（�
 - 类名是模板和 React 组件共用的契约，改名要一起改。新页面先用 `global.css` 里已有的组件（`.page-head`、`.cards`、`.pill`、`.note`、`.table-wrap`、`.filter-bar` 等），别另起一套。
 - 对照图在画廊里是缩略图，外面包了一层链接（`.figure-open`）到原尺寸文件：生成的图看不出差别，界面截图全靠点开才读得出字，所以新加的图不要绕过这层链接。
 - 搜索索引只收 `<main>` 里的内容（`Base.astro` 的 `data-pagefind-body`），页头导航和页脚不进索引。放在 `<main>` 里的导航文字（面包屑、目录、翻页器、无结果时的提示）要带 `data-pagefind-ignore`，否则每个页都会因为这些词被搜到。没有可查内容的页面（搜索页、404）给 `Base` 传 `noSearch`。
+- 分享卡片：每页输出 canonical 与 Open Graph / X 标签（`Base.astro`；成人附录、搜索页、404 不输出），`npm run check:site` 核对 canonical 指向页面自己、缩略图文件存在且尺寸与声明一致。缩略图是 `public/og-cover.png`（1200 × 630），由 `node scripts/og-cover.mjs` 生成；首页 hero 的文案或令牌改了就重跑。它渲染文字要用系统字体，脚本默认取 Windows 的微软雅黑与 Consolas，字体在别处时设 `OG_FONT_DIR`。
 
 ## 部署
 

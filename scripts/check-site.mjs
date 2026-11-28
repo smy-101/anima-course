@@ -5,6 +5,8 @@
  *   2. 检查站内链接是否都能落到 dist 里的文件 → 死链则退出码 1
  *   3. 检查站点地图里没有成人附录的地址（docs/学习网站方案.md §5.2）→ 有，或 sitemap 文件缺失，退出码 1
  *   4. 检查渲染后的可见文字里没有残留的 **（加粗没闭合，页面上原样显示星号）→ 有则退出码 1
+ *   5. 检查分享标签：canonical 恰好一个，指向页面自己的地址（base 不多不少，目录页以 / 结尾）；og:image / twitter:image
+ *      落到 dist 里的文件，声明的宽高与 PNG 一致 → 否则退出码 1。成人附录（noindex）与搜索页、404 不带这些标签，不查。
  * 用法：node scripts/check-site.mjs [dist] [basePath]
  */
 import { readdir, readFile, writeFile, mkdir, stat } from 'node:fs/promises';
@@ -51,8 +53,19 @@ const fileSet = new Set(files.map((f) => relative(DIST, f)));
 const figures = [];
 const broken = [];
 const unrendered = [];
+const share = [];
+let shareable = 0;
 const pageByUrl = new Map();
 const anchors = new Map();
+
+/** 不是合法绝对地址就返回 null */
+const toUrl = (s) => {
+  try {
+    return new URL(s);
+  } catch {
+    return null;
+  }
+};
 
 for (const f of html) {
   const rel = relative(DIST, f);
@@ -73,6 +86,42 @@ for (const f of html) {
 
   for (const m of src.matchAll(/<figure[^>]*data-figure-group="([^"]*)"[^>]*>[\s\S]*?data-figure-todo="([^"]*)"/g)) {
     figures.push({ page, group: m[1], caption: decode(m[2]) });
+  }
+
+  // 分享标签。canonical 的路径要和这页在站内的地址一模一样：base 重复或漏掉、结尾少一个 /，搜索引擎都会当成另一个地址
+  const robots = src.match(/<meta\s+name="robots"\s+content="([^"]*)"/)?.[1] ?? '';
+  if (!/noindex/.test(robots) && !/(^|\/)(search|404)(\/index)?\.html$/.test(rel)) {
+    shareable++;
+    const canon = [...src.matchAll(/<link\s+rel="canonical"\s+href="([^"]+)"/g)].map((m) => m[1]);
+    if (canon.length !== 1) {
+      share.push({ from: rel, reason: `canonical ${canon.length} 个，应为 1` });
+    } else if (!toUrl(canon[0])) {
+      share.push({ from: rel, reason: `canonical 不是绝对地址：${canon[0]}` });
+    } else {
+      const own = toUrl(canon[0]);
+      const expect = `${BASE}/${rel.replace(/index\.html$/, '')}`;
+      if (decode(own.pathname) !== expect) share.push({ from: rel, reason: `canonical 指向 ${own.pathname}，应为 ${expect}` });
+      for (const m of src.matchAll(/<meta\s+(?:property|name)="(?:og:image|twitter:image)"\s+content="([^"]+)"/g)) {
+        const img = toUrl(m[1]);
+        // 只查站内的图；放在站外（图床、CDN）的这里够不着
+        if (!img || img.origin !== own.origin) continue;
+        const file = candidates(decode(img.pathname)).find((c) => fileSet.has(c));
+        if (!file) {
+          share.push({ from: rel, reason: `分享图不存在：${m[1]}` });
+          continue;
+        }
+        if (!file.endsWith('.png')) continue;
+        const png = await readFile(join(DIST, file));
+        const size = [png.readUInt32BE(16), png.readUInt32BE(20)]; // PNG 的 IHDR：宽、高
+        const declared = [
+          src.match(/property="og:image:width"\s+content="(\d+)"/)?.[1],
+          src.match(/property="og:image:height"\s+content="(\d+)"/)?.[1],
+        ];
+        if (declared[0] !== String(size[0]) || declared[1] !== String(size[1])) {
+          share.push({ from: rel, reason: `og:image 声明 ${declared.join(' × ')}，文件是 ${size.join(' × ')}` });
+        }
+      }
+    }
   }
 
   for (const m of src.matchAll(/\shref="([^"]+)"/g)) {
@@ -142,5 +191,7 @@ if (!sitemaps.length) {
 }
 out.push(`- 未渲染的加粗（可见文字里的 **）：${unrendered.length}`);
 for (const u of unrendered.slice(0, 100)) out.push(`  - ${u.from}：…${u.excerpt}…`);
+out.push(`- 分享标签：${shareable} 页带 canonical，问题 ${share.length} 处`);
+for (const s of share.slice(0, 100)) out.push(`  - ${s.from}：${s.reason}`);
 console.log(out.join('\n'));
-process.exit(broken.length || !sitemaps.length || nsfwInSitemap.length || unrendered.length ? 1 : 0);
+process.exit(broken.length || !sitemaps.length || nsfwInSitemap.length || unrendered.length || share.length ? 1 : 0);

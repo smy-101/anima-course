@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import Icon from '../components/Icon.astro';
-import { url, NSFW_ENABLED } from '../lib/env';
+import { url, absUrl, NSFW_ENABLED } from '../lib/env';
 
 interface Props {
   title: string;
@@ -37,6 +37,17 @@ const SEARCH_URL = url('search/');
 
 const fullTitle = title ? `${title} · Anima × ComfyUI 课程` : 'Anima × ComfyUI 学习课程';
 
+/** 分享卡片的缩略图（node scripts/og-cover.mjs 生成，1200 × 630） */
+const OG_IMAGE = absUrl('og-cover.png');
+const OG_IMAGE_ALT = 'Anima × ComfyUI 学习课程：以 Anima 为载体，学会 AI 生图的一般方法。教方法，不教参数。';
+/**
+ * 规范地址与分享标签只给能被收录的页面：成人附录（noindex）不请爬虫来，搜索页和 404（noSearch）没有可预览的内容。
+ * 构建时 Astro.url 的路径已经带 base；目录页补上结尾的 /，和 GitHub Pages 实际提供的地址一致。
+ */
+const social = !noindex && !noSearch;
+const here = Astro.url.pathname;
+const canonical = new URL(/\.[a-z0-9]+$/i.test(here) || here.endsWith('/') ? here : `${here}/`, Astro.site ?? Astro.url.origin).href;
+
 /** 品牌标记：一块"图"（山 + 日），底色从工作流轨的蓝渐变到提示词轨的品红 */
 const brandMark = (gid: string) =>
   `<svg class="brand-mark" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true" focusable="false"><defs><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b5bdb"/><stop offset="1" stop-color="#be185d"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#${gid})"/><path d="M6.4 16.8 10 12.2l2.6 2.9 1.9-2.1 3.1 3.8z" fill="#fff"/><circle cx="15.7" cy="8.5" r="1.7" fill="#fff"/></svg>`;
@@ -50,6 +61,25 @@ const brandMark = (gid: string) =>
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    {social && (
+      <>
+        <link rel="canonical" href={canonical} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="Anima × ComfyUI 学习课程" />
+        <meta property="og:locale" content="zh_CN" />
+        <meta property="og:title" content={fullTitle} />
+        <meta property="og:description" content={description} />
+        <meta property="og:url" content={canonical} />
+        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={OG_IMAGE_ALT} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={fullTitle} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={OG_IMAGE} />
+      </>
+    )}
     <link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
     <script is:inline>
       // 在首次绘制前应用手动选择的配色，避免闪一下；同时标记"JS 可用"。
