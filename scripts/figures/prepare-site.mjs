@@ -79,6 +79,7 @@ const MAP = {
   'l7-shift-5': { lesson: '05-02-l7-shift-guidance', dir: 'l7-shift-5', pattern: /^s5_.*\.png$/ },
   'l7-shift-7': { lesson: '05-02-l7-shift-guidance', dir: 'l7-shift-7', pattern: /^s7_.*\.png$/ },
   'l7-apg': { lesson: '05-02-l7-shift-guidance', dir: 'l7-apg', pattern: /^l7-apg_.*\.png$/ },
+  'l7-nag': { lesson: '05-02-l7-shift-guidance', dir: 'l7-nag', pattern: /^l7-nag_.*\.png$/ },
 
   'l8-loop': { lesson: '05-03-l8-compare-loop', dir: 'l8-loop', pattern: /^grid_.*\.png$/ },
   // ---- B 类：需要额外模型（figures.py 的 l1 / l3b / l4b / l5 / l6b / l7b / l8b 组）

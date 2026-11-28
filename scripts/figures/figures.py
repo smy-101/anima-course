@@ -39,11 +39,16 @@ def _manifest():
     return json.loads(MANIFEST_PATH.read_text()) if MANIFEST_PATH.exists() else {}
 
 
+def _wanted(fig_id: str) -> bool:
+    """FIGURES_ONLY="a b c" 时只跑列出的图，没设就都跑。emit 与下面 l7-guider 的计时段共用。"""
+    only = os.environ.get("FIGURES_ONLY", "").split()
+    return not only or fig_id in only
+
+
 def emit(fig_id: str, graphs: list[tuple[str, Graph]], note: str = ""):
     """跑一张图对应的一个或多个工作流，落盘并记 manifest。graphs: [(tag, Graph)]
     环境变量 FIGURES_ONLY="a b c" 时只跑列出的图（按组重跑时挑出个别图用）。"""
-    only = os.environ.get("FIGURES_ONLY", "").split()
-    if only and fig_id not in only:
+    if not _wanted(fig_id):
         return
     dest = OUT / fig_id
     dest.mkdir(parents=True, exist_ok=True)
@@ -484,23 +489,25 @@ def fig_l7():
     save(g, grid(g, batch_all(g, imgs, 60), 70, columns=2, cell=512), "Anima_course/l7-apg", 80)
     emit("l7-apg", [("", g)], note="cfg 12（7 在 preview3 上不烧），APG eta 1 / norm 5 / momentum 0")
 
-    # NAG：负向里放一个明确不想要的东西（cherry blossoms），cfg 4 不挂 vs 挂
-    neg_tw = NEG_TEMPLATE + ", cherry blossoms"
+    # NAG：负向里放一个明确不想要的东西。要挡的东西正向里不能写，得让模型自己联想出来，否则挂不挂都还在，对照不成立
+    # （2026-11-27 那版正负向都写了 cherry blossoms）。正向写 spring，Base 会自己画出樱花；负向再写 cherry blossoms。
+    # cfg 4：不挂 / 挂 scale 5 / 挂 scale 10。实测 scale 5、10 樱花都没去掉（见课文 05-02 的说明）
+    nag_pos, nag_neg = TPL_A.replace("cherry blossoms", "spring"), NEG_TEMPLATE + ", cherry blossoms"
     g = Graph()
     m, c, v = loaders(g)
-    nag = g.add("NAGuidance", {"model": g.out(m), "nag_scale": 5.0, "nag_alpha": 0.5, "nag_tau": 1.5}, nid=16)
-    p = g.add("CLIPTextEncode", {"text": TPL_A, "clip": g.out(c)}, "Positive", nid=20)
-    n = g.add("CLIPTextEncode", {"text": neg_tw, "clip": g.out(c)}, "Negative", nid=21)
+    p = g.add("CLIPTextEncode", {"text": nag_pos, "clip": g.out(c)}, "Positive", nid=20)
+    n = g.add("CLIPTextEncode", {"text": nag_neg, "clip": g.out(c)}, "Negative", nid=21)
     lat = g.add("EmptyLatentImage", {"width": 1024, "height": 1024, "batch_size": 1}, nid=30)
     imgs = []
-    for i, (mdl, txt) in enumerate(((m, "cfg 4, no NAG"), (nag, "cfg 4 + NAG"))):
+    for i, (scale, txt) in enumerate(((None, "no NAG"), (5.0, "NAG scale 5"), (10.0, "NAG scale 10"))):
+        mdl = m if scale is None else g.add("NAGuidance", {"model": g.out(m), "nag_scale": scale, "nag_alpha": 0.5, "nag_tau": 1.5}, nid=16 + i)
         ks = g.add("KSampler", {"model": g.out(mdl), "positive": g.out(p), "negative": g.out(n), "latent_image": g.out(lat),
                                 "seed": SEED, "steps": 30, "cfg": 4.0, "sampler_name": SAMPLER, "scheduler": SCHEDULER,
                                 "denoise": 1.0}, txt, nid=40 + i * 2)
         dec = g.add("VAEDecode", {"samples": g.out(ks), "vae": g.out(v)}, nid=41 + i * 2)
-        imgs.append(label(g, dec, txt + '  (neg: "cherry blossoms")', 50 + i))
-    save(g, grid(g, batch_all(g, imgs, 60), 70, columns=2, cell=512), "Anima_course/l7-nag", 80)
-    emit("l7-nag", [("", g)], note="cfg 4，负向追加 cherry blossoms；NAG scale 5 / alpha 0.5 / tau 1.5")
+        imgs.append(label(g, dec, txt, 50 + i))
+    save(g, grid(g, batch_all(g, imgs, 60), 70, columns=3, cell=512), "Anima_course/l7-nag", 80)
+    emit("l7-nag", [("", g)], note="cfg 4，Base：正向写 spring，负向追加 cherry blossoms；不挂 NAG / 挂 scale 5 / 挂 scale 10（alpha 0.5 / tau 1.5）")
 
     # 基本引导器 vs K采样器 cfg 1：同 seed 应一致，耗时各跑两遍取第二遍
     def ksampler_graph():
@@ -533,7 +540,7 @@ def fig_l7():
     # 同一工作流第二次提交会命中 ComfyUI 的执行缓存，计时前先清掉（模型不卸载）
     emit("l7-guider", [("ksampler-warmup", ksampler_graph()), ("guider-warmup", guider_graph())],
          note="同 seed 30 步 euler/simple：KSampler cfg 1 与 BasicGuider + SamplerCustomAdvanced；热身两遍后再各计一次")
-    for tag, fn in (("ksampler", ksampler_graph), ("guider", guider_graph)):
+    for tag, fn in (() if not _wanted("l7-guider") else (("ksampler", ksampler_graph), ("guider", guider_graph))):
         free_cache()
         manifest = _manifest()
         g = fn()

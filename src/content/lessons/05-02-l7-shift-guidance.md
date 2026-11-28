@@ -50,7 +50,8 @@ figures:
     caption: "cfg 12：不挂 APG（脸部过曝发白）vs 挂 APG（eta 1 / norm 5 / momentum 0）"
     group: 引导补丁
   - id: l7-nag
-    caption: "cfg 4，负向含 cherry blossoms：不挂 NAG vs 挂 NAG（scale 5 / alpha 0.5 / tau 1.5）"
+    src: ../../assets/figures/l7-nag.webp
+    caption: "cfg 4，正向写 spring、负向写 cherry blossoms：不挂 NAG、挂 NAG scale 5、scale 10，樱花都还在"
     group: 引导补丁
 transfers: true
 sources:
@@ -72,7 +73,7 @@ sources:
   - badge: 社区
     url: https://huggingface.co/circlestone-labs/Anima/discussions/165
     note: "HF 讨论区 #165：CFG++ 采样器需 CFG < 2"
-verified: 2026-11-24
+verified: 2026-11-28
 ---
 
 ## 补丁清单
@@ -125,9 +126,11 @@ UNETLoader.MODEL ──▶ ModelSamplingAuraFlow(shift 3.0) ──▶ APG ──
 
 1. shift 对照。在 `Anima T2T` 子图里或外面，给 UNETLoader 的 MODEL 串一个采样算法（AuraFlow）。`shift` 拖成输入口，接创建列表（3 / 5 / 7）。Base 模式、同 seed、同提示词，出三张拼一张。换一张 1536² 的图再试一次，shift 的收益在高分辨率上更明显。
 2. APG。cfg 拉到 12（7 烧得不明显），先出不挂 APG 的一张，这时脸部过曝发白；再挂 APG 出一张，并排。
-3. NAG。cfg 4、Aesthetic 模型，负向里放一个明确不想要的东西，如 `twins`。不挂 NAG 和挂 NAG 各出一张，速度差一倍是正常的。
+3. NAG。cfg 4、Base 模型。要挡的东西正向里别写，让模型自己联想出来。比如正向写 `spring`，负向再写 `cherry blossoms`。正负向都写它，挂不挂 NAG 它都还在，看不出效果。不挂 NAG 和挂 NAG 各出一张，速度差一倍是正常的。
 4. CFG 覆盖。cfg 6，挂一个 CFG覆盖（cfg 1、end_percent 0.1），与不挂并排，看过饱和是否减轻。
 5. 每个补丁只留一个在模型线上，其余删掉或 `Ctrl+B`。
+
+第 3 步本站在 Base 上试过一组，seed 42。不挂 NAG，樱花照出。挂上 NAG，scale 5 和 scale 10 各出一张，樱花都还在。画面只有颜色上的小差别。Aesthetic 上不挂 NAG 就没有樱花，无从对照。这是一个种子、一组参数的结果，NAG 在你这里管不管用，以你自己的对照图为准。
 
 ## 调参顺序
 
@@ -138,7 +141,7 @@ UNETLoader.MODEL ──▶ ModelSamplingAuraFlow(shift 3.0) ──▶ APG ──
 | 现象 | 原因 / 处理 |
 |---|---|
 | 挂了 NAG 后速度掉一半 | 正常：它关闭了 CFG 1 优化，改成正负两路都算 |
-| 挂 NAG 没效果 | 模型是 Turbo / CFG 1，而 NAG 要求 CFG > 1 |
+| 挂 NAG 没效果 | 先看 CFG：模型是 Turbo / CFG 1 时 NAG 不起作用，它要求 CFG > 1。CFG > 1 也没效果时，看要挡的东西是不是正向里也写了。正负向都写它，挂不挂都还在 |
 | 找不到 `NAGuidance` / `APG` | 核心节点较新，桌面稳定版可能还没有；更新到最新版 |
 | shift 调高后图变糊 / 变慢 | 步数固定时高噪声段分到更多步、低噪声段变少；steps 加 5 ~ 10 再看 |
 | 补丁叠了三四个，画面变怪 | 无法归因，只留一个，逐个对照 |

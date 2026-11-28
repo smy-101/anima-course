@@ -91,9 +91,9 @@ scripts/                check-site.mjs（构建后检查）、prose-lint.mjs（�
 | 概念可迁移：换模型时什么不变、什么要换（《节点详解》§4.1–4.9） | 已迁移（`resources/transfer.md`） |
 | 成人附录 | 规则、合规、词表（到 `nsfw` 级：表情 / 身体 / 衣物 / 展示与暗示）、负向、sensitive～nsfw 级模板（纯文字）；性行为 / 体液 / 群交 / 癖好 / 极端标签不进站 |
 | 开发者选修（《补充B》：HTTP API / 无界面 / 自定义节点） | 已迁移为阶段 5 末尾的两篇选修课（`elective: true`，不计入 14 天进度） |
-| 示例图（76 处占位，清单见 `npm run check:site`） | 63 张已补：54 张对照图（`scripts/figures/figures.py`，全部用官方 `anima-base-v1.0` 等权重）+ 9 张界面截图（`scripts/figures/screenshots.mjs`：界面地图、官方模板画布、问题页、L0 / L1 连线、子图内部对照、收成子图的画布、节点库里的蓝图、输出目录结构）。剩 13 张：8 张等插件或角色 LoRA（WD14、Impact Pack、UltimateSDUpscale、Depth Anything 3 节点、Civitai 角色 LoRA），4 张在 v1.0 与 preview3 上都没复现课程说法（标签传染、eye contact 标签优势、NAG、路线 A 背景加物件）；其中标签传染、eye contact、路线 A 三处已在课里注明本站没复现 |
+| 示例图（76 处占位，清单见 `npm run check:site`） | 64 张已补：55 张对照图（`scripts/figures/figures.py`，全部用官方 `anima-base-v1.0` 等权重）+ 9 张界面截图（`scripts/figures/screenshots.mjs`：界面地图、官方模板画布、问题页、L0 / L1 连线、子图内部对照、收成子图的画布、节点库里的蓝图、输出目录结构）。剩 12 张：8 张等插件或角色 LoRA（WD14、Impact Pack、UltimateSDUpscale、Depth Anything 3 节点、Civitai 角色 LoRA），3 张在 v1.0 与 preview3 上都没复现课程说法（标签传染、eye contact 标签优势、路线 A 背景加物件），三处都已在课里注明本站没复现。NAG 那张原先的对照组设错了（正负向都写了 cherry blossoms），2026-11-28 改成正向写 `spring` 后重出：挂不挂 NAG 樱花都在，课文按实测写 |
 | L0–L8 工作流 JSON、四个工具（实验记录本 / 提示词检查器 / 排错向导 / 误区自测） | 提示词检查器已做（`/tools/prompt-lint/`，18 条规则）；L0 / L1 / L2 / L3 / L4 / L5 / L6 / L7 / L8 的工作流 JSON 由 `scripts/figures/to_workflow.py --all` 生成到 `public/workflows/`（自动布局，拖进画布即可加载），下载入口在 `/resources/workflows/`；实验记录本已做（`/tools/lab-log/`，7 条规则）；排错向导、误区自测待做 |
-| 示例图原图（内嵌工作流的 PNG）→ GitHub Releases | 已上传：Release `figures-v1`，54 张。站内入口在 `/resources/workflows/` 和每课的对照图说明里，链接走 `releases/latest/download/…`，以后补图传成新的正式 Release 即可 |
+| 示例图原图（内嵌工作流的 PNG）→ GitHub Releases | Release `figures-v1` 已上传，54 张；NAG 重出后本地 zip 已重打成 55 张，还没传，传成 `figures-v2`。站内入口在 `/resources/workflows/` 和每课的对照图说明里，链接走 `releases/latest/download/…`，以后补图传成新的正式 Release 即可 |
 
 ## 技术栈
 
