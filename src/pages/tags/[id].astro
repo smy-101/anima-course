@@ -29,7 +29,7 @@ const polarity = d.polarity === '皆可' ? '正向 / 负向皆可' : `${d.polari
 ---
 
 <Base title={d.tag} description={d.meaning} active="tags">
-  <nav class="crumbs" aria-label="面包屑">
+  <nav class="crumbs" aria-label="面包屑" data-pagefind-ignore>
     <a href={url('tags/')}>标签字典</a>
     <span aria-hidden="true">›</span>
     <a href={url(`tags/#cat-${d.category}`)}>{d.category}</a>

@@ -42,7 +42,7 @@ const polarityLabel = (p: string) => (p === '皆可' ? '正 / 负皆可' : `${p}
       <span id="tag-count">{entries.length} / {entries.length} 个标签</span>
     </p>
   </div>
-  <p class="filter-empty" id="tag-empty" hidden>
+  <p class="filter-empty" id="tag-empty" hidden data-pagefind-ignore>
     没有匹配「<q data-filter-query></q>」的标签。<button type="button" class="link-btn">清除筛选</button>，或换个说法：标签用英文写（如
     <code>school uniform</code>），含义用中文写（如「眼神」「全身」）。
   </p>

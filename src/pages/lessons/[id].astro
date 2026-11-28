@@ -49,7 +49,7 @@ const days = d.days.map((n) => `第 ${n} 天`).join('、');
 <Base title={d.title} description={d.summary} active="course" wide>
   <div class="lesson">
     <article class="lesson-main">
-      <nav class="crumbs" aria-label="面包屑">
+      <nav class="crumbs" aria-label="面包屑" data-pagefind-ignore>
         <a href={url('')}>课程</a>
         <span aria-hidden="true">›</span>
         <a href={url(`#stage-${d.stage}`)}>阶段 {d.stage} · {stage.title}</a>
@@ -76,7 +76,7 @@ const days = d.days.map((n) => `第 ${n} 天`).join('、');
       </header>
 
       {toc.length > 1 && (
-        <details class="toc-inline">
+        <details class="toc-inline" data-pagefind-ignore>
           <summary><Icon name="list" size={18} />本页目录</summary>
           <Toc items={toc} />
         </details>
@@ -149,7 +149,7 @@ const days = d.days.map((n) => `第 ${n} 天`).join('、');
 
       <SourceBadge sources={d.sources} verified={d.verified} />
 
-      <nav class="pager" aria-label="上一课 / 下一课">
+      <nav class="pager" aria-label="上一课 / 下一课" data-pagefind-ignore>
         {prev ? (
           <a class="pager-link" href={url(`lessons/${prev.id}/`)} rel="prev">
             <span class="pager-label"><Icon name="arrow-left" size={16} />上一课</span>

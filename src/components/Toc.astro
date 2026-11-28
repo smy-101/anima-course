@@ -16,7 +16,7 @@ interface Props {
 const { items, labelledBy, title } = Astro.props;
 ---
 
-<nav class="toc" aria-labelledby={labelledBy} aria-label={labelledBy ? undefined : '本页目录'}>
+<nav class="toc" aria-labelledby={labelledBy} aria-label={labelledBy ? undefined : '本页目录'} data-pagefind-ignore>
   {title && <p class="toc-title" id={labelledBy}>{title}</p>}
   <ol>
     {items.map((h) => (

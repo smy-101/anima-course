@@ -3,6 +3,8 @@
  * 构建后检查：
  *   1. 汇总所有"待补图"占位块 → reports/figures-todo.json
  *   2. 检查站内链接是否都能落到 dist 里的文件 → 死链则退出码 1
+ *   3. 检查站点地图里没有成人附录的地址（docs/学习网站方案.md §5.2）→ 有，或 sitemap 文件缺失，退出码 1
+ *   4. 检查渲染后的可见文字里没有残留的 **（加粗没闭合，页面上原样显示星号）→ 有则退出码 1
  * 用法：node scripts/check-site.mjs [dist] [basePath]
  */
 import { readdir, readFile, writeFile, mkdir, stat } from 'node:fs/promises';
@@ -48,6 +50,7 @@ const fileSet = new Set(files.map((f) => relative(DIST, f)));
 
 const figures = [];
 const broken = [];
+const unrendered = [];
 const pageByUrl = new Map();
 const anchors = new Map();
 
@@ -57,6 +60,16 @@ for (const f of html) {
   pageByUrl.set(page.replace(/\/$/, '') || BASE || '/', rel);
   const src = await readFile(f, 'utf8');
   anchors.set(rel, new Set([...src.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1])));
+
+  // 加粗没闭合时页面上原样显示星号。CommonMark 的规则是：闭合 ** 前面是标点（如「。」）、后面紧跟汉字时不算闭合符。
+  // prose-lint 按文本数 **…**，查不出这种；所以在这里查产物。只看可见文字，代码块、行内代码、脚本、组件的序列化数据都不算。
+  const visible = src
+    .replace(/<(astro-island|pre|code|script|style)\b[^>]*>[\s\S]*?<\/\1>/g, '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<[^>]*>/g, '');
+  for (const m of visible.matchAll(/\*\*/g)) {
+    unrendered.push({ from: rel, excerpt: visible.slice(Math.max(0, m.index - 24), m.index + 30).replace(/\s+/g, ' ') });
+  }
 
   for (const m of src.matchAll(/<figure[^>]*data-figure-group="([^"]*)"[^>]*>[\s\S]*?data-figure-todo="([^"]*)"/g)) {
     figures.push({ page, group: m[1], caption: decode(m[2]) });
@@ -77,6 +90,18 @@ for (const f of html) {
         if (ids && !ids.has(hash)) broken.push({ from: rel, href, reason: '锚点不存在' });
       }
     }
+  }
+}
+
+const nsfwInSitemap = [];
+const sitemaps = files.filter((f) => /^sitemap-\d+\.xml$/.test(relative(DIST, f)));
+for (const f of sitemaps) {
+  const xml = await readFile(f, 'utf8');
+  for (const m of xml.matchAll(/<loc>([^<]+)<\/loc>/g)) {
+    let pathname = m[1];
+    try { pathname = decodeURIComponent(new URL(m[1]).pathname); } catch { /* 不是合法 URL，原样比较 */ }
+    // 按完整前缀匹配：主线里有一张讲安全等级的标签卡 /tags/nsfw/，它应该留在 sitemap 里
+    if (pathname.startsWith(`${BASE}/nsfw/`)) nsfwInSitemap.push(m[1]);
   }
 }
 
@@ -108,5 +133,14 @@ if (broken.length) {
   for (const b of broken.slice(0, 200)) out.push(`| ${b.from} | ${b.href}${b.reason ? `（${b.reason}）` : ''} |`);
   if (broken.length > 200) out.push(`| … | 还有 ${broken.length - 200} 条 |`);
 }
+// 成人附录不进 sitemap。注意只看 base 下的 /nsfw/ 前缀，不看 /tags/nsfw/ 那张标签卡
+if (!sitemaps.length) {
+  out.push(`- 站点地图：缺失（dist 里没有 sitemap-*.xml，检查 astro.config.mjs 的 sitemap 集成）`);
+} else {
+  out.push(`- 站点地图：${sitemaps.length} 份文件；成人附录地址 ${nsfwInSitemap.length} 条（应为 0）`);
+  for (const u of nsfwInSitemap.slice(0, 50)) out.push(`  - ${u}`);
+}
+out.push(`- 未渲染的加粗（可见文字里的 **）：${unrendered.length}`);
+for (const u of unrendered.slice(0, 100)) out.push(`  - ${u.from}：…${u.excerpt}…`);
 console.log(out.join('\n'));
-process.exit(broken.length ? 1 : 0);
+process.exit(broken.length || !sitemaps.length || nsfwInSitemap.length || unrendered.length ? 1 : 0);

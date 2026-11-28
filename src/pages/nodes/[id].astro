@@ -27,7 +27,7 @@ const typeCell = (t: string) => `<span class="port" data-type="${esc(portKey(t))
 ---
 
 <Base title={`${d.name_zh} ${entry.id}`} description={`${d.name_zh}（${entry.id}）节点的端口与参数说明。`} active="nodes">
-  <nav class="crumbs" aria-label="面包屑">
+  <nav class="crumbs" aria-label="面包屑" data-pagefind-ignore>
     <a href={url('nodes/')}>节点字典</a>
   </nav>
 

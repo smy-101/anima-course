@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
 import { satteri } from '@astrojs/markdown-satteri';
 import { satteriBaseLinks } from './scripts/satteri-base-links.mjs';
 import { satteriTableWrap } from './scripts/satteri-table-wrap.mjs';
@@ -17,7 +18,19 @@ const BASE_PATH = process.env.BASE_PATH ?? '/anima-course';
 export default defineConfig({
   site: SITE_URL,
   base: BASE_PATH,
-  integrations: [mdx(), react()],
+  integrations: [
+    mdx(),
+    react(),
+    // 站点地图（dist/sitemap-index.xml）。成人附录不进（方案 §5.2，它本来就 noindex）；搜索页和 404 没有可收录的内容。
+    // 附录要按 base 下的完整前缀匹配：主线里有一张讲安全等级的标签卡 /tags/nsfw/，它是该收录的。
+    sitemap({
+      filter: (page) => {
+        const path = new URL(page).pathname;
+        if (path.startsWith(`${BASE_PATH.replace(/\/$/, '')}/nsfw/`)) return false;
+        return !/\/(search|404)\/?$/.test(path);
+      },
+    }),
+  ],
   // dev / preview 固定监听 IPv4 回环。原因：本机 Node 把 localhost 解析成 ::1，Vite 默认只绑 IPv6 回环，
   // 而 WSL 镜像网络只把 IPv4 回环转发到 Windows——结果 Windows 浏览器打不开。绑 127.0.0.1 两边都通，且不暴露到局域网。
   // 需要局域网访问时设 DEV_HOST=0.0.0.0。

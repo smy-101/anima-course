@@ -45,7 +45,7 @@ const excerpt = (body: string | undefined) => {
       <span id="node-count">{entries.length} / {entries.length} 个节点</span>
     </p>
   </div>
-  <p class="filter-empty" id="node-empty" hidden>
+  <p class="filter-empty" id="node-empty" hidden data-pagefind-ignore>
     没有匹配「<q data-filter-query></q>」的节点。<button type="button" class="link-btn">清除筛选</button>，或换个关键词：中文名如「采样器」，英文类名如
     <code>KSampler</code>。
   </p>

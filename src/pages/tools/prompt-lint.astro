@@ -16,7 +16,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 <Base title="提示词检查器" description="贴上正负向提示词，查出下划线、逗号空格、画师缺 @、陷阱标签、等级冲突等问题；能自动修的一键修。纯前端。" active="tools" wide>
   <div class="content">
-    <nav class="crumbs" aria-label="面包屑">
+    <nav class="crumbs" aria-label="面包屑" data-pagefind-ignore>
       <a href={url('tools/')}>工具</a>
     </nav>
 
@@ -72,7 +72,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       </p>
     </section>
 
-    <nav class="pager" aria-label="返回">
+    <nav class="pager" aria-label="返回" data-pagefind-ignore>
       <a class="pager-link" href={url('tools/')}>
         <span class="pager-label"><Icon name="arrow-left" size={16} />返回</span>
         <span class="pager-title">全部工具</span>

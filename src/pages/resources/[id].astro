@@ -18,7 +18,7 @@ const { Content } = await render(entry);
 <Base title={d.title} description={`${d.kind}：${d.title}`} active="resources" wide>
   <div class="lesson">
     <article class="lesson-main">
-      <nav class="crumbs" aria-label="面包屑">
+      <nav class="crumbs" aria-label="面包屑" data-pagefind-ignore>
         <a href={url('resources/')}>资源</a>
         <span aria-hidden="true">›</span>
         <a href={url(`resources/#kind-${d.kind}`)}>{d.kind}</a>
@@ -38,7 +38,7 @@ const { Content } = await render(entry);
 
       <SourceBadge sources={d.sources} verified={d.verified} />
 
-      <nav class="pager" aria-label="返回">
+      <nav class="pager" aria-label="返回" data-pagefind-ignore>
         <a class="pager-link" href={url(`resources/#kind-${d.kind}`)}>
           <span class="pager-label"><Icon name="arrow-left" size={16} />返回</span>
           <span class="pager-title">资源的「{d.kind}」分类</span>

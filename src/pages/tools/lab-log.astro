@@ -9,7 +9,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 <Base title="实验记录本" description="按《补充A》模板记实验：一个 ID 一次扫描一个变量、结论必写为什么、每天一行今日基线。生成扫描、检查记录、导出 CSV / Markdown。纯前端。" active="tools" wide>
   <div class="content">
-    <nav class="crumbs" aria-label="面包屑">
+    <nav class="crumbs" aria-label="面包屑" data-pagefind-ignore>
       <a href={url('tools/')}>工具</a>
     </nav>
 
@@ -69,7 +69,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       </p>
     </section>
 
-    <nav class="pager" aria-label="返回">
+    <nav class="pager" aria-label="返回" data-pagefind-ignore>
       <a class="pager-link" href={url('tools/')}>
         <span class="pager-label"><Icon name="arrow-left" size={16} />返回</span>
         <span class="pager-title">全部工具</span>

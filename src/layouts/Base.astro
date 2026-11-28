@@ -9,7 +9,7 @@ interface Props {
   active?: 'course' | 'nodes' | 'tags' | 'troubleshooting' | 'resources' | 'tools' | 'search';
   /** noindex：不进搜索引擎 */
   noindex?: boolean;
-  /** noSearch：不进 Pagefind 索引 */
+  /** noSearch：不进 Pagefind 索引（搜索页、404 这类没有可查内容的页面） */
   noSearch?: boolean;
   /** wide：内容区用满容器宽度（列表页、带侧栏的课程页）；否则是居中的文章列 */
   wide?: boolean;
@@ -105,7 +105,9 @@ const brandMark = (gid: string) =>
       </div>
     </header>
 
-    <main id="main" class="page" tabindex="-1">
+    <!-- 搜索索引只收 <main> 里的内容（data-pagefind-body）：页头导航、页脚不在其中；
+         页内的面包屑、目录、翻页器是每页都有的导航文字，各自带 data-pagefind-ignore -->
+    <main id="main" class="page" tabindex="-1" data-pagefind-body>
       <div class:list={['content', { wide }]}><slot /></div>
     </main>
 
